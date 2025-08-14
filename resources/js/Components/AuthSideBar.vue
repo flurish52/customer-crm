@@ -3,15 +3,12 @@
         <!-- Mobile Toggle Button -->
         <button
             @click="toggleSidebar"
-            class="fixed z-50 md:hidden top-4 right-4 p-2 rounded-full shadow-lg transition-all duration-300 hover:scale-110"
-            :class="{
-        'bg-primary text-white': !isSidebarOpen,
-        'bg-secondary text-primary': isSidebarOpen
-      }"
+            class="fixed z-50 md:hidden top-4 right-4 p-2 rounded-full shadow-lg bg-white/10 backdrop-blur-sm transition-all duration-300 hover:bg-white/20"
         >
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24"
+                 stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      :d="isSidebarOpen ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'" />
+                      :d="isSidebarOpen ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'"/>
             </svg>
         </button>
 
@@ -33,85 +30,110 @@
 
         <!-- Sidebar -->
         <aside
-            class="fixed z-40 h-screen flex flex-col transition-all duration-300 ease-in-out bg-primary-dark"
+            class="fixed z-40 h-screen flex flex-col transition-all duration-300 ease-in-out bg-gradient-to-b from-primary-dark to-primary-light shadow-xl"
             :class="{
         'w-64': isSidebarOpen,
-        '-translate-x-full md:translate-x-0 md:w-20': !isSidebarOpen,
+        'w-16': !isSidebarOpen,
+        '-translate-x-full md:translate-x-0': !isSidebarOpen,
         'translate-x-0': isSidebarOpen
       }"
         >
             <!-- Sidebar Content -->
-            <div class="flex flex-col h-full border-r border-gray-800 shadow-xl">
+            <div class="flex flex-col h-full">
                 <!-- Logo Section -->
-                <div class="flex items-center justify-between p-4 border-b border-gray-800">
-                    <transition name="logo" mode="out-in">
-                        <div v-if="isSidebarOpen" key="expanded" class="flex items-center space-x-2">
-                            <h1 class="text-xl font-bold text-white">Zelvra</h1>
+                <div class="flex items-center justify-between p-6 pb-4">
+                    <transition name="fade" mode="out-in">
+                        <div v-if="isSidebarOpen" key="expanded" class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center">
+                                <span class="text-white font-bold text-xl">
+                                       <svg class="h-8 w-auto text-tertiary-50" viewBox="0 0 120 120"
+                                            fill="currentColor">
+        <path d="M60 0L120 30V90L60 120L0 90V30L60 0Z"/>
+        <path d="M60 30L90 45V75L60 90L30 75V45L60 30Z" fill="teal"/>
+    </svg>
+
+                                </span>
+                            </div>
+                            <h1 class="text-xl font-bold text-white">Zelvra CRM</h1>
                         </div>
-                        <div v-else key="collapsed" class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-white font-bold mx-auto">
-                            Z
+                        <div v-else key="collapsed"
+                             class="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center mx-auto">
+                            <span class="text-white font-bold text-xl">
+                                   <svg class="h-8 w-auto text-tertiary-50" viewBox="0 0 120 120" fill="currentColor">
+        <path d="M60 0L120 30V90L60 120L0 90V30L60 0Z" />
+        <path d="M60 30L90 45V75L60 90L30 75V45L60 30Z" fill="teal"/>
+    </svg>
+
+                            </span>
                         </div>
                     </transition>
 
                     <button
                         @click="toggleSidebar"
-                        class="hidden md:block p-1 rounded-md hover:bg-gray-800 transition-all duration-200 text-gray-400 hover:text-white"
+                        class="hidden md:block p-1.5 rounded-md hover:bg-white/10 transition-all duration-200 text-white/60 hover:text-white"
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                             stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  :d="isSidebarOpen ? 'M15 19l-7-7 7-7' : 'M9 5l7 7-7 7'" />
+                                  :d="isSidebarOpen ? 'M15 19l-7-7 7-7' : 'M9 5l7 7-7 7'"/>
                         </svg>
                     </button>
                 </div>
 
                 <!-- Navigation -->
-                <nav class="flex-1 overflow-y-auto py-4">
-                    <ul class="space-y-1 px-2">
+                <nav class="flex-1 overflow-y-auto px-3 py-4">
+                    <ul class="space-y-1">
                         <li v-for="item in navItems" :key="item.name">
                             <Link
                                 :href="item.path"
-                                class="flex items-center p-3 rounded-lg transition-all duration-200 group"
+                                class="flex items-center p-3 rounded-xl transition-all duration-200 group relative overflow-hidden"
                                 :class="{
-                  'bg-primary/20 text-primary': $page.url.startsWith(item.path),
-                  'text-gray-300 hover:bg-gray-800 hover:text-white': !$page.url.startsWith(item.path)
+                  'bg-white/10 text-white': $page.url.startsWith(item.path),
+                  'text-white/80 hover:bg-white/5': !$page.url.startsWith(item.path)
                 }"
                             >
-                <span class="flex-shrink-0">
+                <span class="flex-shrink-0 relative z-10">
                   <component
                       :is="item.icon"
-                      class="h-5 w-5 transition-all duration-200"
+                      class="h-6 w-6 transition-all duration-200"
                       :class="{
-                      'text-primary': $page.url.startsWith(item.path),
-                      'text-gray-400 group-hover:text-white': !$page.url.startsWith(item.path)
+                      'text-white': $page.url.startsWith(item.path),
+                      'text-white/60 group-hover:text-white': !$page.url.startsWith(item.path)
                     }"
                   />
                 </span>
-                                <transition name="nav-text">
-                  <span v-if="isSidebarOpen" class="ml-3 whitespace-nowrap text-sm font-medium">
+                                <transition name="slide-fade">
+                  <span v-if="isSidebarOpen" class="ml-4 whitespace-nowrap text-sm font-medium relative z-10">
                     {{ item.name }}
                   </span>
                                 </transition>
+                                <span
+                                    v-if="$page.url.startsWith(item.path)"
+                                    class="absolute inset-0 bg-white/5 rounded-xl"
+                                ></span>
                             </Link>
                         </li>
                     </ul>
                 </nav>
 
                 <!-- User Profile -->
-                <div class="border-t border-gray-800 p-4">
-                    <div class="flex items-center" :class="{'justify-center': !isSidebarOpen}">
+                <div class="px-3 pb-6 pt-2">
+                    <div class="flex items-center p-3 rounded-xl bg-white/5"
+                         :class="{'justify-center': !isSidebarOpen}">
                         <div class="relative">
                             <img
                                 :src="$page.props.auth.user.avatar"
                                 alt="User profile"
-                                class="w-10 h-10 rounded-full object-cover border-2 border-gray-700 hover:border-primary transition-all duration-300"
+                                class="w-10 h-10 rounded-full object-cover border-2 border-white/20 hover:border-white/40 transition-all duration-300"
                             >
-                            <span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-gray-900"></span>
+                            <span
+                                class="absolute bottom-0 right-0 w-3 h-3 bg-green-400 rounded-full border-2 border-primary-900"></span>
                         </div>
 
-                        <transition name="profile">
+                        <transition name="slide-fade">
                             <div v-if="isSidebarOpen" class="ml-3 flex-1 min-w-0">
                                 <p class="text-sm font-medium text-white truncate">{{ $page.props.auth.user.name }}</p>
-                                <p class="text-xs text-gray-400 truncate">{{ $page.props.auth.user.email }}</p>
+                                <p class="text-xs text-white/60 truncate">{{ $page.props.auth.user.email }}</p>
                             </div>
                         </transition>
                     </div>
@@ -122,7 +144,7 @@
 </template>
 
 <script setup>
-import { Link } from "@inertiajs/vue3";
+import {Link} from "@inertiajs/vue3";
 import {
     HomeIcon,
     UsersIcon,
@@ -132,6 +154,7 @@ import {
     ChartBarIcon,
     CreditCardIcon,
 } from '@heroicons/vue/24/outline'
+import ApplicationLogo from "@/Components/ApplicationLogo.vue";
 
 const props = defineProps({
     isSidebarOpen: {
@@ -147,48 +170,37 @@ const toggleSidebar = () => {
 }
 
 const navItems = [
-    { name: 'Dashboard', path: '/dashboard', icon: HomeIcon },
-    { name: 'Customers', path: '/dashboard/customers', icon: UsersIcon },
-    { name: 'Jobs', path: '/dashboard/jobs', icon: ClipboardIcon },
-    { name: 'Payments', path: '/dashboard/payments', icon: CreditCardIcon },
-    { name: 'Settings', path: '/dashboard/settings', icon: CogIcon }
+    {name: 'Dashboard', path: '/dashboard', icon: HomeIcon},
+    {name: 'Customers', path: '/dashboard/customers', icon: UsersIcon},
+    {name: 'Jobs', path: '/dashboard/jobs', icon: ClipboardIcon},
+    {name: 'Payments', path: '/dashboard/payments', icon: CreditCardIcon},
+    {name: 'Settings', path: '/dashboard/settings', icon: CogIcon}
 ]
 </script>
 
 <style scoped>
-/* Logo transition */
-.logo-enter-active,
-.logo-leave-active {
-    transition: all 0.3s ease;
-}
-.logo-enter-from,
-.logo-leave-to {
-    opacity: 0;
-    transform: translateX(-10px);
+/* Fade transition */
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.2s ease;
 }
 
-/* Navigation text transition */
-.nav-text-enter-active {
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}
+
+/* Slide-fade transition */
+.slide-fade-enter-active {
     transition: all 0.3s ease-out;
 }
-.nav-text-leave-active {
+
+.slide-fade-leave-active {
     transition: all 0.2s cubic-bezier(1, 0.5, 0.8, 1);
 }
-.nav-text-enter-from,
-.nav-text-leave-to {
-    transform: translateX(5px);
-    opacity: 0;
-}
 
-/* Profile transition */
-.profile-enter-active {
-    transition: all 0.3s ease-out;
-}
-.profile-leave-active {
-    transition: all 0.2s ease-in;
-}
-.profile-enter-from,
-.profile-leave-to {
+.slide-fade-enter-from,
+.slide-fade-leave-to {
     transform: translateX(10px);
     opacity: 0;
 }
@@ -197,29 +209,17 @@ const navItems = [
 nav::-webkit-scrollbar {
     width: 4px;
 }
+
 nav::-webkit-scrollbar-track {
-    background: rgba(255,255,255,0.05);
-}
-nav::-webkit-scrollbar-thumb {
-    background: var(--primary);
-    border-radius: 4px;
-}
-nav::-webkit-scrollbar-thumb:hover {
-    background: color-mix(in srgb, var(--primary) 80%, white);
+    background: transparent;
 }
 
-/* Active link indicator */
-.router-link-active {
-    position: relative;
+nav::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
 }
-.router-link-active::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 3px;
-    background: var(--primary);
-    border-radius: 3px 0 0 3px;
+
+nav::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
 }
 </style>

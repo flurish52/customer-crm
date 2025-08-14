@@ -4,53 +4,39 @@ import { Link } from '@inertiajs/vue3';
 </script>
 
 <template>
-    <div
-        class="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-indigo-900 via-purple-900 to-gray-900 p-6"
-    >
-        <!-- Animated background elements -->
-        <div class="fixed inset-0 overflow-hidden pointer-events-none">
-            <div v-for="i in 8" :key="i"
-                 class="absolute rounded-full bg-purple-500 opacity-10"
-                 :style="{
-                    width: `${Math.random() * 200 + 50}px`,
-                    height: `${Math.random() * 200 + 50}px`,
-                    left: `${Math.random() * 100}%`,
-                    top: `${Math.random() * 100}%`,
-                    animation: `float ${Math.random() * 15 + 10}s ease-in-out ${Math.random() * 5}s infinite alternate`
-                }">
+    <div class="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-6">
+        <!-- Subtle grid pattern background -->
+        <div class="fixed inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-10"></div>
+
+        <div class="relative z-10 w-full max-w-md">
+            <!-- Logo with professional spacing -->
+            <div class="mb-12 flex flex-col items-center justify-center text-center">
+                <Link href="/" class="mb-4">
+                    <ApplicationLogo class="h-16 w-auto text-primary-600 hover:text-primary-700 transition-colors" />
+                </Link>
+                <h1 class="text-2xl font-bold tracking-tight text-gray-900">Zelvra CRM</h1>
             </div>
-        </div>
 
-        <div class="relative z-10">
-            <Link href="/">
-                <ApplicationLogo class="h-24 w-24 fill-current text-purple-300 hover:text-purple-200 transition-colors duration-300" />
-            </Link>
-        </div>
+            <!-- Content card with clean shadow -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="px-10 py-12">
+                    <slot />
+                </div>
 
-        <div
-            class="relative z-10 mt-8 w-full overflow-hidden bg-gray-900/30 backdrop-blur-sm border border-purple-500/20 px-8 py-8 shadow-lg shadow-purple-900/20 sm:max-w-md sm:rounded-2xl"
-        >
-            <slot />
+                <!-- Subtle footer -->
+                <div class="bg-gray-50 px-6 py-4 border-t border-gray-100 text-center">
+                    <p class="text-xs text-gray-500">
+                        © 2024 Zelvra. All rights reserved.
+                    </p>
+                </div>
+            </div>
         </div>
     </div>
 </template>
 
 <style scoped>
-@keyframes float {
-    0% {
-        transform: translateY(0) translateX(0) rotate(0deg);
-    }
-    50% {
-        transform: translateY(-20px) translateX(10px) rotate(5deg);
-    }
-    100% {
-        transform: translateY(0) translateX(0) rotate(0deg);
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    [class*='rounded-full'] {
-        animation: none !important;
-    }
+/* Smooth transitions for interactive elements */
+a, button {
+    transition: all 0.2s ease;
 }
 </style>

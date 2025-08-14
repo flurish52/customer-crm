@@ -1,5 +1,5 @@
 <template>
-    <div class="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 overflow-hidden">
+    <div class=" bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 overflow-hidden">
         <!-- Animated background elements -->
         <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
             <div v-for="i in 8" :key="i"
@@ -9,12 +9,15 @@
         </div>
 
         <!-- Main content -->
-        <div class="relative z-10 max-h-screen flex flex-col">
+        <div class="relative z-10 max-h-fit flex flex-col">
             <!-- Header -->
             <header class="px-6 py-4 sm:px-12 flex justify-between items-center">
                 <div class="flex items-center space-x-2">
-                    <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white font-bold">
-                        Z
+                    <div class="w-8 h-8 rounded-lg bg-gray-900 text-red-600 flex items-center justify-center font-bold">
+                        <svg class="h-8 w-auto text-white" viewBox="0 0 120 120" fill="currentColor">
+                            <path d="M60 0L120 30V90L60 120L0 90V30L60 0Z" />
+                            <path d="M60 30L90 45V75L60 90L30 75V45L60 30Z" fill="#111827"/>
+                        </svg>
                     </div>
                     <h1 class="text-2xl font-bold text-white">
                         Zelvra CRM
@@ -134,17 +137,13 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Footer -->
-            <footer class="px-6 sm:px-12 py-6 text-center text-gray-400 text-sm">
-                <p>© 2023 Zelvra CRM. Streamline your customer relationships.</p>
-            </footer>
         </div>
     </div>
 </template>
 
 <script setup>
 import { Link } from '@inertiajs/vue3'
+import {router} from "@inertiajs/vue3";
 
 const bubbleStyle = (i) => {
     const size = Math.random() * 100 + 50
@@ -159,7 +158,7 @@ const bubbleStyle = (i) => {
 }
 
 const navigateUser = (route) => {
-    // Navigation logic
+    router.visit(route);
 }
 </script>
 

@@ -1,15 +1,24 @@
 <template>
 <HeroSection />
     <BenefitHeadlines />
+<!--    <Pricing />-->
+    <ConversionCTRSection />
+    <HighConversion />
+    <Footer />
+
+
 </template>
 
 <script setup>
 import { onMounted } from 'vue'
 import { gsap } from 'gsap'
-import {Link} from "@inertiajs/vue3";
 import { router } from '@inertiajs/vue3'
 import HeroSection from "@/Components/LandingPage/HeroSection.vue";
 import BenefitHeadlines from "@/Components/LandingPage/BenefitHeadlines.vue";
+import Pricing from "@/Components/LandingPage/Pricing.vue";
+import ConversionCTRSection from "@/Components/LandingPage/ConversionCTRSection.vue";
+import HighConversion from "@/Components/LandingPage/HighConversion.vue";
+import Footer from "@/Components/LandingPage/Footer.vue";
 
 const bubbleStyle = (index) => {
     const size = Math.random() * 200 + 50
