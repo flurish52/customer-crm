@@ -1,5 +1,5 @@
 <template>
-    <div class=" bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 overflow-hidden">
+    <div class=" bg-gradient-to-br from-gray-900 via-gray-700 to-gray-900 overflow-hidden">
         <!-- Animated background elements -->
         <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
             <div v-for="i in 8" :key="i"

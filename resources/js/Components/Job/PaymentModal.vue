@@ -9,6 +9,7 @@ const props = defineProps({
 });
 
 let selectedJob = ref('')
+let jobError = ref('')
 const emit = defineEmits(['submit', 'cancel']);
 const paymentForm = ref({
     amount: '',
@@ -41,9 +42,13 @@ const onJobSelected = () => {
 };
 
 const submitForm = async () => {
+    if (paymentForm.value.jobId === null){
+        jobError.value = 'You must select a Job'
+        return
+    }
     try {
         const response = await axios.post('/user/payments/received', paymentForm.value)
-        emit('activityCreated', response.data.activity)
+        emit('submit', {payload: response.data.activity})
         paymentForm.value = {
             amount: '',
             jobId: null,
@@ -51,6 +56,7 @@ const submitForm = async () => {
             method: 'bank_transfer',
             notes: ''
         }
+        jobError.value = ''
         emit('cancel')
     } catch (error) {
         console.error(error)
@@ -65,6 +71,7 @@ const cancelForm = () => {
         method: 'bank_transfer',
         notes: ''
     }
+    jobError.value = ''
     emit('cancel')
 };
 </script>
@@ -111,6 +118,7 @@ const cancelForm = () => {
                                     {{ job.job_title }}
                                 </option>
                             </select>
+                            <span class="text-sm text-red-600 italic font-thin">{{jobError}}</span>
                         </div>
                         <!-- Amount Field -->
                         <div>
@@ -119,7 +127,7 @@ const cancelForm = () => {
                             </label>
                             <div class="relative rounded-md shadow-sm">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <span class="text-gray-500 dark:text-gray-400 sm:text-sm">$</span>
+                                    <span class="text-gray-500 dark:text-gray-400 sm:text-sm">₦</span>
                                 </div>
                                 <input
                                     type="number"
@@ -135,7 +143,7 @@ const cancelForm = () => {
                                 @click="payInFull()"
                                 class="mt-2 text-xs font-medium text-primary-600 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-300 transition-colors"
                             >
-                                Paid in full (${{ selectedJob.amount }})
+                                Paid in full (₦{{ selectedJob.amount }})
                             </button>
                         </div>
 

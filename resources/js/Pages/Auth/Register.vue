@@ -26,21 +26,21 @@ const submit = () => {
 
         <div class="max-w-md mx-auto p-8 bg-white rounded-xl shadow-md border border-gray-100">
             <div class="text-center mb-8">
-                <h2 class="text-3xl font-bold text-primary-800">
+                <h2 class="text-3xl font-bold text-primary-dark">
                     Create Your Account
                 </h2>
-                <p class="mt-2 text-gray-600">
+                <p class="mt-2 text-primary">
                     Join Zelvra CRM to streamline your client management
                 </p>
             </div>
 
             <form @submit.prevent="submit" class="space-y-6">
                 <div>
-                    <InputLabel for="name" value="Full Name" class="block mb-2 text-sm font-medium text-gray-700" />
+                    <InputLabel for="name" value="Full Name" class="block mb-2 text-sm font-medium text-primary-dark" />
                     <TextInput
                         id="name"
                         type="text"
-                        class="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                        class="block w-full px-4 py-3 border border-primary rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary"
                         :class="{ 'border-red-500': form.errors.name }"
                         v-model="form.name"
                         required
@@ -56,11 +56,11 @@ const submit = () => {
                 </div>
 
                 <div>
-                    <InputLabel for="email" value="Email" class="block mb-2 text-sm font-medium text-gray-700" />
+                    <InputLabel for="email" value="Email" class="block mb-2 text-sm font-medium text-primary-dark" />
                     <TextInput
                         id="email"
                         type="email"
-                        class="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                        class="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary-500"
                         :class="{ 'border-red-500': form.errors.email }"
                         v-model="form.email"
                         required
@@ -75,11 +75,11 @@ const submit = () => {
                 </div>
 
                 <div>
-                    <InputLabel for="password" value="Password" class="block mb-2 text-sm font-medium text-gray-700" />
+                    <InputLabel for="password" value="Password" class="block mb-2 text-sm font-medium text-primary" />
                     <TextInput
                         id="password"
                         type="password"
-                        class="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                        class="block w-full px-4 py-3 border border-primary-light rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
                         :class="{ 'border-red-500': form.errors.password }"
                         v-model="form.password"
                         required
@@ -94,11 +94,11 @@ const submit = () => {
                 </div>
 
                 <div>
-                    <InputLabel for="password_confirmation" value="Confirm Password" class="block mb-2 text-sm font-medium text-gray-700" />
+                    <InputLabel for="password_confirmation" value="Confirm Password" class="block mb-2 text-sm font-medium text-primary" />
                     <TextInput
                         id="password_confirmation"
                         type="password"
-                        class="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                        class="block w-full px-4 py-3 border border-primary rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
                         :class="{ 'border-red-500': form.errors.password_confirmation }"
                         v-model="form.password_confirmation"
                         required
@@ -115,7 +115,7 @@ const submit = () => {
                 <div class="flex items-center justify-between mt-8">
                     <Link
                         :href="route('login')"
-                        class="text-sm text-primary-600 hover:text-primary-800 transition-colors"
+                        class="text-sm text-primary hover:text-primary-dark transition-colors"
                     >
                         Already have an account?
                     </Link>

@@ -3,7 +3,7 @@
         <!-- Mobile Toggle Button -->
         <button
             @click="toggleSidebar"
-            class="fixed z-50 md:hidden top-4 right-4 p-2 rounded-full shadow-lg bg-white/10 backdrop-blur-sm transition-all duration-300 hover:bg-white/20"
+            class="fixed z-50 md:hidden top-4 left-4 p-2 rounded-full shadow-lg  bg-primary backdrop-blur-sm transition-all duration-300 hover:bg-primary-dark"
         >
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24"
                  stroke="currentColor">
@@ -30,7 +30,7 @@
 
         <!-- Sidebar -->
         <aside
-            class="fixed z-40 h-screen flex flex-col transition-all duration-300 ease-in-out bg-gradient-to-b from-primary-dark to-primary-light shadow-xl"
+            class="fixed z-40 h-screen flex flex-col transition-all duration-300 ease-in-out bg-primary-dark shadow-xl"
             :class="{
         'w-64': isSidebarOpen,
         'w-16': !isSidebarOpen,
@@ -70,7 +70,7 @@
 
                     <button
                         @click="toggleSidebar"
-                        class="hidden md:block p-1.5 rounded-md hover:bg-white/10 transition-all duration-200 text-white/60 hover:text-white"
+                        class="hidden md:block p-1.5 rounded-md hover:bg-primary-dark transition-all duration-200 text-tertiary-dark hover:text-tertiary-light"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                              stroke="currentColor">

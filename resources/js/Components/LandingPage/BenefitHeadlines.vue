@@ -1,11 +1,11 @@
 <template>
-    <section class="bg-gradient-to-b from-tertiary-50 to-white py-20 px-4 sm:px-6 lg:px-8">
+    <section class="bg-gradient-to-b from-white to-tertiary-dark py-6 px-4 sm:px-6 lg:px-8">
         <div class="max-w-7xl mx-auto">
-            <div class="text-center mb-16">
-                <h2 class="text-4xl font-extrabold text-primary-900 mb-4">
+            <div class="text-center mb-6">
+                <h2 class="text-4xl font-extrabold text-primary-dark mb-4">
                     Transform Your Workflow
                 </h2>
-                <p class="text-xl text-primary-600 max-w-3xl mx-auto">
+                <p class="text-xl text-secondary-dark max-w-3xl mx-auto">
                     Professional tools trusted by industry leaders to drive efficiency and growth
                 </p>
             </div>
@@ -20,7 +20,7 @@
                 >
                     <!-- Animated background element -->
                     <div
-                        class="absolute inset-0 bg-gradient-to-br from-primary-50 to-tertiary-50 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                        class="absolute inset-0 bg-gradient-to-br from-tertiary-light to-primary-light opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                         :class="{ 'opacity-100': activeCard === index }"
                     ></div>
 
@@ -28,13 +28,13 @@
                         <!-- Icon with animated border -->
                         <div class="relative w-14 h-14 mb-6">
                             <div
-                                class="absolute inset-0 rounded-xl border-2 border-primary-100 transform group-hover:scale-110 transition-transform duration-300"
+                                class="absolute inset-0 rounded-xl border-2 border-primary-light transform group-hover:scale-110 transition-transform duration-300"
                                 :class="{ 'scale-110': activeCard === index }"
                             ></div>
                             <div class="absolute inset-0 flex items-center justify-center">
                                 <component
                                     :is="feature.icon"
-                                    class="w-7 h-7 text-primary-600 transform group-hover:scale-125 transition-transform duration-300"
+                                    class="w-7 h-7 text-primary-dark transform group-hover:scale-125 transition-transform duration-300"
                                     :class="{ 'scale-125': activeCard === index }"
                                 />
                             </div>
@@ -42,21 +42,21 @@
 
                         <!-- Content with staggered animation -->
                         <div class="flex-1">
-                            <h3 class="text-xl font-bold text-primary-900 mb-3 leading-tight transition-all duration-300 group-hover:translate-x-1">
+                            <h3 class="text-xl font-bold text-primary-dark mb-3 leading-tight transition-all duration-300 group-hover:translate-x-1">
                                 {{ feature.title }}
                             </h3>
-                            <p class="text-primary-600 mb-4 opacity-90">
+                            <p class="text-gray-900  opacity-90">
                                 {{ feature.description }}
                             </p>
                         </div>
 
                         <!-- Animated CTA -->
-                        <div class="mt-auto pt-4">
-              <span class="inline-flex items-center text-primary-600 font-medium group-hover:text-primary-700 transition-colors duration-300">
-                Learn more
-                <ArrowRightIcon class="ml-2 h-4 w-4 transform group-hover:translate-x-1 transition-transform duration-300" />
-              </span>
-                        </div>
+<!--                        <div class="mt-auto pt-4">-->
+<!--              <span class="inline-flex items-center text-primary-dark font-medium group-hover:text-primary-700 transition-colors duration-300">-->
+<!--                Learn more-->
+<!--                <ArrowRightIcon class="ml-2 h-4 w-4 transform group-hover:translate-x-1 transition-transform duration-300" />-->
+<!--              </span>-->
+<!--                        </div>-->
                     </div>
                 </div>
             </div>

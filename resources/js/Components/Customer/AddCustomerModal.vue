@@ -9,7 +9,6 @@
                         </svg>
                     </button>
                 </div>
-
                 <form @submit.prevent="saveCustomer">
                     <div class="space-y-4">
                         <div>
@@ -53,7 +52,6 @@
                                 class="mt-1 block w-full border border-tertiary-dark rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-light focus:border-primary-light"
                             >
                         </div>
-
                         <div>
                             <label for="address" class="block text-sm font-medium text-primary-dark">Address</label>
                             <textarea
@@ -92,7 +90,6 @@
                                 <img  :src="`/storage/${newCustomer.avatar}`" alt="Preview" class="w-20 h-20 rounded object-cover border" />
                             </div>
                         </div>
-
                         <div class="flex justify-end space-x-3 pt-4">
                             <button
                                 type="button"
@@ -135,8 +132,6 @@ newCustomer.value = {
 }
 
 }
-
-
 let emit = defineEmits(['closeAddCustomerModal', 'customerCreated_Updated'])
 const resetNewCustomer = () => {
     newCustomer.value = {
@@ -149,7 +144,6 @@ const resetNewCustomer = () => {
         avatar: null,
     }
 }
-
 const photoPreview = ref(null)
 const previewPhoto = (event) => {
     const file = event.target.files[0]
@@ -187,7 +181,6 @@ const saveCustomer = () => {
         })
     }
 }
-
 const closeAddCustomerModal=()=>{
     resetNewCustomer()
     emit('closeAddCustomerModal')

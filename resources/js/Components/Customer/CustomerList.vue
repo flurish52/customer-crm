@@ -167,9 +167,9 @@ const filteredCustomers = computed(() => {
     const query = props.searchQuery.toLowerCase()
     return customers.value.filter(customer =>
         customer.name.toLowerCase().includes(query) ||
-        customer.company.toLowerCase().includes(query) ||
-        customer.email.toLowerCase().includes(query) ||
-        customer.phone.toLowerCase().includes(query)
+        customer.company?.toLowerCase().includes(query) ||
+        customer.email?.toLowerCase().includes(query) ||
+        customer.phone?.toLowerCase().includes(query)
     )
 })
 const openAddCustomerModal = (id) => {
@@ -178,10 +178,6 @@ const openAddCustomerModal = (id) => {
 const editCustomer = (customer) => {
     emits('isEditing', {payload: customer})
 }
-watch(props.newUpdate, () => {
-    console.log(props.newUpdate)
-}, {deep: true});
-
 const getUserCustomers = ()=>{
     axios.get(`/get_customer`)
         .then(res => {
@@ -197,7 +193,6 @@ const getUserCustomers = ()=>{
             })
         })
 }
-
 onMounted(() => {
 getUserCustomers()
 })

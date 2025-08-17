@@ -1,5 +1,11 @@
 <template>
     <AuthenticatedLayout>
+        <PaymentModal
+            @cancel="closePaymentModal"
+            @submit="paymentMade"
+            :jobs="jobs"
+            :showPaymentModal="showPaymentModal"
+        />
         <div class="space-y-6">
             <!-- Page Header with Animation -->
             <div
@@ -24,6 +30,7 @@
                         class="btn-primary hover:scale-[1.02] transition-transform"
                         @mouseenter="hoverButton('record')"
                         @mouseleave="resetButton"
+                        @click="openPaymentModal"
                     >
                         <BanknotesIcon class="w-5 h-5 mr-2 transition-transform" :class="{ 'scale-110': activeButton === 'record' }"/>
                         Record Payment
@@ -54,16 +61,31 @@ import 'aos/dist/aos.css';
 import {onMounted} from "vue";
 import Payments from '@/components/Payments/Payments.vue';
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import PaymentModal from "@/Components/Job/PaymentModal.vue";
+import {router} from "@inertiajs/vue3";
 
-defineProps({
-    payments: Array
+let props = defineProps({
+    payments: Array,
+    jobs: Array
 });
 
 const activeButton = ref(null);
+const showPaymentModal = ref(false);
 
 const hoverButton = (button) => {
     activeButton.value = button;
 };
+
+const openPaymentModal = () =>{
+    showPaymentModal.value = true
+}
+const closePaymentModal = () =>{
+    showPaymentModal.value = false
+}
+
+const paymentMade = () =>{
+    router.reload()
+}
 
 const resetButton = () => {
     activeButton.value = null;

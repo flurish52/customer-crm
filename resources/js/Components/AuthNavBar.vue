@@ -1,5 +1,5 @@
 <template>
-    <header class=" shadow-sm sticky top-0 z-50">
+    <header class="bg-primary-dark shadow-sm sticky top-0 z-30">
         <div class="px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <!-- Left section (logo and mobile menu button) -->
@@ -7,7 +7,7 @@
                     <!-- Mobile menu button (only visible when sidebar is hidden) -->
                     <button
                         @click="$emit('toggleSidebar')"
-                        class="md:hidden p-2 rounded-md text-primary-DEFAULT hover:text-primary-dark focus:outline-none"
+                        class="md:hidden p-2 rounded-md text-tertiary hover:text-primary-dark focus:outline-none"
                     >
                         <span class="sr-only">Open sidebar</span>
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
@@ -20,28 +20,35 @@
                     <!-- App name - visible on mobile -->
                     <div class="flex-shrink-0 flex items-center md:hidden">
                         <div
-                            class="w-8 h-8 rounded-full bg-primary-DEFAULT flex items-center justify-center text-white font-bold">
-                            Z
+                            class="hidden md:block w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white font-bold">
+                            <ApplicationLogo />
                         </div>
-                        <span class="ml-2 text-lg font-semibold text-primary-dark">Zelvra</span>
+                        <span class="ml-2 text-lg font-semibold text-white">Zelvra</span>
                     </div>
+                </div>
+                <!-- Desktop Navbar Greeting (original but enhanced) -->
+                <div class="w-auto hidden md:flex items-center space-x-2">
+                    <span class="text-tertiary-dark">Hi,</span>
+                    <h1 class="text-lg font-semibold text-tertiary truncate max-w-[160px]">
+                        {{ $page.props.auth.user.name }}
+                    </h1>
                 </div>
 
                 <!-- Search bar (center section) -->
                 <div class="flex-1 max-w-md mx-4 hidden md:block">
                     <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none"
-                                 viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                            </svg>
-                        </div>
-                        <input
-                            type="text"
-                            placeholder="Search customers, jobs, receipts..."
-                            class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-tertiary-light placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary-light sm:text-sm transition-all duration-200"
-                        >
+<!--                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">-->
+<!--                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none"-->
+<!--                                 viewBox="0 0 24 24" stroke="currentColor">-->
+<!--                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"-->
+<!--                                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>-->
+<!--                            </svg>-->
+<!--                        </div>-->
+<!--                        <input-->
+<!--                            type="text"-->
+<!--                            placeholder="Search customers, jobs, receipts..."-->
+<!--                            class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-tertiary-light placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary-light sm:text-sm transition-all duration-200"-->
+<!--                        >-->
                     </div>
                 </div>
 
@@ -49,7 +56,7 @@
                 <div class="flex items-center">
                     <!-- Notification button -->
                     <button
-                        class="p-2 rounded-full text-gray-500 hover:text-primary-DEFAULT hover:bg-tertiary-light focus:outline-none relative transition-colors duration-200"
+                        class="p-2 rounded-full text-tertiary hover:text-primary hover:bg-tertiary-light focus:outline-none relative transition-colors duration-200"
                         @click="toggleNotifications"
                     >
                         <span class="sr-only">View notifications</span>
@@ -60,7 +67,7 @@
                         </svg>
                         <span
                             v-if="unreadNotifications > 0"
-                            class="absolute top-0 right-0 h-3 w-3 rounded-full bg-secondary-DEFAULT border-2 border-white"
+                            class="absolute top-0 right-0 h-3 w-3 rounded-full bg-secondary border-2 border-red-200"
                         ></span>
                     </button>
 
@@ -84,7 +91,7 @@
                     <div class="ml-4 relative">
                         <button
                             @click="toggleQuickActions"
-                            class="p-2 rounded-full text-gray-500 hover:text-primary-DEFAULT hover:bg-tertiary-light focus:outline-none transition-colors duration-200"
+                            class="p-2 rounded-full text-tertiary hover:text-primary hover:bg-tertiary-light focus:outline-none transition-colors duration-200"
                         >
                             <span class="sr-only">Quick actions</span>
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
@@ -110,10 +117,10 @@
                                 <div class="py-1">
                                     <button
                                         @click="openAddCustomerModal"
-                                        class="group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-tertiary-light hover:text-primary-DEFAULT"
+                                        class="group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-tertiary-light hover:text-primary"
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg"
-                                             class="mr-3 h-5 w-5 text-gray-400 group-hover:text-primary-DEFAULT"
+                                             class="mr-3 h-5 w-5 text-gray-400 group-hover:text-primary"
                                              fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                   d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
@@ -125,7 +132,7 @@
                                         class="group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-tertiary-light hover:text-primary-DEFAULT"
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg"
-                                             class="mr-3 h-5 w-5 text-gray-400 group-hover:text-primary-DEFAULT"
+                                             class="mr-3 h-5 w-5 text-gray-400 group-hover:text-primary"
                                              fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                   d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
@@ -164,7 +171,7 @@
                                     v-if="$page.props.auth.user.name !== null"
                                     :src="$page.props.auth.user.avatar"
                                     alt="User profile"
-                                    class="w-10 h-10 rounded-full object-cover border-2 border-gray-700 hover:border-primary transition-all duration-300"
+                                    class="w-10 h-10 rounded-full object-cover border-2 border-tertiary hover:border-tertiary-dark transition-all duration-300"
                                 >
                                 <svg
                                     v-else
@@ -202,29 +209,29 @@
                             >
                                 <a
                                     href="/dashboard/profile"
-                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-tertiary-light hover:text-primary-DEFAULT"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-tertiary-light hover:text-primary"
                                     role="menuitem"
                                 >
                                     Your Profile
                                 </a>
                                 <a
                                     href="/dashboard/settings"
-                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-tertiary-light hover:text-primary-DEFAULT"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-tertiary-light hover:text-primary"
                                     role="menuitem"
                                 >
                                     Settings
                                 </a>
                                 <a
                                     href="#"
-                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-tertiary-light hover:text-primary-DEFAULT"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-tertiary-light hover:text-primary"
                                     role="menuitem"
                                 >
                                     Help
                                 </a>
-                                <div class="border-t border-gray-100"></div>
+                                <div class="border-t border-red-100"></div>
                                 <button
                                     @click="logout"
-                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-tertiary-light hover:text-primary-DEFAULT"
+                                    class="block px-4 py-2 text-sm text-red-500 hover:bg-tertiary-light hover:text-red-600"
                                     role="menuitem"
                                 >
                                     Sign out
@@ -239,18 +246,28 @@
         <!-- Mobile search (hidden on desktop) -->
         <div class="md:hidden px-4 pb-3">
             <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none"
-                         viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                    </svg>
-                </div>
-                <input
-                    type="text"
-                    placeholder="Search..."
-                    class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-tertiary-light placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary-light sm:text-sm"
-                >
+<div>
+    <!-- Greeting Text -->
+    <div class="flex flex-col">
+        <span class="text-xs text-tertiary-dark">Welcome back</span>
+        <span class="text-xl font-medium text-tertiary truncate max-w-[120px]">
+        {{ $page.props.auth.user.name.split(' ')[0] }}
+      </span>
+    </div>
+
+</div>
+<!--                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">-->
+<!--                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none"-->
+<!--                         viewBox="0 0 24 24" stroke="currentColor">-->
+<!--                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"-->
+<!--                              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>-->
+<!--                    </svg>-->
+<!--                </div>-->
+<!--                <input-->
+<!--                    type="text"-->
+<!--                    placeholder="Search..."-->
+<!--                    class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-tertiary-light placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary-light sm:text-sm"-->
+<!--                >-->
             </div>
         </div>
 
@@ -305,9 +322,9 @@
                     </a>
                 </div>
                 <div class="p-3 border-t border-tertiary-dark text-center">
-                    <a href="#" class="text-sm font-medium text-primary-DEFAULT hover:text-primary-dark">
+                    <button class="text-sm font-medium text-primary-DEFAULT hover:text-primary-dark">
                         View all notifications
-                    </a>
+                    </button>
                 </div>
             </div>
         </transition>
@@ -339,6 +356,7 @@ import {
     DocumentTextIcon
 } from '@heroicons/vue/24/outline'
 import AddCustomerModal from "@/Components/Customer/AddCustomerModal.vue";
+import ApplicationLogo from "@/Components/ApplicationLogo.vue";
 
 const emit = defineEmits(['toggleSidebar'])
 
@@ -349,38 +367,14 @@ const unreadNotifications = ref(3)
 const unreadMessages = ref(1)
 
 const notifications = ref([
-    {
-        id: 1,
-        title: 'New customer added',
-        message: 'Sarah Johnson has been added to your customers',
-        time: '5 minutes ago',
-        unread: true,
-        icon: UserIcon
-    },
-    {
-        id: 2,
-        title: 'Payment received',
-        message: 'Payment of $250 for project "Website Redesign"',
-        time: '1 hour ago',
-        unread: true,
-        icon: DocumentChartBarIcon
-    },
-    {
-        id: 3,
-        title: 'Job completed',
-        message: 'The "Logo Design" job has been marked as completed',
-        time: '3 hours ago',
-        unread: true,
-        icon: CheckIcon
-    },
-    {
-        id: 4,
-        title: 'Receipt generated',
-        message: 'Receipt #12345 has been generated',
-        time: '1 day ago',
-        unread: false,
-        icon: DocumentTextIcon
-    }
+    // {
+    //     id: 1,
+    //     title: 'New customer added',
+    //     message: 'Sarah Johnson has been added to your customers',
+    //     time: '5 minutes ago',
+    //     unread: true,
+    //     icon: UserIcon
+    // },
 ])
 
 const toggleProfileDropdown = () => {

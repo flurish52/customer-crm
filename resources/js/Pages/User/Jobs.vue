@@ -1,44 +1,42 @@
 <template>
     <AuthenticatedLayout>
-        <div class="space-y-6">
-            <!-- Animated Page Header -->
-            <div
-                class="flex flex-col justify-between gap-4 md:flex-row md:items-center"
-                data-aos="fade-down"
-                data-aos-duration="300"
-            >
-                <div>
-                    <h1 class="text-2xl font-bold tracking-tight text-gray-900">Jobs</h1>
-                    <p class="mt-1 text-sm text-gray-500">Track current and completed work</p>
-                </div>
-                <div class="flex gap-3">
-                    <button
-                        @click="refreshPage"
-                        class="btn-secondary hover:scale-[1.02] transition-transform"
-                        @mouseenter="hoverButton('refresh')"
-                        @mouseleave="resetButton"
-                    >
-                        <ArrowPathIcon
-                            class="w-5 h-5 mr-2 transition-transform duration-300"
-                            :class="{ 'rotate-180': isRefreshing || activeButton === 'refresh' }"
-                        />
-                        {{ isRefreshing ? 'Refreshing...' : 'Refresh' }}
-                    </button>
-                    <button
-                        @click="showCreateJobModal"
-                        class="btn-primary hover:scale-[1.02] transition-transform"
-                        @mouseenter="hoverButton('newJob')"
-                        @mouseleave="resetButton"
-                    >
-                        <PlusIcon
-                            class="w-5 h-5 mr-2 transition-transform"
-                            :class="{ 'scale-125': activeButton === 'newJob' }"
-                        />
-                        New Job
-                    </button>
-                </div>
-            </div>
+        <header class="">
+<!--            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">-->
+<!--                &lt;!&ndash; Title with decorative element &ndash;&gt;-->
+<!--                <div class="flex items-center gap-3">-->
+<!--                    <div class="hidden md:block w-1.5 h-8 rounded-full bg-primary"></div>-->
+<!--                    <div>-->
+<!--                        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">All Jobs</h1>-->
+<!--                        <p class="text-gray-500 dark:text-gray-400 mt-1">-->
+<!--                            Overview of all your active and completed jobs-->
+<!--                        </p>-->
+<!--                    </div>-->
+<!--                </div>-->
 
+<!--                &lt;!&ndash; Action Buttons &ndash;&gt;-->
+<!--                <div class="flex gap-3">-->
+<!--                    <button-->
+<!--                        @click="emits('showModal')"-->
+<!--                        class="flex items-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary-dark text-white rounded-lg transition-all shadow-sm hover:shadow-md"-->
+<!--                    >-->
+<!--                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">-->
+<!--                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />-->
+<!--                        </svg>-->
+<!--                        <span>New Job</span>-->
+<!--                    </button>-->
+
+<!--                    <button-->
+<!--                        class="flex items-center gap-2 px-4 py-2.5 border border-gray-300 hover:border-primary/30 bg-white hover:bg-primary/5 text-gray-700 rounded-lg transition-all shadow-sm hover:shadow-md"-->
+<!--                    >-->
+<!--                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">-->
+<!--                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />-->
+<!--                        </svg>-->
+<!--                        <span>Filters</span>-->
+<!--                    </button>-->
+<!--                </div>-->
+<!--            </div>-->
+        </header>
+        <div class="space-y-6">
             <!-- Jobs Component with Staggered Animation -->
             <div
                 data-aos="fade-up"
@@ -67,6 +65,7 @@ import 'aos/dist/aos.css';
 import Jobs from "@/Components/Job/Jobs.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { router } from '@inertiajs/vue3'
+import CreateJob from "@/Components/Job/CreateJob.vue";
 
 defineProps({
     jobs: Array,

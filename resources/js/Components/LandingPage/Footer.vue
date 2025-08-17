@@ -1,5 +1,5 @@
 <template>
-    <footer class="bg-primary-900 text-tertiary-50 pt-16 pb-8 px-4 sm:px-6 lg:px-8">
+    <footer class="bg-gray-900 text-tertiary pt-16 pb-8 px-4 sm:px-6 lg:px-8">
         <div class="max-w-7xl mx-auto">
             <!-- Main Footer Grid -->
             <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-10 mb-12">
@@ -9,7 +9,7 @@
                         <!-- SVG Logo Inline -->
                         <svg class="h-8 w-auto text-tertiary-50" viewBox="0 0 120 120" fill="currentColor">
                             <path d="M60 0L120 30V90L60 120L0 90V30L60 0Z" />
-                            <path d="M60 30L90 45V75L60 90L30 75V45L60 30Z" fill="#fff"/>
+                            <path d="M60 30L90 45V75L60 90L30 75V45L60 30Z" fill="#111827"/>
                         </svg>
                         <span class="ml-2 text-xl font-bold">Zelvra</span>
                     </div>

@@ -1,119 +1,66 @@
 <template>
-    <div class=" mb-8">
-        <div class="flex items-center justify-between">
-
-            <div class="flex justify-between flex-col mb-6">
-                <!-- Main Header with Accent -->
-                <div class="flex mb-3">
-                    <h1 class="text-2xl font-bold text-primary-dark">Statistics</h1>
+    <div class="pb-3">
+        <div class="welcome-header">
+            <div class="flex items-center justify-between">
+                <div class="flex flex-col">
+                    <h1 class="text-2xl font-bold text-primary-dark">
+                        Welcome to Your Dashboard
+                    </h1>
+                    <p class="text-gray-500 text-sm mt-1">
+                        Here's what's happening with your business
+                    </p>
                 </div>
-
-                <!-- Optional Time Filter -->
-                <div
-                    v-show="!toggledCard"
-                    class="flex items-center space-x-2">
-<!--                    <button-->
-<!--                        v-for="period in timePeriods"-->
-<!--                        :key="period"-->
-<!--                        @click="activePeriod = period"-->
-<!--                        class="px-3 py-1 text-sm rounded-md transition-colors"-->
-<!--                        :class="{-->
-<!--          'bg-primary-DEFAULT text-white bg-primary-dark': activePeriod === period,-->
-<!--          'text-primary-dark hover:bg-tertiary-light': activePeriod !== period-->
-<!--        }"-->
-<!--                    >-->
-<!--                        {{ period }}-->
-<!--                    </button>-->
-                </div>
+                <button
+                    @click="toggleSection"
+                    class="text-gray-500 hover:text-primary transition-all duration-200 p-1 rounded-full hover:bg-gray-100"
+                    :class="{ 'rotate-180': toggledCard }"
+                    aria-label="Toggle statistics"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-5 w-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M19 9l-7 7-7-7"
+                        />
+                    </svg>
+                </button>
             </div>
-
-            <button @click="togleSection">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                     stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                </svg>
-            </button>
         </div>
-        <hr>
+        <hr class="mb-4 border-gray-200">
+
         <transition
-            name="fold-transition"
-            enter-active-class="transition transform duration-500"
-            leave-active-class="transition transform duration-500"
-            enter-from-class="-translate-y-full opacity-0"
-            enter-to-class="translate-y-0 opacity-100"
-            leave-from-class="translate-y-0 opacity-100"
-            leave-to-class="-translate-y-full opacity-0"
+            name="fade-slide"
+            enter-active-class="transition-all duration-300 ease-out"
+            leave-active-class="transition-all duration-200 ease-in"
+            enter-from-class="opacity-0 -translate-y-4"
+            enter-to-class="opacity-100 translate-y-0"
+            leave-from-class="opacity-100 translate-y-0"
+            leave-to-class="opacity-0 -translate-y-4"
         >
-            <div
-                v-show="!toggledCard"
-                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
-            >
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-tertiary-light">
+            <div v-show="!toggledCard" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div
+                    v-for="(card, index) in statCards"
+                    :key="index"
+                    class="bg-primary-dark  p-5 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 hover:-translate-y-1"
+                    :style="{ 'transition-delay': `${index * 50}ms` }"
+                >
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-sm font-medium text-gray-500">Total Customers</p>
-                            <p class="text-2xl font-bold text-primary-dark mt-1">{{ customers.length }}</p>
+                            <p class="text-sm font-medium text-tertiary-light">{{ card.title }}</p>
+                            <p class="text-2xl font-bold text-tertiary-light mt-1">{{ card.value }}</p>
                         </div>
-                        <div class="p-3 rounded-full bg-primary-light/10 text-primary-DEFAULT">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
-                                 viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                            </svg>
+                        <div class="p-3 rounded-full" :class="card.iconBg">
+                            <component :is="card.icon" class="h-6 w-6" :class="card.iconColor" />
                         </div>
                     </div>
-                    <p class="text-xs text-gray-500 mt-3">+{{ newCustomersThisMonth }} this month</p>
-                </div>
-
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-tertiary-light">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-gray-500">Active Jobs</p>
-                            <p class="text-2xl font-bold text-primary-dark mt-1">{{ activeJobs }}</p>
-                        </div>
-                        <div class="p-3 rounded-full bg-secondary-light/10 text-secondary-DEFAULT">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
-                                 viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                            </svg>
-                        </div>
-                    </div>
-                    <p class="text-xs text-red-500 mt-3">{{ overdueJobs }} overdue jobs</p>
-                </div>
-
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-tertiary-light">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-gray-500">Receivables</p>
-                            <p class="text-2xl font-bold text-primary-dark mt-1">&#8358;{{ totalReceivables }}</p>
-                        </div>
-                        <div class="p-3 rounded-full bg-primary-light/10 text-primary-DEFAULT">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
-                                 viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                        </div>
-                    </div>
-<!--                    <p class="text-xs text-gray-500 mt-3">{{ // overduePaymentsCount }} overdue payments</p>-->
-                </div>
-
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-tertiary-light">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-gray-500">Customer Satisfaction</p>
-                            <p class="text-2xl font-bold text-primary-dark mt-1">{{ satisfactionRate }}%</p>
-                        </div>
-                        <div class="p-3 rounded-full bg-secondary-light/10 text-secondary-DEFAULT">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
-                                 viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                        </div>
-                    </div>
-<!--                    <p class="text-xs text-gray-500 mt-3">{{ positiveReviewsCount }} positive reviews</p>-->
+                    <p v-if="card.footer" class="text-xs mt-3 bg-white rounded-md px-3 w-fit py-1" :class="card.footerColor">{{ card.footer }}</p>
                 </div>
             </div>
         </transition>
@@ -121,19 +68,28 @@
 </template>
 
 <script setup>
-import {computed, onMounted} from "vue";
-import {ref} from "vue";
-import axios from "axios";
+import { ref, computed, onMounted } from 'vue'
+import axios from 'axios'
 import dayjs from 'dayjs'
+import {
+    UserGroupIcon,
+    BriefcaseIcon,
+    CurrencyDollarIcon,
+    FaceSmileIcon,
+} from "@heroicons/vue/24/outline"
 
 
 let customers = ref([])
 let jobs = ref([])
-let activeJobs = ref()
+let activeJobs = ref(0)
+let overdueJobs = ref(0)
+let totalReceivables = ref(0)
+let toggledCard = ref(false)
 
-const overdueJobs = ref(0)
-const totalReceivables = ref(0)
-// const overduePaymentsCount = computed(() => Math.floor(Math.random() * 3))
+const toggleSection = () => {
+    toggledCard.value = !toggledCard.value
+}
+
 const newCustomersThisMonth = computed(() => {
     const now = dayjs()
     return customers.value.filter(customer => {
@@ -141,22 +97,61 @@ const newCustomersThisMonth = computed(() => {
     }).length
 })
 
-// const timePeriods = ['Today', 'Week', 'Month', 'Year']
-// const activePeriod = ref('Month')
+const satisfactionRate = computed(() => {
+    const filtered = jobs.value.filter(job =>
+        job.status === 'completed' && job.satisfaction_score != null
+    )
+    if (filtered.length === 0) return 0
+    const sum = filtered.reduce((total, job) => total + Number(job.satisfaction_score), 0)
+    return Math.round((sum / filtered.length) * 20) // Convert 1-5 scale to percentage
+})
 
-let toggledCard = ref(false)
-const togleSection = () => {
-    toggledCard.value = !toggledCard.value
-}
+const statCards = computed(() => [
+    {
+        title: 'Total Customers',
+        value: customers.value.length,
+        icon: UserGroupIcon,
+        iconBg: 'bg-blue-50',
+        iconColor: 'text-blue-500',
+        footer: `+${newCustomersThisMonth.value} this month`,
+        footerColor: 'text-gray-500'
+    },
+    {
+        title: 'Active Jobs',
+        value: activeJobs.value,
+        icon: BriefcaseIcon,
+        iconBg: 'bg-purple-50',
+        iconColor: 'text-purple-500',
+        footer: `${overdueJobs.value} overdue jobs`,
+        footerColor: 'text-red-500'
+    },
+    {
+        title: 'Receivables',
+        value: `₦${totalReceivables.value.toLocaleString()}`,
+        icon: CurrencyDollarIcon,
+        iconBg: 'bg-green-50',
+        iconColor: 'text-green-500',
+        footer: null
+    },
+    {
+        title: 'Customer Satisfaction',
+        value: `${satisfactionRate.value}%`,
+        icon: FaceSmileIcon,
+        iconBg: 'bg-yellow-50',
+        iconColor: 'text-yellow-500',
+        footer: null
+    }
+])
 
 const getCustomers = () => {
-    axios.get(`/get_customer`)
+    axios.get('/get_customer')
         .then(res => {
             customers.value = res.data
         })
 }
+
 const getJobs = () => {
-    axios.get(`/get_user/jobs`)
+    axios.get('/get_user/jobs')
         .then(res => {
             jobs.value = res.data
             activeJobs.value = jobs.value.filter(job => job.status !== 'completed').length
@@ -165,7 +160,7 @@ const getJobs = () => {
 }
 
 const getReceivedAmount = () => {
-    axios.get(`/get_user/total_receivables`)
+    axios.get('/get_user/total_receivables')
         .then(res => {
             totalReceivables.value = res.data
         })
@@ -175,21 +170,5 @@ onMounted(() => {
     getCustomers()
     getJobs()
     getReceivedAmount()
-
 })
-
-const satisfactionRate = computed(() => {
-    const filtered = jobs.value.filter(job =>
-        job.status === 'completed' && job.satisfaction_score != null
-    )
-    if (filtered.length === 0) return 0
-
-    const sum = filtered.reduce((total, job) => total + Number(job.satisfaction_score), 0)
-    return sum / filtered.length
-})
-
 </script>
-
-<style scoped>
-
-</style>

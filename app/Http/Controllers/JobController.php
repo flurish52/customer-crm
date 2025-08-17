@@ -134,10 +134,12 @@ class JobController extends Controller
     public function returnPayments()
     {
         return inertia::render('User/Payments', [
-            'payments' => Activity::with('subject', 'customer')
+            'payments' => Activity::orderBy('created_at', 'DESC')->with('subject', 'customer')
                 ->where('user_id', Auth::id())
                 ->where('type', 'payment')
                 ->get(),
+        'jobs' => Job::orderBy('job_title', 'DESC')->where('user_id', Auth::id())->get(),
+
         ]);
     }
 

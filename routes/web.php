@@ -5,6 +5,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -18,7 +19,16 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
+    return Inertia::render('Dashboard', [
+        'jobs' => \App\Models\Job::with('customer', 'activities')
+            ->where('user_id', Auth::id())->get(),
+
+        'recentActivities' => \App\Models\Activity::with('subject', 'customer')
+        ->where('user_id', Auth::id())->paginate(),
+
+        'customers' => \App\Models\Customer::with('jobs.activities')
+        ->where('user_id', Auth::id())->paginate(),
+    ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
@@ -46,7 +56,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard/reports', [CustomerController::class, 'returnReports'])->name('return.reports');
     Route::get('/dashboard/settings', [ProfileController::class, 'returnSettings'])->name('return.settings');
     Route::get('/dashboard/profile', [ProfileController::class, 'returnProfile'])->name('return.profile');
-
     Route::patch('/profile/update', [ProfileController::class, 'update'])->name('edit.profile');
 
     Route::get('/dashboard/job/{job}', [JobController::class, 'returnJob'])->name('return.job');

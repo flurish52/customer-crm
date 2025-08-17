@@ -1,24 +1,23 @@
 <template>
-<HeroSection />
-    <BenefitHeadlines />
-<!--    <Pricing />-->
-    <ConversionCTRSection />
-    <HighConversion />
-    <Footer />
-
-
+        <HeroSection/>
+        <BenefitHeadlines/>
+        <!--    <Pricing />-->
+        <ConversionCTRSection/>
+        <HighConversion/>
+        <Footer/>
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
-import { gsap } from 'gsap'
-import { router } from '@inertiajs/vue3'
+import {onMounted} from 'vue'
+import {gsap} from 'gsap'
+import {router} from '@inertiajs/vue3'
 import HeroSection from "@/Components/LandingPage/HeroSection.vue";
 import BenefitHeadlines from "@/Components/LandingPage/BenefitHeadlines.vue";
 import Pricing from "@/Components/LandingPage/Pricing.vue";
 import ConversionCTRSection from "@/Components/LandingPage/ConversionCTRSection.vue";
 import HighConversion from "@/Components/LandingPage/HighConversion.vue";
 import Footer from "@/Components/LandingPage/Footer.vue";
+import GuestLayout from "@/Layouts/GuestLayout.vue";
 
 const bubbleStyle = (index) => {
     const size = Math.random() * 200 + 50
@@ -45,7 +44,7 @@ const navigateUser = (action) => {
     }
 }
 
-    onMounted(() => {
+onMounted(() => {
     gsap.from('h1 span', {
         duration: 1.5,
         opacity: 0,
@@ -54,7 +53,7 @@ const navigateUser = (action) => {
         stagger: 0.2
     })
 
-        gsap.from('h1', {
+    gsap.from('h1', {
         duration: 1.5,
         opacity: 0,
         y: 50,
@@ -63,21 +62,21 @@ const navigateUser = (action) => {
     })
 
     gsap.from('p', {
-    duration: 1,
-    opacity: 0,
-    y: 20,
-    delay: 0.5,
-    ease: 'power2.out'
-})
+        duration: 1,
+        opacity: 0,
+        y: 20,
+        delay: 0.5,
+        ease: 'power2.out'
+    })
 
     gsap.from('Link', {
-    duration: 1,
-    // opacity: 0,
-    y: 20,
-    delay: 0.8,
-    stagger: 0.15,
-    ease: 'back.out'
-})
+        duration: 1,
+        // opacity: 0,
+        y: 20,
+        delay: 0.8,
+        stagger: 0.15,
+        ease: 'back.out'
+    })
 })
 
 </script>

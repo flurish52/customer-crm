@@ -49,7 +49,9 @@ const toggleSidebar = () => {
                     <slot name="header" />
                 </div>
             </header>
-<AuthNavBar />
+<AuthNavBar
+@toggleSidebar="toggleSidebar"
+/>
 
             <!-- Main content -->
             <main class="flex-1 p-4 sm:p-6 lg:p-8">
