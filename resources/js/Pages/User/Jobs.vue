@@ -1,40 +1,53 @@
 <template>
     <AuthenticatedLayout>
-        <header class="">
-<!--            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">-->
-<!--                &lt;!&ndash; Title with decorative element &ndash;&gt;-->
-<!--                <div class="flex items-center gap-3">-->
-<!--                    <div class="hidden md:block w-1.5 h-8 rounded-full bg-primary"></div>-->
-<!--                    <div>-->
-<!--                        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">All Jobs</h1>-->
-<!--                        <p class="text-gray-500 dark:text-gray-400 mt-1">-->
-<!--                            Overview of all your active and completed jobs-->
-<!--                        </p>-->
-<!--                    </div>-->
-<!--                </div>-->
+        <CreateJob
+            :showModal="showModal"
+            :customer="customer"
+            :isEditingJob="isEditingJob"
+            :jobToEdit="jobToEdit"
+            :allCustomers="allCustomers"
+            @close="closeCreateJobModal"
+            @submit="refreshPage"
+        />
+        <header class="mb-8">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <!-- Title with decorative element -->
+                <div class="flex items-center gap-3">
+                    <div class="hidden md:block w-1.5 h-8 rounded-full bg-primary"></div>
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">All Jobs</h1>
+                        <p class="text-gray-500 dark:text-gray-400 mt-1">
+                            Overview of all your active and completed jobs
+                        </p>
+                    </div>
+                </div>
 
-<!--                &lt;!&ndash; Action Buttons &ndash;&gt;-->
-<!--                <div class="flex gap-3">-->
-<!--                    <button-->
-<!--                        @click="emits('showModal')"-->
-<!--                        class="flex items-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary-dark text-white rounded-lg transition-all shadow-sm hover:shadow-md"-->
-<!--                    >-->
-<!--                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">-->
-<!--                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />-->
-<!--                        </svg>-->
-<!--                        <span>New Job</span>-->
-<!--                    </button>-->
+                <!-- Action Buttons -->
+                <div class="flex gap-3">
+                    <button
+                        @click=showCreateJobModal
+                        class="flex items-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary-dark text-white rounded-lg transition-all shadow-sm hover:shadow-md"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                             stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                        </svg>
+                        <span>New Job</span>
+                    </button>
 
-<!--                    <button-->
-<!--                        class="flex items-center gap-2 px-4 py-2.5 border border-gray-300 hover:border-primary/30 bg-white hover:bg-primary/5 text-gray-700 rounded-lg transition-all shadow-sm hover:shadow-md"-->
-<!--                    >-->
-<!--                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">-->
-<!--                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />-->
-<!--                        </svg>-->
-<!--                        <span>Filters</span>-->
-<!--                    </button>-->
-<!--                </div>-->
-<!--            </div>-->
+                    <button
+                        class="flex items-center gap-2 px-4 py-2.5 border border-gray-300 hover:border-primary/30 bg-white hover:bg-primary/5 text-gray-700 rounded-lg transition-all shadow-sm hover:shadow-md"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                             stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+                        </svg>
+                        <span>Filters</span>
+                    </button>
+                </div>
+            </div>
         </header>
         <div class="space-y-6">
             <!-- Jobs Component with Staggered Animation -->
@@ -44,12 +57,9 @@
                 data-aos-delay="100"
             >
                 <Jobs
-                    :showModal="showModal"
                     :jobs="jobs"
                     :allCustomers="allCustomers"
-                    @closeModal="closeModal"
-                    @showModal="showCreateJobModal"
-                    @update="refreshPage"
+                    @isEditing="isEditingJobFunc"
                     class="mt-6"
                 />
             </div>
@@ -70,20 +80,12 @@ import CreateJob from "@/Components/Job/CreateJob.vue";
 defineProps({
     jobs: Array,
 });
-
+const customer = ref({});
+const isEditingJob = ref(false);
+const jobToEdit = ref({});
 const showModal = ref(false);
 const allCustomers = ref(null);
 const isRefreshing = ref(false);
-const activeButton = ref(null);
-
-// Animation control
-const hoverButton = (button) => {
-    activeButton.value = button;
-};
-
-const resetButton = () => {
-    activeButton.value = null;
-};
 
 const getUserCustomers = () => {
     axios.get(`/get_customer`)
@@ -94,7 +96,6 @@ const getUserCustomers = () => {
             console.error('API error:', error);
         });
 };
-
 const refreshPage = () => {
     isRefreshing.value = true;
     router.reload({
@@ -104,15 +105,23 @@ const refreshPage = () => {
         }
     });
 };
-
 const showCreateJobModal = () => {
     getUserCustomers();
     showModal.value = true;
 };
 
-const closeModal = () => {
+const closeCreateJobModal = () => {
     showModal.value = false;
     allCustomers.value = null;
+    jobToEdit.value = {}
+    customer.value = {}
+    isEditingJob.value = false
+};
+const isEditingJobFunc = ({payload}) => {
+    isEditingJob.value = true
+    jobToEdit.value = payload
+    customer.value = jobToEdit.value.customer
+    showModal.value = true;
 };
 
 // Initialize animations

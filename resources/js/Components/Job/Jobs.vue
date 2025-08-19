@@ -1,80 +1,30 @@
 <template>
-    <CreateJob
-        :showModal="showModal"
-        :customer="customer"
-        :isEditingJob="isEditingJob"
-        :jobToEdit="jobToEdit"
-        :allCustomers="allCustomers"
-        @close="closeCreateJobModal"
-        @submit="update"
-    />
-
-    <header class="mb-8">
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <!-- Title with decorative element -->
-            <div class="flex items-center gap-3">
-                <div class="hidden md:block w-1.5 h-8 rounded-full bg-primary"></div>
-                <div>
-                    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">All Jobs</h1>
-                    <p class="text-gray-500 dark:text-gray-400 mt-1">
-                        Overview of all your active and completed jobs
-                    </p>
-                </div>
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="flex gap-3">
-                <button
-                    @click="emits('showModal')"
-                    class="flex items-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary-dark text-white rounded-lg transition-all shadow-sm hover:shadow-md"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                    </svg>
-                    <span>New Job</span>
-                </button>
-
-                <button
-                    class="flex items-center gap-2 px-4 py-2.5 border border-gray-300 hover:border-primary/30 bg-white hover:bg-primary/5 text-gray-700 rounded-lg transition-all shadow-sm hover:shadow-md"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                    </svg>
-                    <span>Filters</span>
-                </button>
-            </div>
-        </div>
-    </header>
-
     <!-- Analytics Cards -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <div
-                v-for="(stat, index) in stats"
-                :key="stat.label"
-                class="bg-gradient-to-br from-white to-primary/20 border border-primary/30 p-4 rounded-xl shadow-sm transition-all hover:shadow-md"
-                v-motion-pop
-                :style="getCardStyle(index)"
-            >
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-gray-500">{{ stat.label }}</p>
-                        <h3 class="text-2xl font-bold">{{ stat.value }}</h3>
-                    </div>
-                    <div class="p-3 rounded-lg" :style="{ background: stat.bgColor }">
-                        <component :is="stat.icon" class="h-6 w-6" :style="{ color: stat.color }" />
-                    </div>
+        <div
+            v-for="(stat, index) in stats"
+            :key="stat.label"
+            class="bg-gradient-to-br from-white to-primary/20 border border-primary/30 p-4 rounded-xl shadow-sm transition-all hover:shadow-md"
+            v-motion-pop
+            :style="getCardStyle(index)"
+        >
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-500">{{ stat.label }}</p>
+                    <h3 class="text-2xl font-bold">{{ stat.value }}</h3>
                 </div>
-                <div v-if="stat.subValue" class="mt-2 pt-2 border-t border-primary/10">
-                    <p class="text-xs text-gray-500 flex items-center">
-                        <span class="w-2 h-2 rounded-full mr-1" :style="{ background: stat.dotColor }"></span>
-                        {{ stat.subValue }}
-                    </p>
+                <div class="p-3 rounded-lg" :style="{ background: stat.bgColor }">
+                    <component :is="stat.icon" class="h-6 w-6" :style="{ color: stat.color }"/>
                 </div>
             </div>
+            <div v-if="stat.subValue" class="mt-2 pt-2 border-t border-primary/10">
+                <p class="text-xs text-gray-500 flex items-center">
+                    <span class="w-2 h-2 rounded-full mr-1" :style="{ background: stat.dotColor }"></span>
+                    {{ stat.subValue }}
+                </p>
+            </div>
         </div>
-
-
-
+    </div>
     <div class="space-y-4">
         <!-- List View with Staggered Animations -->
         <transition-group
@@ -103,7 +53,8 @@
                             <p class="text-sm opacity-80 truncate text-secondary-gray-400">
                                 {{ job.customer.company }} • {{ job.customer.name }}
                             </p>
-                            <span v-if="job.customer.is_owing" class="ml-2 text-xs px-2 py-0.5 bg-red-100 text-red-700 rounded-full">
+                            <span v-if="job.customer.is_owing"
+                                  class="ml-2 text-xs px-2 py-0.5 bg-red-100 text-red-700 rounded-full">
                                 Owing
                             </span>
                         </div>
@@ -127,9 +78,12 @@
                     <div class="grid grid-cols-2 gap-4 mb-4">
                         <div class="space-y-2">
                             <div class="flex items-center">
-                                <div class="p-2 rounded-lg mr-2" :style="{ background: 'rgba(var(--primary-rgb), 0.1)' }">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" :style="{ color: 'var(--primary)' }">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                <div class="p-2 rounded-lg mr-2"
+                                     :style="{ background: 'rgba(var(--primary-rgb), 0.1)' }">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                         viewBox="0 0 24 24" stroke="currentColor" :style="{ color: 'var(--primary)' }">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>
                                 </div>
                                 <div>
@@ -138,9 +92,12 @@
                                 </div>
                             </div>
                             <div v-if="job.due_date" class="flex items-center">
-                                <div class="p-2 rounded-lg mr-2" :style="{ background: 'rgba(var(--primary-rgb), 0.1)' }">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" :style="{ color: 'var(--primary)' }">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                <div class="p-2 rounded-lg mr-2"
+                                     :style="{ background: 'rgba(var(--primary-rgb), 0.1)' }">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                         viewBox="0 0 24 24" stroke="currentColor" :style="{ color: 'var(--primary)' }">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                     </svg>
                                 </div>
                                 <div>
@@ -152,34 +109,46 @@
 
                         <div class="space-y-2">
                             <div class="flex items-center">
-                                <div class="p-2 rounded-lg mr-2" :style="{ background: 'rgba(var(--primary-rgb), 0.1)' }">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" :style="{ color: 'var(--primary)' }">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                <div class="p-2 rounded-lg mr-2"
+                                     :style="{ background: 'rgba(var(--primary-rgb), 0.1)' }">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                         viewBox="0 0 24 24" stroke="currentColor" :style="{ color: 'var(--primary)' }">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>
                                 </div>
                                 <div>
                                     <p class="text-xs text-gray-500">Paid</p>
-                                    <p class="text-sm font-medium text-green-600">{{ formatCurrency(job.totalPaid || 0) }}</p>
+                                    <p class="text-sm font-medium text-green-600">
+                                        {{ formatCurrency(totalPaidPerJob[job.id]) }}</p>
                                 </div>
                             </div>
                             <div class="flex items-center">
-                                <div class="p-2 rounded-lg mr-2" :style="{ background: 'rgba(var(--primary-rgb), 0.1)' }">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" :style="{ color: 'var(--primary)' }">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                <div class="p-2 rounded-lg mr-2"
+                                     :style="{ background: 'rgba(var(--primary-rgb), 0.1)' }">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                         viewBox="0 0 24 24" stroke="currentColor" :style="{ color: 'var(--primary)' }">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>
                                 </div>
                                 <div>
                                     <p class="text-xs text-gray-500">Balance</p>
-                                    <p class="text-sm font-medium" :class="getBalanceClass(job)">{{ formatCurrency(getJobBalance(job)) }}</p>
+                                    <p class="text-sm font-medium" :class="getBalanceClass(job)">
+                                        {{ formatCurrency(getJobBalance(job)) }}</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <div class="flex items-center justify-between">
-                        <div v-if="job.satisfaction_score" class="flex items-center rounded-full px-3 py-1.5 backdrop-blur-sm" :style="{ background: 'rgba(var(--primary-rgb), 0.15)' }">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" :style="{ color: 'var(--primary)' }">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/>
+                        <div v-if="job.satisfaction_score"
+                             class="flex items-center rounded-full px-3 py-1.5 backdrop-blur-sm"
+                             :style="{ background: 'rgba(var(--primary-rgb), 0.15)' }">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
+                                 stroke="currentColor" :style="{ color: 'var(--primary)' }">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/>
                             </svg>
                             <span class="text-xs font-medium">{{ job.satisfaction_score }}/5</span>
                         </div>
@@ -193,9 +162,12 @@
                                 :style="{ border: '1px solid rgba(var(--primary-rgb), 0.3)' }"
                                 v-tooltip="'View details'"
                             >
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" :style="{ color: 'var(--primary)' }">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                     stroke="currentColor" :style="{ color: 'var(--primary)' }">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                 </svg>
                             </button>
 
@@ -205,8 +177,10 @@
                                 :style="{ border: '1px solid rgba(59, 130, 246, 0.3)' }"
                                 v-tooltip="'Edit job'"
                             >
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500" fill="none"
+                                     viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                 </svg>
                             </button>
                             <button
@@ -215,8 +189,10 @@
                                 :style="{ border: '1px solid rgba(239, 68, 68, 0.3)' }"
                                 v-tooltip="'Delete job'"
                             >
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500" fill="none"
+                                     viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                 </svg>
                             </button>
                         </div>
@@ -247,7 +223,7 @@
 
 <script setup>
 import {ref, computed} from 'vue';
-import { gsap } from 'gsap';
+import {gsap} from 'gsap';
 import dayjs from 'dayjs';
 import ViewJob from "@/Components/Job/ViewJob.vue";
 import CreateJob from "@/Components/Job/CreateJob.vue";
@@ -263,7 +239,6 @@ import {
 } from '@heroicons/vue/24/outline';
 
 
-
 const props = defineProps({
     jobs: {
         type: Array,
@@ -273,50 +248,24 @@ const props = defineProps({
     allCustomers: Array,
 });
 
-const emits = defineEmits(['closeModal', 'showModal', 'update'])
+const emits = defineEmits(['closeModal', 'showModal', 'isEditing', 'update'])
 
 const selectedJob = ref(null);
 const customer = ref({});
 const isEditingJob = ref(false);
 const jobToEdit = ref({});
 
-// Computed properties for analytics
-const completedJobsCount = computed(() => {
-    return props.jobs.filter(job => job.status === 'completed').length;
-});
 
-const totalRevenue = computed(() => {
-    return props.jobs.reduce((sum, job) => sum + Number(job.amount || 0), 0);
-});
-
-const totalOutstanding = computed(() => {
-    return props.jobs.reduce((sum, job) => {
-        const paid = job.totalPaid || 0;
-        return sum + (Number(job.amount || 0) - Number(paid));
-    }, 0);
-});
-
-const averageSatisfaction = computed(() => {
-    const jobsWithScores = props.jobs.filter(job => job.satisfaction_score);
-    if (jobsWithScores.length === 0) return 0;
-    return jobsWithScores.reduce((sum, job) => sum + Number(job.satisfaction_score), 0) / jobsWithScores.length;
-});
-
-const jobsWithSatisfactionCount = computed(() => {
-    return props.jobs.filter(job => job.satisfaction_score).length;
-});
-
-// Helper functions
 const getJobBalance = (job) => {
-    const paid = job.totalPaid || 0;
+    const paid = totalPaidPerJob.value[job.id];
     return Number(job.amount || 0) - Number(paid);
 };
 
 const getBalanceClass = (job) => {
     const balance = getJobBalance(job);
     if (balance <= 0) return 'text-green-600';
-    if (dayjs().isAfter(dayjs(job.due_date))) return 'text-red-600';
-    return 'text-yellow-600';
+    if (dayjs().isAfter(dayjs(job.due_date)) && job.status !== 'completed') return 'text-yellow-600';
+        return 'text-red-600';
 };
 
 const getTotalPaid = (activities) => {
@@ -344,9 +293,8 @@ const formatDate = (dateString) => {
 // Job actions
 const editJob = (job) => {
     emits('showModal');
-    jobToEdit.value = job;
-    isEditingJob.value = true;
     customer.value = job.customer;
+    emits('isEditing', {payload: job})
 };
 
 const update = () => {
@@ -407,12 +355,14 @@ const stats = computed(() => {
     const totalAmount = props.jobs.reduce((sum, j) => sum + Number(j.amount || 0), 0);
     const totalPaid = props.jobs.reduce((sum, j) => sum + getTotalPaid(j.activities), 0);
     const totalBalance = totalAmount - totalPaid;
-    const overdueJobs = props.jobs.filter(j => j.due_date && dayjs().isAfter(dayjs(j.due_date))).length;
+    const overdueJobs = props.jobs.filter(
+        j => j.due_date && dayjs().isAfter(dayjs(j.due_date)) && j.status !== "completed"
+    ).length;
 
     const jobsWithRating = props.jobs.filter(j => j.satisfaction_score);
     const avgRating = jobsWithRating.length > 0
         ? (jobsWithRating.reduce((sum, j) => sum + Number(j.satisfaction_score), 0) / jobsWithRating.length)
-            : 0;
+        : 0;
 
     return [
         {
@@ -456,16 +406,23 @@ const stats = computed(() => {
 
 const getCardStyle = (index) => {
     const colors = [
-        { border: 'primary', bgTo: 'primary/20' },
-        { border: 'blue-500', bgTo: 'blue-500/20' },
-        { border: 'green-500', bgTo: 'green-500/20' },
-        { border: 'yellow-500', bgTo: 'yellow-500/20' }
+        {border: 'primary', bgTo: 'primary/20'},
+        {border: 'blue-500', bgTo: 'blue-500/20'},
+        {border: 'green-500', bgTo: 'green-500/20'},
+        {border: 'yellow-500', bgTo: 'yellow-500/20'}
     ];
     return {
         borderColor: `var(--${colors[index].border})`,
         background: `linear-gradient(to bottom right, white, var(--${colors[index].bgTo}))`
     };
 };
+
+const totalPaidPerJob = computed(() => {
+    return props.jobs.reduce((acc, job) => {
+        acc[job.id] = getTotalPaid(job.activities)
+        return acc
+    }, {})
+})
 </script>
 
 <style scoped>
