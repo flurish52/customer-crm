@@ -37,6 +37,7 @@
             @enter="enter"
         >
             <div
+                v-if="jobs.length > 0"
                 v-for="(job, index) in jobs"
                 :key="job.id"
                 :data-index="index"
@@ -72,7 +73,6 @@
                         {{ job.status || 'not started' }}
                     </span>
                 </div>
-
                 <!-- Job Details -->
                 <div class="mt-4 pt-4" :style="{ borderTop: '1px solid rgba(var(--primary-rgb), 0.1)' }">
                     <div class="grid grid-cols-2 gap-4 mb-4">
@@ -140,7 +140,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="flex items-center justify-between">
                         <div v-if="job.satisfaction_score"
                              class="flex items-center rounded-full px-3 py-1.5 backdrop-blur-sm"
@@ -155,12 +154,12 @@
                         <div v-else></div>
 
                         <!-- Action Buttons -->
-                        <div class="flex justify-end space-x-2">
+                        <div class="flex justify-end space-x-2 bg-tertiary-dark/20 p-1 rounded-md">
                             <button
                                 @click.stop="selectJob(job)"
                                 class="group flex items-center justify-center p-2 rounded-lg transition-all duration-200 hover:bg-white hover:shadow-md"
                                 :style="{ border: '1px solid rgba(var(--primary-rgb), 0.3)' }"
-                                v-tooltip="'View details'"
+                                title="View details"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                                      stroke="currentColor" :style="{ color: 'var(--primary)' }">
@@ -170,12 +169,23 @@
                                           d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                 </svg>
                             </button>
-
+                            <button
+                                v-if="job.status !== 'completed'"
+                                @click="openRatingModal(job.id)"
+                                class="group flex bg-teal-100 items-center text-primary-dark justify-center p-2 rounded-lg transition-all duration-200 hover:bg-white hover:shadow-md"
+                                title="Mark Complete"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                     viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M5 13l4 4L19 7"/>
+                                </svg>
+                            </button>
                             <button
                                 @click.stop="editJob(job)"
                                 class="group flex items-center justify-center p-2 rounded-lg transition-all duration-200 hover:bg-white hover:shadow-md"
                                 :style="{ border: '1px solid rgba(59, 130, 246, 0.3)' }"
-                                v-tooltip="'Edit job'"
+                                title="Edit job"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500" fill="none"
                                      viewBox="0 0 24 24" stroke="currentColor">
@@ -187,7 +197,7 @@
                                 @click.stop="deleteJob(job)"
                                 class="group flex items-center justify-center p-2 rounded-lg transition-all duration-200 hover:bg-white hover:shadow-md"
                                 :style="{ border: '1px solid rgba(239, 68, 68, 0.3)' }"
-                                v-tooltip="'Delete job'"
+                                title="Delete job"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500" fill="none"
                                      viewBox="0 0 24 24" stroke="currentColor">
@@ -199,6 +209,17 @@
                     </div>
                 </div>
             </div>
+
+            <div v-else class="flex flex-col items-center justify-center p-6 bg-gray-50 rounded-lg shadow-md text-center">
+                <p class="text-gray-600 mb-4">
+                    No jobs yet
+                </p>
+                <button @click="createJob"
+                        class="bg-primary-dark text-white font-semibold px-6 py-2 rounded-lg hover:bg-primary-light transition">
+                    Create a Job
+                </button>
+            </div>
+
         </transition-group>
 
         <!-- Detailed View with Animation -->
@@ -237,8 +258,6 @@ import {
     StarIcon,
     UserGroupIcon
 } from '@heroicons/vue/24/outline';
-
-
 const props = defineProps({
     jobs: {
         type: Array,
@@ -248,26 +267,28 @@ const props = defineProps({
     allCustomers: Array,
 });
 
-const emits = defineEmits(['closeModal', 'showModal', 'isEditing', 'update'])
+const emits = defineEmits(['closeModal', 'showModal', 'isEditing', 'update', 'jobCompleted'])
 
 const selectedJob = ref(null);
 const customer = ref({});
 const isEditingJob = ref(false);
 const jobToEdit = ref({});
 
+const openRatingModal = (jobId) =>{
+    emits('jobCompleted', {payload: jobId})
+}
+
 
 const getJobBalance = (job) => {
     const paid = totalPaidPerJob.value[job.id];
     return Number(job.amount || 0) - Number(paid);
 };
-
 const getBalanceClass = (job) => {
     const balance = getJobBalance(job);
     if (balance <= 0) return 'text-green-600';
     if (dayjs().isAfter(dayjs(job.due_date)) && job.status !== 'completed') return 'text-yellow-600';
         return 'text-red-600';
 };
-
 const getTotalPaid = (activities) => {
     if (!activities) return 0;
     return activities
@@ -277,45 +298,31 @@ const getTotalPaid = (activities) => {
             return sum + Number(changes.amount);
         }, 0);
 };
-
 const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: 'USD',
     }).format(amount);
 };
-
 const formatDate = (dateString) => {
     if (!dateString) return 'Not set';
     return dayjs(dateString).format('MMM D, YYYY');
 };
-
 // Job actions
 const editJob = (job) => {
     emits('showModal');
     customer.value = job.customer;
     emits('isEditing', {payload: job})
 };
-
 const update = () => {
     closeCreateJobModal();
 };
-
 const selectJob = (job) => {
     selectedJob.value = job;
 };
-
 const closeModal = () => {
     selectedJob.value = null;
 };
-
-const closeCreateJobModal = () => {
-    emits('closeModal');
-    jobToEdit.value = '';
-    isEditingJob.value = false;
-    customer.value = {};
-};
-
 const deleteJob = (job) => {
     if (!confirm(`Are you sure you want to delete "${job.job_title}"?`)) {
         return;
@@ -332,13 +339,11 @@ const deleteJob = (job) => {
             alert('Failed to delete job. Please try again.');
         });
 };
-
 // Animation functions
 const beforeEnter = (el) => {
     el.style.opacity = 0;
     el.style.transform = 'translateY(20px)';
 };
-
 const enter = (el, done) => {
     gsap.to(el, {
         opacity: 1,
@@ -403,7 +408,6 @@ const stats = computed(() => {
         }
     ];
 });
-
 const getCardStyle = (index) => {
     const colors = [
         {border: 'primary', bgTo: 'primary/20'},
@@ -416,7 +420,6 @@ const getCardStyle = (index) => {
         background: `linear-gradient(to bottom right, white, var(--${colors[index].bgTo}))`
     };
 };
-
 const totalPaidPerJob = computed(() => {
     return props.jobs.reduce((acc, job) => {
         acc[job.id] = getTotalPaid(job.activities)

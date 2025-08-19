@@ -9,6 +9,12 @@
             @close="closeCreateJobModal"
             @submit="refreshPage"
         />
+        <JobRating
+            :jobId="selectedJobId"
+            :showModal="showRatingModal"
+            @submit="completeJob"
+            @close="closeRatingModal"
+        />
         <header class="mb-8">
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <!-- Title with decorative element -->
@@ -37,14 +43,15 @@
                     </button>
 
                     <button
+                        @click="refreshPage"
                         class="flex items-center gap-2 px-4 py-2.5 border border-gray-300 hover:border-primary/30 bg-white hover:bg-primary/5 text-gray-700 rounded-lg transition-all shadow-sm hover:shadow-md"
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                             stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
-                        </svg>
-                        <span>Filters</span>
+<!--                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"-->
+<!--                             stroke="currentColor">-->
+<!--                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"-->
+<!--                                  d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>-->
+<!--                        </svg>-->
+                        <span>Refresh</span>
                     </button>
                 </div>
             </div>
@@ -60,6 +67,7 @@
                     :jobs="jobs"
                     :allCustomers="allCustomers"
                     @isEditing="isEditingJobFunc"
+                    @jobCompleted="openRatingModal"
                     class="mt-6"
                 />
             </div>
@@ -76,7 +84,8 @@ import Jobs from "@/Components/Job/Jobs.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { router } from '@inertiajs/vue3'
 import CreateJob from "@/Components/Job/CreateJob.vue";
-
+import JobRating from "@/Components/Job/JobRating.vue";
+import axios from "axios";
 defineProps({
     jobs: Array,
 });
@@ -86,7 +95,16 @@ const jobToEdit = ref({});
 const showModal = ref(false);
 const allCustomers = ref(null);
 const isRefreshing = ref(false);
-
+const selectedJobId = ref(null);
+const showRatingModal = ref(false);
+const openRatingModal = ({payload})=>{
+    selectedJobId.value = payload
+    showRatingModal.value = true
+}
+const closeRatingModal = ()=>{
+    selectedJobId.value = null
+    showRatingModal.value = false
+}
 const getUserCustomers = () => {
     axios.get(`/get_customer`)
         .then(res => {
@@ -123,7 +141,6 @@ const isEditingJobFunc = ({payload}) => {
     customer.value = jobToEdit.value.customer
     showModal.value = true;
 };
-
 // Initialize animations
 onMounted(() => {
     AOS.init({
@@ -132,6 +149,15 @@ onMounted(() => {
         offset: 50
     });
 });
+
+let completeJob = ({payload, jobId}) =>{
+    axios.patch(`/job_update/status/${jobId}`, {type: 'complete_job', satisfaction_score: payload})
+        .then(res=>{
+            refreshPage()
+            closeRatingModal()
+            alert(res.data.message)
+        })
+}
 </script>
 
 <style scoped>

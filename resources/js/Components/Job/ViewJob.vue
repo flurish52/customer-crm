@@ -1,5 +1,5 @@
 <template>
-    <div class="bg-white rounded-xl shadow-xl overflow-hidden max-w-4xl w-full border border-gray-100 transform transition-all duration-300 hover:shadow-2xl">
+    <div class="bg-white rounded-xl shadow-xl overflow-hidden   w-full border border-gray-100 transform transition-all duration-300 hover:shadow-2xl">
         <!-- Header with subtle gradient -->
         <div
             class="flex justify-between items-start p-6 border-b border-gray-200 bg-gradient-to-r from-primary/95 to-primary-dark/95"

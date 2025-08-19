@@ -2,11 +2,10 @@
     <AuthenticatedLayout>
         <CreateJob
             :showModal="showModal"
-            :customer="job.customer"
-            :jobToEdit="job"
-            :isEditingJob="isEditingJob"
+            :customer="customer"
+        :isEditingJob="isEditingJob"
+        :jobToEdit="jobToEdit"
             @close="closeModal"
-            @submit="refreshPage"
         />
         <div class="min-h-screen">
             <!-- Header Section -->
@@ -15,6 +14,8 @@
                     <h1 class="text-2xl font-bold text-primary-dark">Job Details</h1>
                 </div>
             </div>
+
+
             <!-- Main Content -->
             <div class="max-w-7xl mx-auto">
                 <!-- Action Buttons -->
@@ -76,25 +77,28 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import ViewJob from "@/Components/Job/ViewJob.vue";
 import {ref} from "vue";
-import {router} from "@inertiajs/vue3";
 import axios from "axios";
 import CreateJob from "@/Components/Job/CreateJob.vue";
 defineProps({
     job: Object
 })
 const fullPage = ref(true)
-const isEditingJob = ref(true)
+const isEditingJob = ref(false)
+let jobToEdit = ref({})
+let customer = ref({})
 let showModal =  ref(false)
 
 const editJob = (job)=>{
+    jobToEdit.value =  job
+    customer.value = jobToEdit.value.customer
+    isEditingJob.value =  true
     showModal.value = true
 }
 
-const refreshPage = ()=>{
-    router.reload()
-}
-
 const closeModal = ()=>{
+    jobToEdit.value = {}
+    customer.value = {}
+    isEditingJob.value =  false
     showModal.value = false
 }
 const deleteJob = (job) => {

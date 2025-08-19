@@ -18,12 +18,15 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        return $customers = Customer::orderBy('created_at', 'DESC')->with('jobs', 'activities')->where('user_id', auth()->user()->id)->get();
+        return $customers = Customer::orderBy('created_at', 'DESC')
+            ->with('jobs', 'activities')
+            ->where('user_id', auth()
+                ->user()->id)->get();
     }
 
     public function getReceivables()
     {
-        $total_receiveables = Activity::where('type', 'payment')->get();
+        $total_receiveables = Activity::where('type', 'payment')->where('user_id', Auth::id())->get();
 
         $total_amount = $total_receiveables->sum(function ($activity) {
             $changes = json_decode($activity->changes, true);

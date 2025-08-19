@@ -12,7 +12,6 @@
                 <div class="text-center">
                     <h3 class="text-xl font-bold text-primary-dark mb-2">Rate his satisfaction</h3>
                     <p class="text-secondary-dark mb-6">How would you rate your customer's satisfaction?</p>
-        {{jobId}}
 
                     <!-- Rating Options with Emoji and Label -->
                     <div class="flex flex-col items-center mb-8">

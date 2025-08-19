@@ -21,7 +21,10 @@ class JobController extends Controller
     public function index($customer_id)
     {
         $user_id = Auth::user()->id;
-        return $jobs = Job::orderBy('created_at', 'DESC')->where('user_id', auth()->id())->where('customer_id', $customer_id)->get();
+        return $jobs = Job::orderBy('created_at', 'DESC')
+            ->where('user_id', Auth::id())
+            ->where('customer_id', $customer_id)
+            ->get();
     }
 
     /**
@@ -30,7 +33,10 @@ class JobController extends Controller
     public function getJobs()
     {
         $user_id = auth()->user()->id;
-        return $jobs = Job::orderBy('created_at', 'DESC')->with('activities', 'customer')->where('user_id', $user_id)->get();
+        return $jobs = Job::orderBy('created_at', 'DESC')
+            ->with('activities', 'customer')
+            ->where('user_id', $user_id)
+            ->get();
     }
 
     public function create()
@@ -114,7 +120,10 @@ class JobController extends Controller
     public function returnJobs()
     {
         return inertia::render('User/Jobs', [
-        'jobs' => Job::orderBy('created_at', 'DESC')->with('activities', 'customer')->get(),
+        'jobs' => Job::orderBy('created_at', 'DESC')
+            ->with('activities', 'customer')
+            ->where('user_id', Auth::id())
+            ->get(),
         ]);
     }
 
@@ -177,6 +186,12 @@ class JobController extends Controller
      */
     public function destroy(Job $job)
     {
+        if ($job->user_id !== auth()->id()) {
+            return response()->json([
+                'message' => 'You are not authorized to delete this job'
+            ], 403);
+        }
+
         $job->delete();
         return response()->json([
             'message' => 'Job deleted successfully'

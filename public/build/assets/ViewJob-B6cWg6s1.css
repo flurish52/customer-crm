@@ -1,0 +1,1 @@
+.animate-detail[data-v-af22e059]{animation:slideIn-af22e059 var(--delay, 0ms) ease-out forwards;opacity:0;transform:translate(-10px)}@keyframes slideIn-af22e059{to{opacity:1;transform:translate(0)}}.hover-rotate[data-v-af22e059]{transition:transform .3s ease}.hover-rotate[data-v-af22e059]:hover{transform:rotate(90deg)}.status-glow[data-v-af22e059]{box-shadow:0 0 8px currentColor}

@@ -203,7 +203,7 @@
                     </div>
                 </div>
                 <!-- Jobs List -->
-                <div v-if="jobs.length > 0" class="divide-y divide-tertiary-light">
+                <div v-if="jobs.length> 0" class="divide-y divide-tertiary-light">
                     <div
                         v-for="(job, index) in jobs"
                         :key="job.id"

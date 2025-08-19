@@ -148,7 +148,6 @@ const props = defineProps({
 const emit = defineEmits(['close', 'submit'])
 const form = ref({})
 const closeModal = () => {
-    emit('close')
     form.value = {
         customer_id: props.customer.id,
         job_title: '',
@@ -157,6 +156,7 @@ const closeModal = () => {
         amount: 0,
         due_date: '',
     }
+    emit('close')
 
 }
 watch(
