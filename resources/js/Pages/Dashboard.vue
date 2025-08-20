@@ -74,6 +74,7 @@ import StatCards from "@/Components/StatCards.vue"
 import OverDueJobs from "@/Components/Job/OverDueJobs.vue";
 import RecentActivities from "@/components/Job/RecentActivities.vue"
 import OwingCustomers from "@/Components/Customer/OwingCustomers.vue";
+import dayjs from "dayjs";
 let props = defineProps({
     jobs: Array,
     recentActivities: Array,
@@ -113,7 +114,10 @@ function getOwingCustomers(customers) {
     });
 }
 onMounted(()=>{
-    overdueJobs.value = props.jobs.filter(job => job.status === 'overdue')
+    overdueJobs.value = props.jobs.filter(job =>
+        job.status !== 'completed' &&
+        dayjs(job.due_date).isBefore(dayjs(), 'day') // due_date is before today
+    )
     owingCustomers.value = getOwingCustomers(props.customers.data)
 })
 </script>

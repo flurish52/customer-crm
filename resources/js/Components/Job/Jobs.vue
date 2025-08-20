@@ -1,30 +1,4 @@
 <template>
-    <!-- Analytics Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div
-            v-for="(stat, index) in stats"
-            :key="stat.label"
-            class="bg-gradient-to-br from-white to-primary/20 border border-primary/30 p-4 rounded-xl shadow-sm transition-all hover:shadow-md"
-            v-motion-pop
-            :style="getCardStyle(index)"
-        >
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm text-gray-500">{{ stat.label }}</p>
-                    <h3 class="text-2xl font-bold">{{ stat.value }}</h3>
-                </div>
-                <div class="p-3 rounded-lg" :style="{ background: stat.bgColor }">
-                    <component :is="stat.icon" class="h-6 w-6" :style="{ color: stat.color }"/>
-                </div>
-            </div>
-            <div v-if="stat.subValue" class="mt-2 pt-2 border-t border-primary/10">
-                <p class="text-xs text-gray-500 flex items-center">
-                    <span class="w-2 h-2 rounded-full mr-1" :style="{ background: stat.dotColor }"></span>
-                    {{ stat.subValue }}
-                </p>
-            </div>
-        </div>
-    </div>
     <div class="space-y-4">
         <!-- List View with Staggered Animations -->
         <transition-group
@@ -36,12 +10,13 @@
             @before-enter="beforeEnter"
             @enter="enter"
         >
+
             <div
                 v-if="jobs.length > 0"
                 v-for="(job, index) in jobs"
                 :key="job.id"
                 :data-index="index"
-                class="bg-gradient-to-br from-white to-primary/20 border border-primary shadow-md p-4 rounded-xl cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1.5"
+                class="bg-gradient-to-br from-white to-primary/20 border border-primary shadow-md px-2 rounded-xl cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1.5"
                 v-motion-slide-visible-once-bottom
             >
                 <!-- Job Header -->
@@ -52,7 +27,7 @@
                         </h3>
                         <div class="flex items-center mt-1">
                             <p class="text-sm opacity-80 truncate text-secondary-gray-400">
-                                {{ job.customer.company }} • {{ job.customer.name }}
+                                {{ job.customer?.company }} • {{ job.customer?.name }}
                             </p>
                             <span v-if="job.customer.is_owing"
                                   class="ml-2 text-xs px-2 py-0.5 bg-red-100 text-red-700 rounded-full">
@@ -155,6 +130,41 @@
 
                         <!-- Action Buttons -->
                         <div class="flex justify-end space-x-2 bg-tertiary-dark/20 p-1 rounded-md">
+                        <div class="flex justify-center items-center space-x-2">
+                            <button
+                                type="button"
+                                v-if="job.status !== 'completed'"
+                                :disabled="isDisabled || isLoading"
+                                @click="$emit('completeJob', {payload: job.id})"
+                                class="flex items-center justify-center gap-2 h-6 w-6 rounded-2xl border border-emerald-600 text-emerald-700 hover:bg-emerald-50 disabled:opacity-60 disabled:cursor-not-allowed shadow-sm"
+                                aria-label="Mark complete"
+                                title="Mark complete"
+                            >
+                                <svg
+                                    v-if="!loading"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    class="h-5 w-5"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <path d="M9 12l2 2 4-4" />
+                                    <circle cx="12" cy="12" r="9" />
+                                </svg>
+                                <svg
+                                    v-else
+                                    class="h-5 w-5 animate-spin"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                >
+                                    <circle cx="12" cy="12" r="10" stroke="currentColor" opacity="0.25" stroke-width="4"/>
+                                    <path d="M22 12a10 10 0 0 1-10 10" stroke="currentColor" stroke-width="4" opacity="0.95"/>
+                                </svg>
+
+                            </button>
                             <button
                                 @click.stop="selectJob(job)"
                                 class="group flex items-center justify-center p-2 rounded-lg transition-all duration-200 hover:bg-white hover:shadow-md"
@@ -210,6 +220,7 @@
                 </div>
             </div>
 
+            </div>
             <div v-else class="flex flex-col items-center justify-center p-6 bg-gray-50 rounded-lg shadow-md text-center">
                 <p class="text-gray-600 mb-4">
                     No jobs yet
@@ -221,7 +232,6 @@
             </div>
 
         </transition-group>
-
         <!-- Detailed View with Animation -->
         <transition
             v-else
@@ -247,17 +257,6 @@ import {ref, computed} from 'vue';
 import {gsap} from 'gsap';
 import dayjs from 'dayjs';
 import ViewJob from "@/Components/Job/ViewJob.vue";
-import CreateJob from "@/Components/Job/CreateJob.vue";
-import axios from "axios";
-import {
-    BriefcaseIcon,
-    CurrencyDollarIcon,
-    CheckCircleIcon,
-    ClockIcon,
-    ScaleIcon,
-    StarIcon,
-    UserGroupIcon
-} from '@heroicons/vue/24/outline';
 const props = defineProps({
     jobs: {
         type: Array,
@@ -268,7 +267,6 @@ const props = defineProps({
 });
 
 const emits = defineEmits(['closeModal', 'showModal', 'isEditing', 'update', 'jobCompleted'])
-
 const selectedJob = ref(null);
 const customer = ref({});
 const isEditingJob = ref(false);
@@ -277,8 +275,8 @@ const jobToEdit = ref({});
 const openRatingModal = (jobId) =>{
     emits('jobCompleted', {payload: jobId})
 }
-
-
+let   isLoading = ref(false)
+let   isDisabled = ref(false)
 const getJobBalance = (job) => {
     const paid = totalPaidPerJob.value[job.id];
     return Number(job.amount || 0) - Number(paid);
@@ -301,8 +299,8 @@ const getTotalPaid = (activities) => {
 const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-US', {
         style: 'currency',
-        currency: 'USD',
-    }).format(amount);
+        currency: 'NGN',
+    }).format(amount)
 };
 const formatDate = (dateString) => {
     if (!dateString) return 'Not set';
@@ -310,9 +308,11 @@ const formatDate = (dateString) => {
 };
 // Job actions
 const editJob = (job) => {
+   let amountPaid = job.activities?.filter(activity => activity.type === "payment")
+            .reduce((sum, activity) => sum + Number(JSON.parse(activity.changes).amount), 0)
     emits('showModal');
     customer.value = job.customer;
-    emits('isEditing', {payload: job})
+    emits('isEditing', {payload: job, amountPaid: amountPaid})
 };
 const update = () => {
     closeCreateJobModal();
@@ -322,6 +322,12 @@ const selectJob = (job) => {
 };
 const closeModal = () => {
     selectedJob.value = null;
+};
+const closeCreateJobModal = () => {
+    emits('closeModal');
+    jobToEdit.value = '';
+    isEditingJob.value = false;
+    customer.value = {};
 };
 const deleteJob = (job) => {
     if (!confirm(`Are you sure you want to delete "${job.job_title}"?`)) {
@@ -353,73 +359,8 @@ const enter = (el, done) => {
         onComplete: done
     });
 };
+
 // Stats computation
-const stats = computed(() => {
-    const totalJobs = props.jobs.length;
-    const completedJobs = props.jobs.filter(j => j.status === 'completed').length;
-    const totalAmount = props.jobs.reduce((sum, j) => sum + Number(j.amount || 0), 0);
-    const totalPaid = props.jobs.reduce((sum, j) => sum + getTotalPaid(j.activities), 0);
-    const totalBalance = totalAmount - totalPaid;
-    const overdueJobs = props.jobs.filter(
-        j => j.due_date && dayjs().isAfter(dayjs(j.due_date)) && j.status !== "completed"
-    ).length;
-
-    const jobsWithRating = props.jobs.filter(j => j.satisfaction_score);
-    const avgRating = jobsWithRating.length > 0
-        ? (jobsWithRating.reduce((sum, j) => sum + Number(j.satisfaction_score), 0) / jobsWithRating.length)
-        : 0;
-
-    return [
-        {
-            label: "Total Jobs",
-            value: totalJobs,
-            subValue: `${completedJobs} completed`,
-            icon: BriefcaseIcon,
-            color: 'var(--primary)',
-            bgColor: 'rgba(var(--primary-rgb), 0.1)',
-            dotColor: '#10B981'
-        },
-        {
-            label: "Total Amount",
-            value: formatCurrency(totalAmount),
-            subValue: formatCurrency(totalBalance) + ' outstanding',
-            icon: CurrencyDollarIcon,
-            color: '#3B82F6',
-            bgColor: 'rgba(59, 130, 246, 0.1)',
-            dotColor: '#F59E0B'
-        },
-        {
-            label: "Total Paid",
-            value: formatCurrency(totalPaid),
-            subValue: `${overdueJobs} overdue jobs`,
-            icon: CheckCircleIcon,
-            color: '#10B981',
-            bgColor: 'rgba(16, 185, 129, 0.1)',
-            dotColor: '#EF4444'
-        },
-        {
-            label: "Avg. Rating",
-            value: avgRating.toFixed(1),
-            subValue: `${jobsWithRating.length} ratings`,
-            icon: StarIcon,
-            color: '#F59E0B',
-            bgColor: 'rgba(245, 158, 11, 0.1)',
-            dotColor: '#3B82F6'
-        }
-    ];
-});
-const getCardStyle = (index) => {
-    const colors = [
-        {border: 'primary', bgTo: 'primary/20'},
-        {border: 'blue-500', bgTo: 'blue-500/20'},
-        {border: 'green-500', bgTo: 'green-500/20'},
-        {border: 'yellow-500', bgTo: 'yellow-500/20'}
-    ];
-    return {
-        borderColor: `var(--${colors[index].border})`,
-        background: `linear-gradient(to bottom right, white, var(--${colors[index].bgTo}))`
-    };
-};
 const totalPaidPerJob = computed(() => {
     return props.jobs.reduce((acc, job) => {
         acc[job.id] = getTotalPaid(job.activities)
