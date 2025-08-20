@@ -65,6 +65,5 @@ Route::middleware('auth')->group(function () {
     Route::get('/get_user/total_receivables', [CustomerController::class, 'getReceivables'])->name('tatal_received.payments');
 });
 
-
 require __DIR__.'/auth.php';
 
