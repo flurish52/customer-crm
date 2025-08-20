@@ -26,8 +26,8 @@ class CustomerController extends Controller
 
     public function getReceivables()
     {
-        $total_receiveables = Activity::where('type', 'payment')->where('user_id', Auth::id())->get();
-
+        $total_receiveables = Activity::where('type', 'payment')
+            ->where('user_id', Auth::id())->get();
         $total_amount = $total_receiveables->sum(function ($activity) {
             $changes = json_decode($activity->changes, true);
             return $changes['amount'] ?? 0;
@@ -53,11 +53,13 @@ class CustomerController extends Controller
 
     public function viewCustomer($customer_id)
     {
-        $user_id =  Auth::user()->id;
-        return  inertia::render('User/Customer', [
-            'customer' => Customer::with('jobs', 'activities')->where('id', $customer_id)->where('user_id', $user_id)->first(),
-            'totalSpent' => Job::where('customer_id', $customer_id)->sum('amount'),
-            ]);
+        $user_id = Auth::user()->id;
+        return inertia::render('User/Customer', [
+            'customer' => Customer::with('jobs.customer', 'jobs.activities', 'activities')->where('id', $customer_id)->where('user_id', $user_id)->first(),
+            'totalSpent' => Job::where('customer_id', $customer_id)->where('user_id', Auth::id())->sum('amount'),
+            'jobs' => Job::orderBy('created_at', 'DESC')->with('activities', 'customer')
+                ->where('user_id', Auth::id())->get(),
+        ]);
     }
 
     /**

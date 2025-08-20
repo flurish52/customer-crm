@@ -6,8 +6,6 @@ use App\Models\Activity;
 use App\Models\Job;
 use App\Http\Requests\StoreJobRequest;
 use App\Http\Requests\UpdateJobRequest;
-use http\Env\Response;
-use Illuminate\Database\Events\TransactionBeginning;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -61,7 +59,6 @@ class JobController extends Controller
                     $job->completed_at = now();
                     $job->satisfaction_score = $validated['satisfaction_score'];
                     $job->save();
-
                     Activity::create([
                         'user_id' => Auth::id(),
                         'subject_type' => Job::class,
@@ -92,12 +89,49 @@ class JobController extends Controller
      */
     public function store(StoreJobRequest $request)
     {
-        Job::create([
+        DB::beginTransaction();
+        $job = Job::create([
             'user_id' => auth()->id(),
             ...$request->validated(),
+            'satisfaction' => $request->completedExtras['satisfaction'] ?? null,
         ]);
+        $now = now();
+        // Job completion activity (only if status is completed)
+        if ($job->status === 'completed') {
+            Activity::create([
+                'user_id' => auth()->id(),
+                'subject_type' => Job::class,
+                'subject_id' => $job->id,
+                'customer_id' => $job->customer_id,
+                'type' => 'complete_job',
+                'changes' => json_encode([
+                    'status' => 'completed',
+                    'completed_at' => $now->toDateTimeString(),
+                ]),
+            ]);
+        }
+// Payment activity (only if amount_paid is set and > 0)
+        if (!empty($request->completedExtras['amount_paid'])) {
+            Activity::create([
+                'user_id' => auth()->id(),
+                'subject_type' => Job::class,
+                'customer_id' => $job->customer_id,
+                'subject_id' => $job->id,
+                'type' => 'payment',
+                'changes' => json_encode([
+                    'amount' => $request->completedExtras['amount_paid'],
+                    'method' => $request->completedExtras['payment_method'] ?? 'N/A',
+                    'date' => $now->toDateString(),
+                    'notes' => 'Payment received for job',
+                ]),
+            ]);
+        }
+        DB::commit();
 
-        $jobs = Job::orderBy('id', 'DESC')->where('user_id', auth()->id())->where('customer_id', $request->customer_id)->get();
+        $jobs = Job::orderBy('id', 'DESC')
+            ->where('user_id', auth()->id())
+            ->where('customer_id', $request->customer_id)
+            ->get();
 
         return response()->json($jobs);
     }
@@ -117,6 +151,7 @@ class JobController extends Controller
     {
         //
     }
+
     public function returnJobs()
     {
         return inertia::render('User/Jobs', [
@@ -129,17 +164,21 @@ class JobController extends Controller
 
     public function returnJob(Job $job)
     {
-        $viewingJob = Job::with('activities', 'customer')->where('id', $job->id)->first();
+        $viewingJob = Job::with('activities', 'customer')
+            ->where('user_id', Auth::id())
+            ->where('id', $job->id)->first();
         return inertia::render('Job/Job', [
             'job' => $viewingJob,
         ]);
     }
+
     public function returnReceipts()
     {
         return inertia::render('User/Receipts', [
 
         ]);
     }
+
     public function returnPayments()
     {
         return inertia::render('User/Payments', [
@@ -147,7 +186,7 @@ class JobController extends Controller
                 ->where('user_id', Auth::id())
                 ->where('type', 'payment')
                 ->get(),
-        'jobs' => Job::orderBy('job_title', 'DESC')->where('user_id', Auth::id())->get(),
+            'jobs' => Job::orderBy('job_title', 'DESC')->where('user_id', Auth::id())->get(),
 
         ]);
     }
@@ -157,28 +196,61 @@ class JobController extends Controller
      */
     public function update(UpdateJobRequest $request, Job $job)
     {
+        DB::beginTransaction();
         try {
             $validated = $request->validated();
+            $previousStatus = $job->status;
+            $now = now();
+            // Update job with request data
             $job->update($validated);
-            return response()->json([
-                'jobs' => Job::with('activities', 'customer')
-                    ->where('user_id', Auth::id())
-                    ->where('customer_id', $job->customer_id)
-                    ->get(),
-                'message' => 'Successfully updated',
-            ]);
+            // If status changed to completed and was not previously completed, log activity
+            if (
+                isset($validated['status']) &&
+                $validated['status'] === 'completed' &&
+                $previousStatus !== 'completed'
+            ) {
+                Activity::create([
+                    'user_id' => Auth::id(),
+                    'subject_type' => Job::class,
+                    'subject_id' => $job->id,
+                    'customer_id' => $job->customer_id,
+                    'type' => 'complete_job',
+                    'changes' => json_encode([
+                        'status' => 'completed',
+                        'completed_at' => $now->toDateTimeString(),
+                    ]),
+                ]);
+            }
+            // If amount_paid exists and is greater than 0, log payment activity
+            if (!empty($validated['completedExtras']['amount_paid']) && $validated['completedExtras']['amount_paid'] > 0) {
+                Activity::create([
+                    'user_id' => Auth::id(),
+                    'subject_type' => Job::class,
+                    'subject_id' => $job->id,
+                    'customer_id' => $job->customer_id,
+                    'type' => 'payment',
+                    'changes' => json_encode([
+                        'amount' => $validated['completedExtras']['amount_paid'],
+                        'method' => $validated['completedExtras']['payment_method'] ?? 'N/A',
+                        'date' => $now->toDateString(),
+                        'notes' => 'Payment received for job',
+                    ]),
+                ]);
+            }
+            DB::commit();
         } catch (\Exception $e) {
+            DB::rollBack();
             \Log::error('Job update failed', [
                 'error' => $e->getMessage(),
                 'data' => $request->all()
             ]);
-
             return response()->json([
                 'message' => 'Failed to update job',
                 'error' => $e->getMessage()
             ], 500);
         }
     }
+
 
 
     /**

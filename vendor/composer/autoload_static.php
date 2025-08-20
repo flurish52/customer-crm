@@ -572,7 +572,10 @@ class ComposerStaticInit88970a0117c062eed55fa8728fc43833
         'App\\Http\\Requests\\UpdateActivityRequest' => __DIR__ . '/../..' . '/app/Http/Requests/UpdateActivityRequest.php',
         'App\\Http\\Requests\\UpdateCustomerRequest' => __DIR__ . '/../..' . '/app/Http/Requests/UpdateCustomerRequest.php',
         'App\\Http\\Requests\\UpdateJobRequest' => __DIR__ . '/../..' . '/app/Http/Requests/UpdateJobRequest.php',
+<<<<<<< HEAD
         'App\\Mail\\RegistrationSuccess' => __DIR__ . '/../..' . '/app/Mail/RegistrationSuccess.php',
+=======
+>>>>>>> fixing_mvp_minor_errors
         'App\\Models\\Activity' => __DIR__ . '/../..' . '/app/Models/Activity.php',
         'App\\Models\\Customer' => __DIR__ . '/../..' . '/app/Models/Customer.php',
         'App\\Models\\Job' => __DIR__ . '/../..' . '/app/Models/Job.php',

@@ -1,11 +1,12 @@
 <template>
     <AuthenticatedLayout>
         <CreateJob
-        :customer="customer"
+        :customer="jobCustomer"
         :jobToEdit="jobToEdit"
         @close="closeModal"
         :showModal="showModal"
-        @submit="jobCreated"
+        :amountPaid="previousPayment"
+        @submit="refreshPage"
         :isEditingJob="isEditingJob"
         />
 
@@ -20,7 +21,6 @@
         @cancel="cancelPaymentForm"
         :showPaymentModal="showPaymentModal"
         />
-
         <div v-if="showAddCustomerModal"
              @click.self="closeAddCustomerModal"
              class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -163,7 +163,6 @@
                     </button>
                 </div>
             </div>
-
             <!-- Jobs Section -->
             <div class="bg-white rounded-xl shadow-sm border border-tertiary-light overflow-hidden">
                 <!-- Section Header -->
@@ -205,85 +204,15 @@
                 <!-- Jobs List -->
                 <div v-if="jobs.length> 0" class="divide-y divide-tertiary-light">
                     <div
-                        v-for="(job, index) in jobs"
-                        :key="job.id"
-                        class="p-6 hover:bg-tertiary-light/20 transition-colors"
+                        class=" hover:bg-tertiary-light/20 transition-colors"
                     >
-
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                            <div class="flex-1 min-w-0">
-                                <div class="flex items-center">
-                                    <h3 class="text-lg font-medium text-primary-dark">{{ job.job_title }}</h3>
-                                    <span
-                                        class="ml-3 px-2 py-0.5 rounded-full text-xs font-medium"
-                                        :class="{
-                    'bg-secondary-light/20 text-secondary-dark': job.status === 'pending',
-                    'bg-green-100 text-green-800': job.status === 'completed',
-                    'bg-red-100 text-red-800': job.status === 'overdue'
-                  }"
-                                    >
-                  {{ job.status === 'overdue' ? 'Overdue' : job.status === 'completed' ? 'Completed' : 'In Progress' }}
-                </span>
-                                </div>
-                                <p class="text-sm text-gray-500 mt-1">{{ job.description }}</p>
-                                <div class="flex flex-wrap gap-x-4 gap-y-1 mt-3">
-                                    <div class="flex items-center text-sm text-gray-500">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none"
-                                             viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                        </svg>
-                                        {{dayjs(job.created_at).format('MMM- D -YYYY') }} - {{ job.due_date }}
-                                    </div>
-                                    <div class="flex items-center text-sm text-gray-500">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none"
-                                             viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                        </svg>
-                                        {{ job.amount }}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="flex space-x-2">
-                                <Link
-                                    :href="`/dashboard/job/${job.id}`"
-                                    class="p-2 rounded-lg hover:bg-tertiary-light text-primary-DEFAULT"
-                                    title="View Details"
-                                >
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                         viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                    </svg>
-                                </Link>
-                                <button
-                                    @click="editJob(job)"
-                                    class="p-2 rounded-lg hover:bg-tertiary-light text-primary-DEFAULT"
-                                    title="Edit"
-                                >
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                         viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                                    </svg>
-                                </button>
-                                <button
-                                    v-if="job.status !== 'completed'"
-                                    @click="openRatingModal(job.id)"
-                                    class="p-2 rounded-lg hover:bg-green-100 text-green-600"
-                                    title="Mark Complete"
-                                >
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                         viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                              d="M5 13l4 4L19 7"/>
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
+                        <Jobs
+                            :jobs="customer.jobs"
+                            @isEditing="isEditingJobFunc"
+                            @showModal="showModalComponent"
+                            @completeJob="openRatingModal"
+                            class=""
+                        />
 
                     </div>
                 </div>
@@ -316,19 +245,20 @@
 </template>
 
 <script setup>
-import {ref, computed, triggerRef, onMounted} from 'vue'
+import {ref, onMounted} from 'vue'
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import {Link} from "@inertiajs/vue3";
+import {Link, router} from "@inertiajs/vue3";
 import dayjs from "dayjs";
 import CreateJob from "@/Components/Job/CreateJob.vue";
 import axios from "axios";
 import JobRating from "@/Components/Job/JobRating.vue";
 import AddCustomerModal from "@/Components/Customer/AddCustomerModal.vue";
 import PaymentModal from "@/Components/Job/PaymentModal.vue";
-
+import Jobs from "@/Components/Job/Jobs.vue";
+import AOS from "aos";
 let props = defineProps({
     customer: Object,
-    totalSpent: Number
+    totalSpent: Number,
 })
 let showModal = ref(false)
 let showRatingModal = ref(false)
@@ -336,19 +266,21 @@ const jobs = ref([])
 const isEditing  = ref(false)
 const activeFilter = ref('all')
 const isEditingJob = ref(false)
+const previousPayment = ref(0)
 
 const showAddCustomerModal = ref(false)
 const showPaymentModal = ref(false)
 const jobToEdit = ref({})
-
+const jobCustomer = ref({})
+const isEditingJobFunc = ({payload, amountPaid}) => {
+    previousPayment.value =  amountPaid
+    isEditingJob.value = true
+    jobToEdit.value = payload
+    jobCustomer.value = jobToEdit.value.customer
+    showModal.value = true;
+};
 const openPaymentForm = () => {
     showPaymentModal.value = true
-};
-
-const editJob = (job) => {
-    jobToEdit.value = job
-    isEditingJob.value = true
-    showModal.value = true
 };
 const cancelPaymentForm = () => {
     showPaymentModal.value = false
@@ -362,10 +294,11 @@ const closeAddCustomerModal = () => {
     isEditing.value = false
 }
 
-const jobCreated = ({payload})=>{
-    jobs.value = payload
-    console.log(payload)
-    // activeJobs.value = jobs.value.filter(job => job.status !== 'completed').length
+const refreshPage = () =>{
+    router.reload({
+        preserveScroll: true,
+        preserveState: true
+    })
 }
 let closeModal = () =>{
     isEditingJob.value = false
@@ -374,8 +307,8 @@ let closeModal = () =>{
 
 let satisfaction_score = ref(0)
 let selectedJobId = ref()
-const openRatingModal = (jobId) => {
-    selectedJobId.value =  jobId
+const openRatingModal = ({payload}) => {
+    selectedJobId.value =  payload
     showRatingModal.value = true
 }
 const closeRatingModal = () => {
@@ -388,9 +321,6 @@ let completeJob = ({payload, jobId}) =>{
             closeRatingModal()
             alert(res.data.message)
         })
-}
-let showModalComponent = () =>{
-    showModal.value =  true
 }
 let activeJobs = ref([])
 const getCustomerJobs =(customerId)=>{

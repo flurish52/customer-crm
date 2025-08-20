@@ -218,7 +218,7 @@ const customerDetails = computed(() => [
 const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-US', {
         style: 'currency',
-        currency: 'USD',
+        currency: 'NGN',
     }).format(amount)
 }
 
