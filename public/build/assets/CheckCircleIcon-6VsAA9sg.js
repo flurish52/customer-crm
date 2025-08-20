@@ -1,5 +1,0 @@
-<<<<<<<< HEAD:public/build/assets/CheckCircleIcon-CyPdzm8S.js
-import{j as e,o,b as r}from"./app-DXhGyOzx.js";function s(t,n){return o(),e("svg",{xmlns:"http://www.w3.org/2000/svg",fill:"none",viewBox:"0 0 24 24","stroke-width":"1.5",stroke:"currentColor","aria-hidden":"true","data-slot":"icon"},[r("path",{"stroke-linecap":"round","stroke-linejoin":"round",d:"M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"})])}export{s as r};
-========
-import{g as e,o,b as r}from"./app-BExok_hY.js";function s(t,n){return o(),e("svg",{xmlns:"http://www.w3.org/2000/svg",fill:"none",viewBox:"0 0 24 24","stroke-width":"1.5",stroke:"currentColor","aria-hidden":"true","data-slot":"icon"},[r("path",{"stroke-linecap":"round","stroke-linejoin":"round",d:"M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"})])}export{s as r};
->>>>>>>> fixing_mvp_minor_errors:public/build/assets/CheckCircleIcon-6VsAA9sg.js
