@@ -27,11 +27,13 @@ class UpdateJobRequest extends FormRequest
             'customer_id' => 'required|exists:customers,id',
             'job_title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'status' => 'required|in:pending,completed,cancelled',
+            'status' => 'required|in:pending,completed,cancelled,in_progress',
             'amount' => 'required|numeric|min:0',
             'due_date' => 'nullable|date',
             'completed_at' => 'nullable|date',
-            'satisfaction_score' => 'nullable|integer|min:1|max:5'
+            'completedExtras.amount_paid' => 'required_if:status,completed|numeric|min:0',
+            'completedExtras.satisfaction' => 'required_if:status,completed|integer|between:1,5',
+            'completedExtras.payment_method' => 'required_if:status,completed|string',
         ];
 
     }
