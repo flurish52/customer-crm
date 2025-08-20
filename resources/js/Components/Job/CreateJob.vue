@@ -114,6 +114,7 @@
                                     >
                                         <option value="pending">Pending</option>
                                         <option value="in_progress">In Progress</option>
+                                        <option value="cancelled">Cancelled</option>
                                         <option value="completed">Completed</option>
                                     </select>
                                     <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">

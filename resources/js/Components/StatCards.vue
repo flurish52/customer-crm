@@ -149,16 +149,17 @@ const getCustomers = () => {
             customers.value = res.data
         })
 }
-
 const getJobs = () => {
     axios.get('/get_user/jobs')
         .then(res => {
             jobs.value = res.data
             activeJobs.value = jobs.value.filter(job => job.status !== 'completed').length
-            overdueJobs.value = jobs.value.filter(job => job.status === 'overdue').length
+            overdueJobs.value = jobs.value.filter(job =>
+                job.status !== 'completed' &&
+                dayjs(job.due_date).isBefore(dayjs(), 'day') // due_date is before today
+            ).length
         })
 }
-
 const getReceivedAmount = () => {
     axios.get('/get_user/total_receivables')
         .then(res => {

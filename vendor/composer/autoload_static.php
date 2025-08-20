@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit88970a0117c062eed55fa8728fc43833
+class ComposerStaticInitf2a7cfb0443dbdd0aa9bfe9d4c6e2e9b
 {
     public static $files = array (
         '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
@@ -572,10 +572,7 @@ class ComposerStaticInit88970a0117c062eed55fa8728fc43833
         'App\\Http\\Requests\\UpdateActivityRequest' => __DIR__ . '/../..' . '/app/Http/Requests/UpdateActivityRequest.php',
         'App\\Http\\Requests\\UpdateCustomerRequest' => __DIR__ . '/../..' . '/app/Http/Requests/UpdateCustomerRequest.php',
         'App\\Http\\Requests\\UpdateJobRequest' => __DIR__ . '/../..' . '/app/Http/Requests/UpdateJobRequest.php',
-<<<<<<< HEAD
         'App\\Mail\\RegistrationSuccess' => __DIR__ . '/../..' . '/app/Mail/RegistrationSuccess.php',
-=======
->>>>>>> fixing_mvp_minor_errors
         'App\\Models\\Activity' => __DIR__ . '/../..' . '/app/Models/Activity.php',
         'App\\Models\\Customer' => __DIR__ . '/../..' . '/app/Models/Customer.php',
         'App\\Models\\Job' => __DIR__ . '/../..' . '/app/Models/Job.php',
@@ -6870,9 +6867,9 @@ class ComposerStaticInit88970a0117c062eed55fa8728fc43833
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit88970a0117c062eed55fa8728fc43833::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit88970a0117c062eed55fa8728fc43833::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInit88970a0117c062eed55fa8728fc43833::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitf2a7cfb0443dbdd0aa9bfe9d4c6e2e9b::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitf2a7cfb0443dbdd0aa9bfe9d4c6e2e9b::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInitf2a7cfb0443dbdd0aa9bfe9d4c6e2e9b::$classMap;
 
         }, null, ClassLoader::class);
     }

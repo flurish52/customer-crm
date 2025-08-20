@@ -220,6 +220,7 @@
                 </div>
             </div>
 
+            </div>
             <div v-else class="flex flex-col items-center justify-center p-6 bg-gray-50 rounded-lg shadow-md text-center">
                 <p class="text-gray-600 mb-4">
                     No jobs yet
@@ -228,7 +229,6 @@
                         class="bg-primary-dark text-white font-semibold px-6 py-2 rounded-lg hover:bg-primary-light transition">
                     Create a Job
                 </button>
-            </div>
             </div>
 
         </transition-group>

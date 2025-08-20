@@ -17,12 +17,6 @@
             @submit="completeJob"
             @close="closeRatingModal"
         />
-        <JobRating
-            :jobId="selectedJobId"
-            :showModal="showRatingModal"
-            @submit="completeJob"
-            @close="closeRatingModal"
-        />
         <header class="mb-8">
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <!-- Title with decorative element -->
@@ -151,9 +145,10 @@ import Jobs from "@/Components/Job/Jobs.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { router } from '@inertiajs/vue3'
 import CreateJob from "@/Components/Job/CreateJob.vue";
+import dayjs from "dayjs";
 import JobRating from "@/Components/Job/JobRating.vue";
 import axios from "axios";
-import dayjs from "dayjs";
+import {computed} from "vue";
 import {
     BriefcaseIcon,
     CurrencyDollarIcon,
@@ -163,8 +158,6 @@ import {
     StarIcon,
     UserGroupIcon
 } from '@heroicons/vue/24/outline';
-import JobRating from "@/Components/Job/JobRating.vue";
-import axios from "axios";
 const props = defineProps({
     jobs: Array,
 });

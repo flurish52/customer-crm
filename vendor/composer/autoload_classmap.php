@@ -29,10 +29,7 @@ return array(
     'App\\Http\\Requests\\UpdateActivityRequest' => $baseDir . '/app/Http/Requests/UpdateActivityRequest.php',
     'App\\Http\\Requests\\UpdateCustomerRequest' => $baseDir . '/app/Http/Requests/UpdateCustomerRequest.php',
     'App\\Http\\Requests\\UpdateJobRequest' => $baseDir . '/app/Http/Requests/UpdateJobRequest.php',
-<<<<<<< HEAD
     'App\\Mail\\RegistrationSuccess' => $baseDir . '/app/Mail/RegistrationSuccess.php',
-=======
->>>>>>> fixing_mvp_minor_errors
     'App\\Models\\Activity' => $baseDir . '/app/Models/Activity.php',
     'App\\Models\\Customer' => $baseDir . '/app/Models/Customer.php',
     'App\\Models\\Job' => $baseDir . '/app/Models/Job.php',
