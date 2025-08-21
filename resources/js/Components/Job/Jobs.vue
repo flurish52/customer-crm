@@ -180,18 +180,6 @@
                                 </svg>
                             </button>
                             <button
-                                v-if="job.status !== 'completed'"
-                                @click="openRatingModal(job.id)"
-                                class="group flex bg-teal-100 items-center text-primary-dark justify-center p-2 rounded-lg transition-all duration-200 hover:bg-white hover:shadow-md"
-                                title="Mark Complete"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                     viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                          d="M5 13l4 4L19 7"/>
-                                </svg>
-                            </button>
-                            <button
                                 @click.stop="editJob(job)"
                                 class="group flex items-center justify-center p-2 rounded-lg transition-all duration-200 hover:bg-white hover:shadow-md"
                                 :style="{ border: '1px solid rgba(59, 130, 246, 0.3)' }"
