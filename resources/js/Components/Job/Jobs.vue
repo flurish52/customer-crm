@@ -16,11 +16,11 @@
                 v-for="(job, index) in jobs"
                 :key="job.id"
                 :data-index="index"
-                class="bg-gradient-to-br from-white to-primary/20 border border-primary shadow-md px-2 rounded-xl cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1.5"
+                class=" w-full mx-auto overflow-hidden px-2  bg-gradient-to-br md:w-full from-white to-primary/10 border border-primary shadow-md rounded-xl cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1.5"
                 v-motion-slide-visible-once-bottom
             >
                 <!-- Job Header -->
-                <div class="flex justify-between items-start mb-3">
+                <div class="md:flex   justify-between items-start mb-3">
                     <div class="max-w-[80%]">
                         <h3 class="font-semibold text-lg truncate text-primary-dark">
                             {{ job.job_title }}
@@ -45,7 +45,7 @@
                         }"
                         class="text-xs font-medium px-3 py-1 rounded-full capitalize shadow-sm transform transition-all hover:scale-105"
                     >
-                        {{ job.status || 'not started' }}
+                        {{ job.status || 'Pending' }}
                     </span>
                 </div>
                 <!-- Job Details -->
@@ -253,7 +253,6 @@ const props = defineProps({
     showModal: Boolean,
     allCustomers: Array,
 });
-
 const emits = defineEmits(['closeModal', 'showModal', 'isEditing', 'update', 'jobCompleted'])
 const selectedJob = ref(null);
 const customer = ref({});

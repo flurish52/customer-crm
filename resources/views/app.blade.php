@@ -7,8 +7,9 @@
         <title inertia>{{ config('app.name', 'Zelra') }}</title>
 
         <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400&display=swap" rel="stylesheet">
+{{--        <link rel="preconnect" href="https://fonts.bunny.net">--}}
+{{--        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />--}}
         <link rel="manifest" href="/manifest.json">
         <meta name="theme-color" content="#000000">
 
