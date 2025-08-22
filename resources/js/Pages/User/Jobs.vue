@@ -128,6 +128,7 @@
             >
                 <Jobs
                     :jobs="jobs"
+                    @showModal="showCreateJobModal"
                     :allCustomers="allCustomers"
                     @isEditing="isEditingJobFunc"
                     @jobCompleted="openRatingModal"

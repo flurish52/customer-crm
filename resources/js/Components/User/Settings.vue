@@ -4,6 +4,12 @@
         <div v-if="activeTab === 'General'" class="space-y-6">
            <UserUpdateProfile />
         </div>
+        <div v-if="activeTab === 'Business info'" class="space-y-6">
+           <BusinessInfo
+           :business="user.business || {}"
+           :user="user"
+           />
+        </div>
         <!-- Team Tab -->
         <div v-if="activeTab === 'Team'" class="space-y-6">
             <div class="bg-white shadow rounded-lg overflow-hidden">
@@ -165,9 +171,10 @@ import { ref } from 'vue'
 import { Switch } from '@headlessui/vue'
 import { PencilIcon, TrashIcon, PlusIcon, CreditCardIcon } from '@heroicons/vue/24/outline'
 import UserUpdateProfile from "@/Components/User/UserUpdateProfile.vue";
-
+import BusinessInfo from "@/Components/User/BusinessInfo.vue";
 const props = defineProps({
-    activeTab: String
+    activeTab: String,
+    user: Object
 })
 let photoPreview = ref()
 
