@@ -12,7 +12,7 @@
         >
 
             <div
-                v-if="jobs.length > 0"
+                v-if="jobs?.length > 0"
                 v-for="(job, index) in jobs"
                 :key="job.id"
                 :data-index="index"
@@ -213,7 +213,7 @@
                 <p class="text-gray-600 mb-4">
                     No jobs yet
                 </p>
-                <button @click="createJob"
+                <button @click="emits('showModal')"
                         class="bg-primary-dark text-white font-semibold px-6 py-2 rounded-lg hover:bg-primary-light transition">
                     Create a Job
                 </button>

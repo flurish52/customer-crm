@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ActivityController;
+use App\Http\Controllers\BusinessController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\ProfileController;
@@ -39,7 +40,6 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-
     Route::post('/customer_store', [CustomerController::class, 'store'])
         ->name('customer.store');
 
@@ -66,6 +66,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/job_delete/{job}', [JobController::class, 'destroy'])->name('delete.job');
     Route::delete('/customer_delete/{customer}', [CustomerController::class, 'destroy'])->name('delete.customer');
     Route::get('/get_user/total_receivables', [CustomerController::class, 'getReceivables'])->name('tatal_received.payments');
+
+    Route::post('/save/business/info', [BusinessController::class, 'store'])->name('business.store');
+    Route::patch('/save/business/info/{business}', [BusinessController::class, 'update'])->name('business.update');
 });
 
 

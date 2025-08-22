@@ -134,7 +134,7 @@
                 <!-- Action Buttons -->
                 <div class="p-6 border-t border-tertiary-light flex flex-col sm:flex-row gap-3 justify-center">
                     <button
-                        @click="showModalComponent"
+                        @click="openAddCustomerModal"
                         class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors flex items-center justify-center"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -207,7 +207,7 @@
                         class=" hover:bg-tertiary-light/20 transition-colors"
                     >
                         <Jobs
-                            :jobs="customer.jobs"
+                            :jobs="customer.jobs || {}"
                             @isEditing="isEditingJobFunc"
                             @showModal="showModalComponent"
                             @completeJob="openRatingModal"
@@ -228,7 +228,7 @@
                     <p class="mt-1 text-gray-500">This customer doesn't have any
                         {{ activeFilter === 'all' ? '' : activeFilter }} jobs yet</p>
                     <button
-                        @click="startNewJob"
+                        @click="showModal= true"
                         class="mt-4 px-4 py-2 bg-secondary-DEFAULT text-white rounded-lg hover:bg-secondary-dark transition-colors flex items-center mx-auto"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
