@@ -23,6 +23,7 @@ return new class extends Migration
             $table->text('note')->nullable();
             $table->unique(['user_id', 'phone']);
             $table->unique(['user_id', 'email']);
+            $table->timestamp('deleted_at')->nullable();
             $table->timestamps();
         });
     }

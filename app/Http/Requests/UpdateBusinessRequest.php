@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class UpdateBusinessRequest extends FormRequest
 {
@@ -21,9 +23,21 @@ class UpdateBusinessRequest extends FormRequest
      */
     public function rules(): array
     {
+        $userId = Auth::id();
+        $business = $this->route('business');
+        $businessId = $business->id;
         return [
         'name' => 'required|string|max:255',
-        'email' => 'required|email|max:255|unique:businesses,business_email,',
+            'email' => [
+                'required',
+                'email',
+                'max:255',
+                Rule::unique('businesses', 'business_email')
+                    ->where(function ($query) use ($userId) {
+                        return $query->where('user_id', '!=', $userId);
+                    })
+                    ->ignore($businessId),
+            ],
         'phone' => 'nullable|string|max:20',
         'address' => 'nullable|string|max:500',
         'website' => 'nullable|url|max:255',

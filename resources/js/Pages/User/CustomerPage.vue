@@ -47,6 +47,7 @@
                 @update="refreshPage"
                 :searchQuery="searchQuery"
                 @isEditing="isEditingCustomer"
+                @openAddCustomerModal="openAddCustomerModal"
             />
         </div>
     </AuthenticatedLayout>

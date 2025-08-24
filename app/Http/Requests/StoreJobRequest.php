@@ -30,8 +30,8 @@ class StoreJobRequest extends FormRequest
             'due_date' => 'required|date|after_or_equal:today',
             'satisfaction_score' => 'nullable|integer|between:1,5',
             'completed_at' => ['nullable', 'date'],
-            'completedExtras.amount_paid' => 'required_if:status,completed|numeric|min:0',
-            'completedExtras.satisfaction' => 'required_if:status,completed|integer|between:1,5',
+            'completedExtras.amount_paid' => 'nullable|required_if:status,completed|numeric|min:0',
+            'completedExtras.satisfaction' => 'nullable|required_if:status,completed|integer|between:1,5',
             'completedExtras.payment_method' => 'required_if:status,completed|string',
         ];
     }

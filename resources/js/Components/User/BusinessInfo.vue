@@ -60,7 +60,7 @@ const submit = () => {
         onSuccess: () => alert(form.id ? 'Updated successfully!' : 'Saved successfully!'),
         onError: () => {}
     };
-    if (form.id) {
+    if (form.id && props.business) {
         form.post(`/save/business/info/${form.id}?_method=PATCH`, options)
     } else {
         form.post('/save/business/info', options)

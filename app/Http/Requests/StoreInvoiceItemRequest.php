@@ -21,8 +21,12 @@ class StoreInvoiceItemRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            //
-        ];
+            return [
+                'items' => 'required|array|min:1',
+                'items.*.name' => 'required|string|max:255',
+                'items.*.description' => 'required|string|max:500',
+                'items.*.quantity' => 'required|integer|min:1',
+                'items.*.unit_price' => 'required|numeric|min:0.01',
+            ];
     }
 }

@@ -15,13 +15,17 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('customer_id')->constrained()->onDelete('cascade');
+            $table->foreignId('business_id')->constrained()->onDelete('cascade');
             $table->string('job_title');
             $table->text('description')->nullable();
-            $table->enum('status', ['pending', 'in_progress', 'completed', 'overdue'])->default('pending');
+            $table->enum('status', ['pending', 'in_progress', 'completed', 'overdue', 'cancelled'])
+                ->default('pending');
             $table->decimal('amount', 10, 2)->default(0);
+            $table->date('start_date')->nullable();
             $table->date('due_date')->nullable();
             $table->timestamp('completed_at')->nullable();
             $table->tinyInteger('satisfaction_score')->nullable();
+            $table->timestamp('deleted_at')->nullable();
             $table->timestamps();
         });
     }

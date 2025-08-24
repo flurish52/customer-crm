@@ -5,7 +5,8 @@
         @click.self="closeModal"
     >
         <!-- Modal Container -->
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[95vh] overflow-hidden flex flex-col transform transition-all duration-300 scale-100 opacity-100">
+        <div
+            class="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[95vh] overflow-hidden flex flex-col transform transition-all duration-300 scale-100 opacity-100">
 
             <!-- Header -->
             <div class="sticky top-0 bg-white px-6 py-4 border-b border-gray-100 flex justify-between items-center">
@@ -18,7 +19,8 @@
                     class="text-gray-400 hover:text-gray-600 transition-colors duration-200 rounded-full p-1 hover:bg-gray-100"
                     aria-label="Close modal"
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                         stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
                 </button>
@@ -33,7 +35,8 @@
 
                         <div class="grid grid-cols-1 gap-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Customer <span class="text-red-500">*</span></label>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Customer <span
+                                    class="text-red-500">*</span></label>
                                 <template v-if="customer && Object.keys(customer).length">
                                     <div class="relative">
                                         <input
@@ -42,9 +45,12 @@
                                             disabled
                                             class="w-full border border-gray-200 rounded-lg px-4 py-3 bg-gray-50 text-gray-600 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200"
                                         >
-                                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                        <div
+                                            class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400"
+                                                 fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                                             </svg>
                                         </div>
                                     </div>
@@ -60,9 +66,12 @@
                                                 {{ cust.name }}
                                             </option>
                                         </select>
-                                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
+                                        <div
+                                            class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400"
+                                                 fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                      d="M8 9l4-4 4 4m0 6l-4 4-4-4"/>
                                             </svg>
                                         </div>
                                     </div>
@@ -77,7 +86,8 @@
 
                         <div class="grid grid-cols-1 gap-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Job Title <span class="text-red-500">*</span></label>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Job Title <span
+                                    class="text-red-500">*</span></label>
                                 <input
                                     v-model="form.job_title"
                                     type="text"
@@ -118,8 +128,10 @@
                                         <option value="completed">Completed</option>
                                     </select>
                                     <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400"
+                                             fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M8 9l4-4 4 4m0 6l-4 4-4-4"/>
                                         </svg>
                                     </div>
                                 </div>
@@ -143,7 +155,8 @@
                         </div>
 
                         <!-- Payment Summary (only when editing) -->
-                        <div v-if="isEditingJob" class="bg-blue-50 p-4 rounded-lg border border-blue-100 text-sm text-gray-700 grid grid-cols-2 gap-3">
+                        <div v-if="isEditingJob"
+                             class="bg-blue-50 p-4 rounded-lg border border-blue-100 text-sm text-gray-700 grid grid-cols-2 gap-3">
                             <div class="space-y-1">
                                 <p class="text-gray-500">Previous Payment:</p>
                                 <p class="font-semibold text-lg text-gray-800">{{ amountPaid }}</p>
@@ -167,32 +180,57 @@
                     <!-- Timeline Section -->
                     <section class="space-y-4">
                         <h3 class="text-lg font-semibold text-gray-800 border-b pb-2">Timeline</h3>
-
-                        <div class="grid grid-cols-1 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Delivery Date</label>
+                        <div class=" flex items-center justify-between">
+                            <div class="w-1/2 mx-2">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Start Date</label>
                                 <div class="relative">
                                     <input
-                                        v-model="form.due_date"
+                                        v-model="form.start_date"
                                         type="date"
                                         class="w-full border border-gray-200 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                                     >
                                     <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400"
+                                             fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                         </svg>
                                     </div>
                                 </div>
                             </div>
+                            <div class="w-1/2  mx-2grid grid-cols-1 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Delivery Date</label>
+                                    <div class="relative">
+                                        <input
+                                            v-model="form.due_date"
+                                            type="date"
+                                            class="w-full border border-gray-200 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                                        >
+                                        <div
+                                            class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400"
+                                                 fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
                         </div>
+
                     </section>
 
                     <!-- Error Messages -->
                     <div v-if="errors.length" class="bg-red-50 border border-red-200 rounded-lg p-4 mt-4">
                         <div class="flex items-start">
                             <div class="flex-shrink-0">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500" fill="none"
+                                     viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                                 </svg>
                             </div>
                             <div class="ml-3">
@@ -255,6 +293,7 @@ const closeModal = () => {
         status: 'pending',
         amount: null,
         due_date: '',
+        start_date: '',
         completedExtras: {
             amount_paid: null,
             satisfaction: '',
@@ -277,6 +316,7 @@ watch(
                 description: '',
                 status: 'pending',
                 amount: null,
+                start_date: '',
                 due_date: '',
                 completedExtras: {
                     amount_paid: null,
@@ -292,7 +332,6 @@ const submitForm = () => {
     let formData = form.value
 
     // form validations
-    console.log(form.value.completedExtras)
 
 
     errors.value = []
@@ -301,6 +340,7 @@ const submitForm = () => {
     if (!form.value.status) errors.value.push('Status is required')
     if (!form.value.amount && form.value.amount !== 0) errors.value.push('Amount is required')
     if (!form.value.due_date) errors.value.push('Due date is required')
+    if (!form.value.start_date) errors.value.push('Start date is required')
 
     if (form.value.status === 'completed') {
         if (
@@ -339,6 +379,7 @@ const submitForm = () => {
                     description: '',
                     status: 'pending',
                     amount: null,
+                    start_date: '',
                     due_date: '',
                     completedExtras: {
                         amount_paid: null,
@@ -359,6 +400,7 @@ const submitForm = () => {
                     description: '',
                     status: 'pending',
                     amount: null,
+                    start_date: '',
                     due_date: '',
                     completedExtras: {
                         amount_paid: null,

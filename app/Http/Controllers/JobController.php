@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Activity;
+use App\Models\Business;
 use App\Models\Job;
 use App\Http\Requests\StoreJobRequest;
 use App\Http\Requests\UpdateJobRequest;
@@ -41,7 +42,14 @@ class JobController extends Controller
     {
         //
     }
-
+    public function viewJob(Job $job)
+    {
+        if ($job->user_id !== Auth::id()) return;
+        $job->load('customer', 'invoice', 'business');
+        return inertia::render('Job/View', [
+            'selectedJob'=> $job,
+        ]);
+    }
 
     public function updateJobStatus(Request $request, Job $job)
     {
@@ -89,9 +97,12 @@ class JobController extends Controller
      */
     public function store(StoreJobRequest $request)
     {
+        $business =  Business::where('user_id', Auth::id())->first();
+
         DB::beginTransaction();
         $job = Job::create([
             'user_id' => auth()->id(),
+            'business_id' => $business->id,
             ...$request->validated(),
             'satisfaction' => $request->completedExtras['satisfaction'] ?? null,
         ]);
@@ -196,14 +207,16 @@ class JobController extends Controller
      */
     public function update(UpdateJobRequest $request, Job $job)
     {
+//        dd($request);
         DB::beginTransaction();
         try {
             $validated = $request->validated();
             $previousStatus = $job->status;
             $now = now();
-            // Update job with request data
+
             $job->update($validated);
-            // If status changed to completed and was not previously completed, log activity
+
+
             if (
                 isset($validated['status']) &&
                 $validated['status'] === 'completed' &&

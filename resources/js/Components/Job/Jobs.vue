@@ -130,86 +130,90 @@
 
                         <!-- Action Buttons -->
                         <div class="flex justify-end space-x-2 bg-tertiary-dark/20 p-1 rounded-md">
-                        <div class="flex justify-center items-center space-x-2">
-                            <button
-                                type="button"
-                                v-if="job.status !== 'completed'"
-                                :disabled="isDisabled || isLoading"
-                                @click="$emit('completeJob', {payload: job.id})"
-                                class="flex items-center justify-center gap-2 h-6 w-6 rounded-2xl border border-emerald-600 text-emerald-700 hover:bg-emerald-50 disabled:opacity-60 disabled:cursor-not-allowed shadow-sm"
-                                aria-label="Mark complete"
-                                title="Mark complete"
-                            >
-                                <svg
-                                    v-if="!loading"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    class="h-5 w-5"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
+                            <div class="flex justify-center items-center space-x-2">
+                                <button
+                                    type="button"
+                                    v-if="job.status !== 'completed'"
+                                    :disabled="isDisabled || isLoading"
+                                    @click="$emit('completeJob', {payload: job.id})"
+                                    class="flex items-center justify-center gap-2 h-6 w-6 rounded-2xl border border-emerald-600 text-emerald-700 hover:bg-emerald-50 disabled:opacity-60 disabled:cursor-not-allowed shadow-sm"
+                                    aria-label="Mark complete"
+                                    title="Mark complete"
                                 >
-                                    <path d="M9 12l2 2 4-4" />
-                                    <circle cx="12" cy="12" r="9" />
-                                </svg>
-                                <svg
-                                    v-else
-                                    class="h-5 w-5 animate-spin"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                >
-                                    <circle cx="12" cy="12" r="10" stroke="currentColor" opacity="0.25" stroke-width="4"/>
-                                    <path d="M22 12a10 10 0 0 1-10 10" stroke="currentColor" stroke-width="4" opacity="0.95"/>
-                                </svg>
+                                    <svg
+                                        v-if="!loading"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        class="h-5 w-5"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                    >
+                                        <path d="M9 12l2 2 4-4"/>
+                                        <circle cx="12" cy="12" r="9"/>
+                                    </svg>
+                                    <svg
+                                        v-else
+                                        class="h-5 w-5 animate-spin"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                    >
+                                        <circle cx="12" cy="12" r="10" stroke="currentColor" opacity="0.25"
+                                                stroke-width="4"/>
+                                        <path d="M22 12a10 10 0 0 1-10 10" stroke="currentColor" stroke-width="4"
+                                              opacity="0.95"/>
+                                    </svg>
 
-                            </button>
-                            <button
-                                @click.stop="selectJob(job)"
-                                class="group flex items-center justify-center p-2 rounded-lg transition-all duration-200 hover:bg-white hover:shadow-md"
-                                :style="{ border: '1px solid rgba(var(--primary-rgb), 0.3)' }"
-                                title="View details"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                                     stroke="currentColor" :style="{ color: 'var(--primary)' }">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                </svg>
-                            </button>
-                            <button
-                                @click.stop="editJob(job)"
-                                class="group flex items-center justify-center p-2 rounded-lg transition-all duration-200 hover:bg-white hover:shadow-md"
-                                :style="{ border: '1px solid rgba(59, 130, 246, 0.3)' }"
-                                title="Edit job"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500" fill="none"
-                                     viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                                </svg>
-                            </button>
-                            <button
-                                @click.stop="deleteJob(job)"
-                                class="group flex items-center justify-center p-2 rounded-lg transition-all duration-200 hover:bg-white hover:shadow-md"
-                                :style="{ border: '1px solid rgba(239, 68, 68, 0.3)' }"
-                                title="Delete job"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500" fill="none"
-                                     viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                </svg>
-                            </button>
+                                </button>
+                                <button
+                                    @click.stop="selectJob(job)"
+                                    class="group flex items-center justify-center p-2 rounded-lg transition-all duration-200 hover:bg-white hover:shadow-md"
+                                    :style="{ border: '1px solid rgba(var(--primary-rgb), 0.3)' }"
+                                    title="View details"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                         viewBox="0 0 24 24"
+                                         stroke="currentColor" :style="{ color: 'var(--primary)' }">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                    </svg>
+                                </button>
+                                <button
+                                    @click.stop="editJob(job)"
+                                    class="group flex items-center justify-center p-2 rounded-lg transition-all duration-200 hover:bg-white hover:shadow-md"
+                                    :style="{ border: '1px solid rgba(59, 130, 246, 0.3)' }"
+                                    title="Edit job"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500" fill="none"
+                                         viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                    </svg>
+                                </button>
+                                <button
+                                    @click.stop="deleteJob(job)"
+                                    class="group flex items-center justify-center p-2 rounded-lg transition-all duration-200 hover:bg-white hover:shadow-md"
+                                    :style="{ border: '1px solid rgba(239, 68, 68, 0.3)' }"
+                                    title="Delete job"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500" fill="none"
+                                         viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
             </div>
-            <div v-else class="flex flex-col items-center justify-center p-6 bg-gray-50 rounded-lg shadow-md text-center">
+            <div v-else
+                 class="flex flex-col items-center justify-center p-6 bg-gray-50 rounded-lg shadow-md text-center">
                 <p class="text-gray-600 mb-4">
                     No jobs yet
                 </p>
@@ -244,7 +248,9 @@
 import {ref, computed} from 'vue';
 import {gsap} from 'gsap';
 import dayjs from 'dayjs';
+import {router} from "@inertiajs/vue3";
 import ViewJob from "@/Components/Job/ViewJob.vue";
+
 const props = defineProps({
     jobs: {
         type: Array,
@@ -260,11 +266,11 @@ const customer = ref({});
 const isEditingJob = ref(false);
 const jobToEdit = ref({});
 
-const openRatingModal = (jobId) =>{
+const openRatingModal = (jobId) => {
     emits('jobCompleted', {payload: jobId})
 }
-let   isLoading = ref(false)
-let   isDisabled = ref(false)
+let isLoading = ref(false)
+let isDisabled = ref(false)
 const getJobBalance = (job) => {
     const paid = totalPaidPerJob.value[job.id];
     return Number(job.amount || 0) - Number(paid);
@@ -273,7 +279,7 @@ const getBalanceClass = (job) => {
     const balance = getJobBalance(job);
     if (balance <= 0) return 'text-green-600';
     if (dayjs().isAfter(dayjs(job.due_date)) && job.status !== 'completed') return 'text-yellow-600';
-        return 'text-red-600';
+    return 'text-red-600';
 };
 const getTotalPaid = (activities) => {
     if (!activities) return 0;
@@ -296,8 +302,8 @@ const formatDate = (dateString) => {
 };
 // Job actions
 const editJob = (job) => {
-   let amountPaid = job.activities?.filter(activity => activity.type === "payment")
-            .reduce((sum, activity) => sum + Number(JSON.parse(activity.changes).amount), 0)
+    let amountPaid = job.activities?.filter(activity => activity.type === "payment")
+        .reduce((sum, activity) => sum + Number(JSON.parse(activity.changes).amount), 0)
     emits('showModal');
     customer.value = job.customer;
     emits('isEditing', {payload: job, amountPaid: amountPaid})
@@ -306,7 +312,7 @@ const update = () => {
     closeCreateJobModal();
 };
 const selectJob = (job) => {
-    selectedJob.value = job;
+    router.visit(`/dashboard/job/${job.id}/view`)
 };
 const closeModal = () => {
     selectedJob.value = null;

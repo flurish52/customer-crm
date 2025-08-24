@@ -55,7 +55,6 @@ class BusinessController extends Controller
 
         return response()->json([
             'message' => 'Store created successfully',
-            'store' => $store
         ]);
     }
 
@@ -81,17 +80,13 @@ class BusinessController extends Controller
     public function update(UpdateBusinessRequest $request, Business $business)
     {
         $data = $request->validated();
-        // Handle logo upload
         if ($request->hasFile('logo')) {
-            // Delete old logo if it exists
             if ($business->business_logo_path && Storage::disk('public')->exists($business->business_logo_path)) {
                 Storage::disk('public')->delete($business->business_logo_path);
             }
-
             $path = $request->file('logo')->store('logos', 'public');
             $data['business_logo_path'] = $path;
         }
-
         $business->update([
             'business_name' => $data['name'],
             'business_email' => $data['email'],

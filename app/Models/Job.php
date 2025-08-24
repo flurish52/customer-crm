@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Validation\Rules\In;
 
 class Job extends Model
 {
@@ -15,6 +16,7 @@ class Job extends Model
     protected $fillable = [
         'customer_id',
         'user_id',
+        'business_id',
         'job_title',
         'description',
         'status',
@@ -29,9 +31,13 @@ class Job extends Model
         return $this->belongsTo(Customer::class);
     }
 
-    public function user()
+    public function business()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Business::class);
+    }
+    public function invoice()
+    {
+        return $this->belongsTo(Invoice::class);
     }
 
 

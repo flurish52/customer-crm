@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('logo_path')->nullable();
             $table->string('tax_id')->nullable();
             $table->json('settings')->nullable();
+            $table->timestamp('deleted_at')->nullable();
             $table->timestamps();
         });
     }

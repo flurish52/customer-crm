@@ -16,7 +16,9 @@ return new class extends Migration
             $table->string('invoice_number')->unique();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('customer_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('job_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('job_id')->constrained('customer_jobs')->cascadeOnDelete();
+            $table->json('customer_snapshot');
+            $table->json('job_snapshot');
             $table->json('business_snapshot');
 
             $table->date('issue_date');

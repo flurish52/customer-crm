@@ -33,8 +33,14 @@ class UpdateCustomerRequest extends FormRequest
             'phone' => 'required|string|max:20|unique:customers,phone,NULL,id,user_id,',
             'address' => 'nullable|string|max:255',
             'note' => 'nullable|string|max:255',
-            'avatar.file' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-            'avatar' => 'nullable|string',
+            'avatar' => [
+                'nullable',
+                Rule::when(
+                    fn($input) => $input['avatar'] instanceof \Illuminate\Http\UploadedFile,
+                    ['image', 'mimes:jpeg,png,jpg,gif,webp', 'max:2048'],
+                    ['string']
+                )
+            ],
         ];
     }
 }

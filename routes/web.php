@@ -3,6 +3,7 @@
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\BusinessController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
@@ -59,6 +60,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard/reports', [CustomerController::class, 'returnReports'])->name('return.reports');
     Route::get('/dashboard/settings', [ProfileController::class, 'returnSettings'])->name('return.settings');
     Route::get('/dashboard/profile', [ProfileController::class, 'returnProfile'])->name('return.profile');
+    Route::get('/dashboard/invoices', [InvoiceController::class, 'index'])->name('dashboard.invoice');
     Route::patch('/profile/update', [ProfileController::class, 'update'])->name('edit.profile');
 
     Route::get('/dashboard/job/{job}', [JobController::class, 'returnJob'])->name('return.job');
@@ -69,6 +71,11 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/save/business/info', [BusinessController::class, 'store'])->name('business.store');
     Route::patch('/save/business/info/{business}', [BusinessController::class, 'update'])->name('business.update');
+    Route::get('/get_user/job_details/{job}', [InvoiceController::class, 'create'])->name('create.invoice');
+    Route::post('/store/invoice/generate', [InvoiceController::class, 'store'])->name('store.invoice');
+    Route::patch('/update_invoice/status/{invoice}', [InvoiceController::class, 'update'])->name('update.invoice');
+    Route::get('/dashboard/invoice/{invoice}', [InvoiceController::class, 'viewInvoice'])->name('view.invoice');
+    Route::get('/dashboard/job/{job}/view', [JobController::class, 'viewJob'])->name('view.job');
 });
 
 

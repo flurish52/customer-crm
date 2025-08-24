@@ -125,19 +125,16 @@ class CustomerController extends Controller
 
         // Handle image upload if present
         if ($request->hasFile('avatar')) {
-            $path = $request->file('avatar')->store('avatars', 'public');
 
-            // Optional: delete old image if stored
-            if ($customer->avatar) {
+
+            if ($customer->avatar && Storage::disk('public')->exists($customer->avatar)) {
                 Storage::disk('public')->delete($customer->avatar);
             }
 
-            $customer->update([
-                'avatar' => $path,
-            ]);
+            // Store new file
+            $path = $request->file('avatar')->store('avatars', 'public');
+            $customer->avatar = $path;
         }
-
-        return redirect()->back()->with('success', 'Customer updated');
     }
 
 

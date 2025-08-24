@@ -84,7 +84,7 @@ let overdueJobs = ref([])
 let owingCustomers = ref()
 const tabs = [
     {id: 1, label: 'Overdue Jobs', component: OverDueJobs, props: {overdueJobs}},
-    {id: 3, label: 'Owing customers', component: OwingCustomers, props: {owingCustomers}},
+    {id: 3, label: 'Accounts Receivable', component: OwingCustomers, props: {owingCustomers}},
     {id: 2, label: ' Recent Activity', component: RecentActivities, props: {recentActivities: props.recentActivities}},
 ]
 const activeTab = ref(tabs[0].id)

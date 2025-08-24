@@ -1,5 +1,19 @@
 <template>
-    <div class="bg-white rounded-xl shadow-xl overflow-hidden   w-full border border-gray-100 transform transition-all duration-300 hover:shadow-2xl">
+    <div v-if="showCreateInvoiceModal" class="fixed inset-0 z-50 flex items-center justify-center">
+
+        <!-- Overlay -->
+        <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm" @click="showCreateInvoiceModal = false"></div>
+
+        <!-- Modal Content -->
+        <div class="relative bg-white rounded-lg shadow-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto z-10 p-6">
+            <button @click="showCreateInvoiceModal = false" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700 font-bold text-lg">×</button>
+
+            <CreateInvoiceModal :selectedJob="selectedJob.id" />
+        </div>
+    </div>
+
+    <div
+        class="bg-white rounded-xl shadow-xl overflow-hidden   w-full border border-gray-100 transform transition-all duration-300 hover:shadow-2xl">
         <!-- Header with subtle gradient -->
         <div
             class="flex justify-between items-start p-6 border-b border-gray-200 bg-gradient-to-r from-primary/95 to-primary-dark/95"
@@ -23,7 +37,9 @@
                 aria-label="Close"
             >
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    <path fill-rule="evenodd"
+                          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                          clip-rule="evenodd"/>
                 </svg>
             </button>
         </div>
@@ -37,8 +53,10 @@
             <!-- Job Details -->
             <div class="space-y-6">
                 <h3 class="text-sm font-semibold uppercase tracking-wider text-primary-dark flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24"
+                         stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                     </svg>
                     Job Details
                 </h3>
@@ -49,7 +67,8 @@
                         class="animate-detail"
                         :style="{'--delay': `${index * 50}ms`}"
                     >
-                        <div class="flex justify-between items-center py-2 px-3 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div
+                            class="flex justify-between items-center py-2 px-3 rounded-lg hover:bg-gray-50 transition-colors">
                             <span class="text-sm text-gray-600">{{ item.label }}</span>
                             <span class="font-medium text-gray-900">{{ item.value }}</span>
                         </div>
@@ -61,8 +80,10 @@
             <!-- Customer Info -->
             <div class="space-y-6">
                 <h3 class="text-sm font-semibold uppercase tracking-wider text-primary-dark flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24"
+                         stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                     </svg>
                     Customer
                 </h3>
@@ -79,9 +100,10 @@
                         class="animate-detail"
                         :style="{'--delay': `${index * 50 + 100}ms`}"
                     >
-                        <div class="flex items-center space-x-3 py-2 px-3 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div
+                            class="flex items-center space-x-3 py-2 px-3 rounded-lg hover:bg-gray-50 transition-colors">
                             <div class="text-gray-400">
-                                <component :is="item.icon" class="h-4 w-4" />
+                                <component :is="item.icon" class="h-4 w-4"/>
                             </div>
                             <span class="text-sm text-gray-600 flex-1">{{ item.label }}</span>
                             <span class="font-medium text-gray-900">{{ item.value }}</span>
@@ -99,13 +121,18 @@
             data-aos-delay="200"
         >
             <h3 class="text-sm font-semibold uppercase tracking-wider text-primary-dark mb-3 flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24"
+                     stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                 </svg>
                 Description
             </h3>
-            <div class="bg-gray-50 p-4 rounded-lg border border-gray-100 transition-all duration-300 hover:border-primary/30">
-                <p class="whitespace-pre-line text-gray-700">{{ selectedJob.description || 'No description provided' }}</p>
+            <div
+                class="bg-gray-50 p-4 rounded-lg border border-gray-100 transition-all duration-300 hover:border-primary/30">
+                <p class="whitespace-pre-line text-gray-700">{{
+                        selectedJob.description || 'No description provided'
+                    }}</p>
             </div>
         </div>
 
@@ -117,8 +144,10 @@
             data-aos-delay="300"
         >
             <h3 class="text-sm font-semibold uppercase tracking-wider text-primary-dark mb-4 flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24"
+                     stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
                 Activity Log
             </h3>
@@ -131,15 +160,19 @@
                     :data-aos-delay="300 + (index * 50)"
                 >
                     <!-- Animated timeline dot -->
-                    <div class="absolute left-0 top-1 h-full w-0.5 bg-gray-200 group-hover:bg-primary transition-colors" aria-hidden="true"></div>
-                    <div class="absolute left-0 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-gray-200 group-hover:bg-primary transition-all transform group-hover:scale-125">
+                    <div class="absolute left-0 top-1 h-full w-0.5 bg-gray-200 group-hover:bg-primary transition-colors"
+                         aria-hidden="true"></div>
+                    <div
+                        class="absolute left-0 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-gray-200 group-hover:bg-primary transition-all transform group-hover:scale-125">
                         <div class="h-2 w-2 rounded-full bg-white transition-all"></div>
                     </div>
-
                     <!-- Activity content -->
-                    <div class="bg-white p-4 rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-all">
+                    <div
+                        class="bg-white p-4 rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-all">
                         <div class="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2">
-                            <p class="text-sm font-medium text-gray-900 capitalize">{{ formatActivityType(activity.type) }}</p>
+                            <p class="text-sm font-medium text-gray-900 capitalize">{{
+                                    formatActivityType(activity.type)
+                                }}</p>
                             <p class="text-xs text-gray-500">{{ formatDateTime(activity.created_at) }}</p>
                         </div>
 
@@ -148,7 +181,8 @@
                             v-if="activity.changes"
                             class="mt-3 bg-gray-50 p-3 rounded-lg overflow-hidden transition-all duration-300 max-h-0 group-hover:max-h-96"
                         >
-                            <div v-for="(value, key) in JSON.parse(activity.changes)" :key="key" class="text-sm grid grid-cols-3 gap-2 py-1">
+                            <div v-for="(value, key) in JSON.parse(activity.changes)" :key="key"
+                                 class="text-sm grid grid-cols-3 gap-2 py-1">
                                 <span class="text-gray-500 col-span-1">{{ key }}:</span>
                                 <span class="font-medium text-gray-800 col-span-2">{{ value }}</span>
                             </div>
@@ -157,11 +191,19 @@
                 </div>
             </div>
         </div>
+            <!-- Submit -->
+            <div class="text-right p-3">
+                <button @click="showCreateInvoiceFunc"
+                        class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+                    Generate Invoice
+                </button>
+            </div>
+
     </div>
 </template>
 
 <script setup>
-import { computed } from "vue";
+import {computed, ref} from "vue";
 import {onMounted} from "vue";
 import {
     PhoneIcon,
@@ -173,6 +215,7 @@ import {
 } from '@heroicons/vue/24/outline'
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+import CreateInvoiceModal from "@/Components/Invoice/CreateInvoiceModal.vue";
 // Define props and emits
 const props = defineProps({
     selectedJob: Object,
@@ -202,16 +245,28 @@ const statusBadgeClasses = computed(() => {
 })
 // Job details array for consistent rendering
 const jobDetails = computed(() => [
-    { label: 'Amount', value: formatCurrency(props.selectedJob.amount), icon: CurrencyDollarIcon },
-    { label: 'Due Date', value: props.selectedJob.due_date ? formatDate(props.selectedJob.due_date) : 'Not set', icon: CalendarDaysIcon },
-    { label: 'Completed', value: props.selectedJob.completed_at ? formatDateTime(props.selectedJob.completed_at) : 'Not completed', icon: CheckCircleIcon },
-    { label: 'Satisfaction', value: props.selectedJob.satisfaction_score ? `${props.selectedJob.satisfaction_score}/5` : 'Not rated', icon: StarIcon }
+    {label: 'Amount', value: formatCurrency(props.selectedJob.amount), icon: CurrencyDollarIcon},
+    {
+        label: 'Due Date',
+        value: props.selectedJob.due_date ? formatDate(props.selectedJob.due_date) : 'Not set',
+        icon: CalendarDaysIcon
+    },
+    {
+        label: 'Completed',
+        value: props.selectedJob.completed_at ? formatDateTime(props.selectedJob.completed_at) : 'Not completed',
+        icon: CheckCircleIcon
+    },
+    {
+        label: 'Satisfaction',
+        value: props.selectedJob.satisfaction_score ? `${props.selectedJob.satisfaction_score}/5` : 'Not rated',
+        icon: StarIcon
+    }
 ].filter(item => item.value !== undefined))
 
 // Customer details array
 const customerDetails = computed(() => [
-    { label: 'Phone', value: props.selectedJob.customer.phone, icon: PhoneIcon },
-    { label: 'Address', value: props.selectedJob.customer.address, icon: MapPinIcon }
+    {label: 'Phone', value: props.selectedJob.customer.phone, icon: PhoneIcon},
+    {label: 'Address', value: props.selectedJob.customer.address, icon: MapPinIcon}
 ].filter(item => item.value))
 
 // Formatting functions
@@ -246,6 +301,14 @@ const formatActivityType = (type) => {
     ).join(' ')
 }
 
+let showCreateInvoiceModal =  ref(false);
+
+const showCreateInvoiceFunc = () => {
+    showCreateInvoiceModal.value = true
+}
+const closeCreateInvoiceFunc = () => {
+    emit('')
+}
 const closeModal = () => {
     emit('closeModal')
 }
@@ -270,6 +333,7 @@ const closeModal = () => {
 .hover-rotate {
     transition: transform 0.3s ease;
 }
+
 .hover-rotate:hover {
     transform: rotate(90deg);
 }
