@@ -12,11 +12,17 @@ export default {
     ],
     theme: {
         extend: {
+            fontFamily: {
+                sans: ['poppins', 'ui-sans-serif', 'system-ui']
+            },
+            fontWeight: {
+                thin: 100,
+                extralight: 200,
+                light: 300
+            },
+
             animation: {
                 'pulse-slow': 'pulse-slow 6s ease-in-out infinite',
-            },
-            fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
             keyframes: {
                 'pulse-slow': {

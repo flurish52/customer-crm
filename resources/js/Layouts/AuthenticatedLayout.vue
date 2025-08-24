@@ -24,7 +24,7 @@ const toggleSidebar = () => {
 </script>
 
 <template>
-    <div class="min-h-screen bg-primary-light/10 flex">
+    <div class="min-h-screen bg-primary-light/5 flex">
         <!-- Sidebar - fixed on large screens, overlay on mobile -->
         <AuthSidebar
             :isSidebarOpen="isSidebarOpen"

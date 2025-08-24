@@ -1,1 +1,0 @@
-import{_ as r}from"./AuthenticatedLayout-CD8uY5zI.js";import{c as e,o as t,w as a,b as s}from"./app-VKdpvpg5.js";import"./_plugin-vue_export-helper-DlAUqK2U.js";const i={__name:"Profile",setup(_){return(l,o)=>(t(),e(r,null,{default:a(()=>o[0]||(o[0]=[s("p",null,"Your Profile",-1)])),_:1,__:[0]}))}};export{i as default};
