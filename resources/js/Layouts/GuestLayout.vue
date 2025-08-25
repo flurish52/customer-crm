@@ -1,6 +1,6 @@
 <script setup>
-import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import { Link } from '@inertiajs/vue3';
+import dayjs from "dayjs";
 </script>
 
 <template>
@@ -14,7 +14,7 @@ import { Link } from '@inertiajs/vue3';
                 </svg>
             </div>
             <h1 class="text-2xl font-bold text-primary-dark">
-                Zelvra CRM
+                Entroly
             </h1>
         </Link>
         <button class="md:hidden text-gray-300 hover:text-primary">
@@ -36,7 +36,7 @@ import { Link } from '@inertiajs/vue3';
                 <!-- Subtle footer -->
                 <div class="bg-gray-50 px-6 py-4 border-t border-gray-100 text-center">
                     <p class="text-xs text-gray-500">
-                        © 2024 Zelvra. All rights reserved.
+                        ©{{dayjs(Date()).format('YYYY')}} Entroly. All rights reserved.
                     </p>
                 </div>
             </div>

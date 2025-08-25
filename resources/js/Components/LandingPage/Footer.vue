@@ -11,7 +11,7 @@
                             <path d="M60 0L120 30V90L60 120L0 90V30L60 0Z" />
                             <path d="M60 30L90 45V75L60 90L30 75V45L60 30Z" fill="#111827"/>
                         </svg>
-                        <span class="ml-2 text-xl font-bold">Zelvra</span>
+                        <span class="ml-2 text-xl font-bold">Entroly</span>
                     </div>
                     <p class="text-primary-200 text-sm mb-4">
                         Client management simplified for professionals who mean business.
@@ -81,7 +81,7 @@
             <!-- Bottom Row -->
             <div class="flex flex-col md:flex-row justify-between items-center">
                 <div class="text-sm text-primary-300 mb-4 md:mb-0">
-                    © 2025 Zelvra. All rights reserved.
+                    ©{{dayjs(Date()).format('YYYY')}} Entroly. All rights reserved.
                 </div>
                 <div class="flex space-x-6">
                     <Link href="#" class="text-sm text-primary-300 hover:text-tertiary-50 transition-colors">Privacy</Link>

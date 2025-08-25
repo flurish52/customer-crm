@@ -17,6 +17,8 @@
             @submit="completeJob"
             @close="closeRatingModal"
         />
+
+        <Head title="Jobs" />
         <header class="mb-8">
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <!-- Title with decorative element -->
@@ -144,7 +146,7 @@ import AOS from 'aos';
 import 'aos/dist/aos.css';
 import Jobs from "@/Components/Job/Jobs.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { router } from '@inertiajs/vue3'
+import {Head, router} from '@inertiajs/vue3'
 import CreateJob from "@/Components/Job/CreateJob.vue";
 import dayjs from "dayjs";
 import JobRating from "@/Components/Job/JobRating.vue";

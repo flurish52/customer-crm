@@ -30,7 +30,7 @@ const submit = () => {
                     Create Your Account
                 </h2>
                 <p class="mt-2 text-primary">
-                    Join Zelvra CRM to streamline your client management
+                    Join Entroly CRM to streamline your client management
                 </p>
             </div>
 

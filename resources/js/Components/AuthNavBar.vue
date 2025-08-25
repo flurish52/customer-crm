@@ -1,5 +1,5 @@
 <template>
-    <header class="bg-primary-dark shadow-sm sticky top-0 z-30">
+    <header class="bg-white shadow-sm sticky top-0 text-primary z-30">
         <div class="px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <!-- Left section (logo and mobile menu button) -->
@@ -7,7 +7,7 @@
                     <!-- Mobile menu button (only visible when sidebar is hidden) -->
                     <button
                         @click="$emit('toggleSidebar')"
-                        class="md:hidden p-2 rounded-md text-tertiary hover:text-primary-dark focus:outline-none"
+                        class="md:hidden p-2 rounded-md hover:text-primary-dark focus:outline-none"
                     >
                         <span class="sr-only">Open sidebar</span>
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
@@ -23,13 +23,13 @@
                             class="hidden md:block w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white font-bold">
                             <ApplicationLogo />
                         </div>
-                        <span class="ml-2 text-lg font-semibold text-white">Zelvra</span>
+                        <span class="ml-2 text-lg font-semibold text-white">Entroly</span>
                     </div>
                 </div>
                 <!-- Desktop Navbar Greeting (original but enhanced) -->
                 <div class="w-auto hidden md:flex items-center space-x-2">
-                    <span class="text-tertiary-dark">Hi,</span>
-                    <h1 class="text-lg font-semibold text-tertiary truncate max-w-[160px]">
+                    <span class="text-primary">Hi,</span>
+                    <h1 class="text-lg font-semibold text-primary truncate max-w-[160px]">
                         {{ $page.props.auth.user.name }}
                     </h1>
                 </div>
@@ -56,7 +56,7 @@
                 <div class="flex items-center">
                     <!-- Notification button -->
                     <button
-                        class="p-2 rounded-full text-tertiary hover:text-primary hover:bg-tertiary-light focus:outline-none relative transition-colors duration-200"
+                        class="p-2 rounded-full text-primary hover:text-primary hover:bg-tertiary-light focus:outline-none relative transition-colors duration-200"
                         @click="toggleNotifications"
                     >
                         <span class="sr-only">View notifications</span>
@@ -91,7 +91,7 @@
                     <div class="ml-4 relative">
                         <button
                             @click="toggleQuickActions"
-                            class="p-2 rounded-full text-tertiary hover:text-primary hover:bg-tertiary-light focus:outline-none transition-colors duration-200"
+                            class="p-2 rounded-full text-primary hover:text-primary hover:bg-tertiary-light focus:outline-none transition-colors duration-200"
                         >
                             <span class="sr-only">Quick actions</span>
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"

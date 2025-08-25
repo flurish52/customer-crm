@@ -44,7 +44,7 @@ const submit = () => {
         <form @submit.prevent="submit" class="max-w-md mx-auto p-10 bg-white rounded-xl shadow-lg border border-tertiary-light">
             <div class="mb-8 text-center">
                 <h2 class="text-3xl font-bold text-primary-dark">
-                    Welcome to Zelvra
+                    Welcome to Entroly
                 </h2>
                 <p class="mt-2 text-primary-dark">
                     Sign in to your CRM dashboard

@@ -1,17 +1,17 @@
 <template>
     <!-- Sticky Mobile CTA (Always visible) -->
     <div class="fixed lg:hidden bottom-0 inset-x-0 bg-primary shadow-lg z-50 text-white">
-        <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-            <div class="flex-1">
-                <h3 class="text-sm font-bold text-tertiary-50 truncate">Get your free client management guide</h3>
-            </div>
-<!--            <button-->
-<!--                @click="showModal = true"-->
-<!--                class="ml-4 flex-shrink-0 bg-tertiary-50 hover:bg-tertiary-100 text-primary-700 px-4 py-2 rounded-md text-sm font-medium transition-colors"-->
-<!--            >-->
-<!--                Download Now-->
-<!--            </button>-->
-        </div>
+<!--        <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">-->
+<!--&lt;!&ndash;            <div class="flex-1">&ndash;&gt;-->
+<!--&lt;!&ndash;                <h3 class="text-sm font-bold text-tertiary-50 truncate">Get your free client management guide</h3>&ndash;&gt;-->
+<!--&lt;!&ndash;            </div>&ndash;&gt;-->
+<!--&lt;!&ndash;            <button&ndash;&gt;-->
+<!--&lt;!&ndash;                @click="showModal = true"&ndash;&gt;-->
+<!--&lt;!&ndash;                class="ml-4 flex-shrink-0 bg-tertiary-50 hover:bg-tertiary-100 text-primary-700 px-4 py-2 rounded-md text-sm font-medium transition-colors"&ndash;&gt;-->
+<!--&lt;!&ndash;            >&ndash;&gt;-->
+<!--&lt;!&ndash;                Download Now&ndash;&gt;-->
+<!--&lt;!&ndash;            </button>&ndash;&gt;-->
+<!--        </div>-->
     </div>
 
     <!-- Desktop Exit-Intent Footer CTA -->
@@ -48,7 +48,7 @@
                     </form>
 
                     <p class="mt-4 text-sm text-primary">
-                        We'll also send you Zelvra tips. Unsubscribe anytime.
+                        We'll also send you Entroly tips. Unsubscribe anytime.
                     </p>
                 </div>
 
@@ -66,7 +66,7 @@
                             </li>
                             <li class="flex items-start">
                                 <CheckCircleIcon class="h-5 w-5 text-primary-dark mt-0.5 mr-2 flex-shrink-0" />
-                                <span class="text-primary-dark">Zelvra setup checklist</span>
+                                <span class="text-primary-dark">Entroly setup checklist</span>
                             </li>
                         </ul>
                     </div>

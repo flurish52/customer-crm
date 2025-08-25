@@ -1,5 +1,6 @@
 <template>
     <AuthenticatedLayout>
+        <Head title="Job" />
         <div v-if="showCreateInvoiceModal" class="fixed inset-0 z-50 flex items-center justify-center">
 
             <!-- Overlay -->
@@ -221,7 +222,7 @@ import AOS from 'aos';
 import 'aos/dist/aos.css';
 import CreateInvoiceModal from "@/Components/Invoice/CreateInvoiceModal.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import {router} from "@inertiajs/vue3";
+import {Head, router} from "@inertiajs/vue3";
 // Define props and emits
 const props = defineProps({
     selectedJob: Object,

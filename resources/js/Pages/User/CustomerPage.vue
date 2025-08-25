@@ -10,6 +10,7 @@
                 @customerCreated_Updated="refreshPage"
                 />
             </div>
+        <Head title="Customers" />
         <div class="space-y-6">
             <!-- Page Header -->
             <div class="flex flex-col justify-between gap-4 md:flex-row md:items-center bg-primary-light/10 p-6 rounded-xl shadow-inner border border-primary/20">
@@ -58,7 +59,7 @@ import {ref} from 'vue'
 import {PlusIcon, MagnifyingGlassIcon} from '@heroicons/vue/24/outline'
 import CustomerList from "@/Components/Customer/CustomerList.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import {router} from "@inertiajs/vue3";
+import {Head, router} from "@inertiajs/vue3";
 import AddCustomerModal from "@/Components/Customer/AddCustomerModal.vue";
 import SearchComponent from "@/Components/SearchComponent.vue";
 

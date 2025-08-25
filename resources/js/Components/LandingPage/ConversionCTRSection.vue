@@ -52,7 +52,7 @@
                                 <img v-for="(avatar, i) in avatars" :key="i" :src="avatar" class="w-8 h-8 rounded-full border-2 border-tertiary-50" />
                             </div>
                             <span class="text-sm text-primary-600">
-        Join <span class="font-semibold">2,500+</span> professionals using Zelvra
+        Join <span class="font-semibold">2,500+</span> professionals using Entroly
       </span>
                         </div>
 
@@ -84,7 +84,7 @@ onMounted(() => {
     const interval = setInterval(() => {
         liveCounter.value += Math.floor(Math.random() * 3)
         if (liveCounter.value > 210) clearInterval(interval)
-    }, 3000)
+    }, 7200000)
 })
 const benefits = [
     {

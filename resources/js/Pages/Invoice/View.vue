@@ -1,5 +1,6 @@
 <template>
     <AuthenticatedLayout>
+        <Head title="Invoice" />
         <div ref="invoiceContainer" id="invoiceContainer" class="max-w-5xl mx-auto p-8 bg-white text-gray-800 shadow-lg rounded-lg">
 
             <!-- Header Section -->
@@ -149,6 +150,7 @@
 import {computed} from "vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import InvoiceFooter from "@/Pages/Invoice/InvoiceFooter.vue";
+import {Head} from "@inertiajs/vue3";
 
 const props = defineProps({
     invoice: Object

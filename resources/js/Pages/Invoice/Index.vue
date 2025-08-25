@@ -10,6 +10,7 @@
         />
 
         <!-- Desktop Table View -->
+        <Head title="Invoices" />
         <div class="hidden md:block overflow-x-auto rounded-lg shadow">
             <table class="w-full border-collapse bg-white text-left text-sm border-b-2 border-gray-900">
                 <thead class="bg-primary border-b-2 border-gray-600">
@@ -140,7 +141,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import InvoiceIndexHeader from "@/Components/Invoice/InvoiceIndexHeader.vue";
 import UpdateInvoiceStatus from "@/Components/Invoice/UpdateInvoiceStatus.vue";
 import {ref} from "vue";
-import {router} from "@inertiajs/vue3";
+import {Head, router} from "@inertiajs/vue3";
 
 defineProps({
     invoices: Array

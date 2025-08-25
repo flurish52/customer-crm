@@ -1,4 +1,5 @@
 <template>
+    <Head title="Home" />
         <HeroSection/>
         <BenefitHeadlines/>
         <!--    <Pricing />-->
@@ -10,7 +11,7 @@
 <script setup>
 import {onMounted} from 'vue'
 import {gsap} from 'gsap'
-import {router} from '@inertiajs/vue3'
+import {Head, router} from '@inertiajs/vue3'
 import HeroSection from "@/Components/LandingPage/HeroSection.vue";
 import BenefitHeadlines from "@/Components/LandingPage/BenefitHeadlines.vue";
 import Pricing from "@/Components/LandingPage/Pricing.vue";

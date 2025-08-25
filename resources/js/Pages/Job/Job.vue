@@ -7,6 +7,7 @@
         :jobToEdit="jobToEdit"
             @close="closeModal"
         />
+        <Head title="Jobs" />
         <div class="min-h-screen">
             <!-- Header Section -->
             <div class="">
@@ -79,6 +80,7 @@ import ViewJob from "@/Components/Job/ViewJob.vue";
 import {ref} from "vue";
 import axios from "axios";
 import CreateJob from "@/Components/Job/CreateJob.vue";
+import {Head} from "@inertiajs/vue3";
 defineProps({
     job: Object
 })

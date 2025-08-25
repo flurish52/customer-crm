@@ -1,6 +1,7 @@
 <template>
     <AuthenticatedLayout>
 
+        <Head title="Settings" />
         <div class="">
         <!-- Page Header -->
         <div class="flex flex-col justify-between gap-4 md:flex-row md:items-center">
@@ -36,6 +37,7 @@
 import { ref } from 'vue'
 import Settings from '@/components/User/Settings.vue'
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import {Head} from "@inertiajs/vue3";
 const props = defineProps({
     user: Object,
 })

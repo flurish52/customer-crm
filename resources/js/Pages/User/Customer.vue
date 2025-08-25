@@ -30,6 +30,8 @@
                 @closeAddCustomerModal="closeAddCustomerModal"
             />
         </div>
+
+        <Head title="Customer" />
         <div class="">
             <!-- Back Button -->
             <Link
@@ -245,7 +247,7 @@
 <script setup>
 import {ref, onMounted} from 'vue'
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import {Link, router} from "@inertiajs/vue3";
+import {Head, Link, router} from "@inertiajs/vue3";
 import dayjs from "dayjs";
 import CreateJob from "@/Components/Job/CreateJob.vue";
 import axios from "axios";

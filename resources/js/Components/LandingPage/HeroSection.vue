@@ -20,7 +20,7 @@
                         </svg>
                     </div>
                     <h1 class="text-2xl font-bold text-white">
-                        Zelvra CRM
+                        Entroly
                     </h1>
                 </div>
                 <div class="hidden md:flex justify-center items-center space-x-4">
@@ -48,7 +48,7 @@
                         your customers, jobs, and receipts
                     </h1>
                     <p class="text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto mb-8">
-                        Zelvra helps you manage client relationships, track jobs, and generate professional receipts - all in one beautiful interface.
+                        Entroly helps you manage client relationships, track jobs, and generate professional receipts - all in one beautiful interface.
                     </p>
                     <div class="flex flex-col sm:flex-row justify-center gap-4 mb-12">
                         <Link @click="navigateUser('login')"

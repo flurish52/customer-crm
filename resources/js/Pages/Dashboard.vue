@@ -1,5 +1,7 @@
 <template>
     <AuthenticatedLayout>
+
+        <Head title="Dashboard" />
         <div class="">
             <!-- Stats Cards -->
             <StatCards/>
@@ -75,6 +77,7 @@ import OverDueJobs from "@/Components/Job/OverDueJobs.vue";
 import RecentActivities from "@/components/Job/RecentActivities.vue"
 import OwingCustomers from "@/Components/Customer/OwingCustomers.vue";
 import dayjs from "dayjs";
+import {Head} from "@inertiajs/vue3";
 let props = defineProps({
     jobs: Array,
     recentActivities: Array,

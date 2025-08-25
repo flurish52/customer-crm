@@ -54,7 +54,9 @@
 
                                 </span>
                             </div>
-                            <h1 class="text-xl font-bold text-white">Zelvra CRM</h1>
+                            <Link href="/">
+                            <h1 class="text-xl font-bold text-white">Entroly</h1>
+                            </Link>
                         </div>
                         <div v-else key="collapsed"
                              class="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center mx-auto">
@@ -63,7 +65,6 @@
         <path d="M60 0L120 30V90L60 120L0 90V30L60 0Z" />
         <path d="M60 30L90 45V75L60 90L30 75V45L60 30Z" fill="teal"/>
     </svg>
-
                             </span>
                         </div>
                     </transition>

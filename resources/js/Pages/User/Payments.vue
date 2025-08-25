@@ -6,6 +6,8 @@
             :jobs="jobs"
             :showPaymentModal="showPaymentModal"
         />
+
+        <Head title="Payments" />
         <div class="space-y-6">
             <!-- Page Header with Animation -->
             <div
@@ -62,7 +64,7 @@ import {onMounted} from "vue";
 import Payments from '@/components/Payments/Payments.vue';
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import PaymentModal from "@/Components/Job/PaymentModal.vue";
-import {router} from "@inertiajs/vue3";
+import {Head, router} from "@inertiajs/vue3";
 
 let props = defineProps({
     payments: Array,

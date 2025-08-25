@@ -84,7 +84,7 @@ const features = [
     {
         icon: ShieldCheckIcon,
         title: "No More Client Data Leaks",
-        description: "Your address book isn’t secure. Zelvra encrypts every client detail and access log—so sensitive data never slips through the cracks."
+        description: "Your address book isn’t secure. Entroly encrypts every client detail and access log—so sensitive data never slips through the cracks."
     },
     {
         icon: ClockIcon,
@@ -94,7 +94,7 @@ const features = [
     {
         icon: ScaleIcon,
         title: "Double Your Client Retention",
-        description: "Missed follow-ups lose clients. Zelvra’s timeline alerts ensure you’re always proactive, not reactive."
+        description: "Missed follow-ups lose clients. Entroly’s timeline alerts ensure you’re always proactive, not reactive."
     },
     {
         icon: CurrencyDollarIcon,
