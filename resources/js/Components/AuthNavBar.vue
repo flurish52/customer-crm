@@ -249,8 +249,8 @@
 <div>
     <!-- Greeting Text -->
     <div class="flex flex-col">
-        <span class="text-xs text-tertiary-dark">Welcome back</span>
-        <span class="text-xl font-medium text-tertiary truncate max-w-[120px]">
+        <span class="text-xs text-primary-dark">Welcome back</span>
+        <span class="text-xl font-medium text-primary truncate max-w-[120px]">
         {{ $page.props.auth.user.name.split(' ')[0] }}
       </span>
     </div>

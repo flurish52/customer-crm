@@ -60,7 +60,7 @@ class InvoiceController extends Controller
         $customer = json_decode($invoice->customer_snapshot);
         $job = $invoice->job_snapshot ? json_decode($invoice->job_snapshot) : null;
 
-        $pdf = PDF::loadView('pdf.invoice', [
+        $pdf = PDF::loadView('pdf.Invoice', [
             'invoice' => $invoice,
             'business' => $business,
             'customer' => $customer,
@@ -213,7 +213,7 @@ class InvoiceController extends Controller
         $business = json_decode($invoice->business_snapshot);
         $job = json_decode($invoice->job_snapshot);
         $customer = json_decode($invoice->customer_snapshot);
-        $pdf = PDF::loadView('pdf.invoice', [
+        $pdf = PDF::loadView('pdf.Invoice', [
             'invoice' => $invoice,
             'business' => $business,
             'job' => $job,

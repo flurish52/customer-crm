@@ -193,8 +193,11 @@
                                 class="px-5 py-2.5 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors duration-200 font-medium">
                             Cancel
                         </button>
-                        <button @click="sendInvoice"
-                                class="bg-indigo-600 text-white px-5 py-2.5 rounded-lg hover:bg-indigo-700 transition-all duration-200 font-medium shadow-md hover:shadow-lg flex items-center gap-2">
+                        <button
+                            @click="sendInvoice"
+                            :disabled="sending"
+                            :class="sending ? 'bg-gray-500 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700'"
+                            class="text-white px-5 py-2.5 rounded-lg transition-all duration-200 font-medium shadow-md flex items-center gap-2">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                                  stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -202,6 +205,7 @@
                             </svg>
                             Send Invoice
                         </button>
+
                     </div>
                 </div>
             </div>
@@ -230,6 +234,7 @@ const recipientEmail = ref('')
 let emailOnInvoice = ref(JSON.parse(props.invoice.business_snapshot).email)
 let returnMessage = ref('')
 let replyToOption = ref('')
+let sending = ref(false)
 
 
 const openModal = () => {
@@ -262,6 +267,7 @@ const sendInvoice = async () => {
         alert('Please provide a client email.')
         return
     }
+    sending.value = true
     try {
         await axios.post(`/invoice/${props.invoice.id}/send`, {
             replyToEmail: replyToEmail.value,
@@ -271,11 +277,13 @@ const sendInvoice = async () => {
             message: message.value
         })
         alert('Email sent successfully')
+        sending.value = false
         closeModal()
         router.visit(`/dashboard/invoice/${props.invoice.id}`)
     } catch (error) {
         returnMessage.value = error.response?.data.message || error.message
         alert('Failed to send email,')
+        sending.value = false
     }
 }
 </script>
