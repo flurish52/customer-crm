@@ -8,7 +8,7 @@
                 <thead class="bg-gray-50">
                 <tr>
                     <th class="px-4 py-2 text-left text-sm font-medium text-gray-500">Job Title</th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500">Customer</th>
+                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500">Client</th>
                     <th class="px-4 py-2 text-left text-sm font-medium text-gray-500">Amount Due</th>
                     <th class="px-4 py-2 text-left text-sm font-medium text-gray-500">Due Date</th>
                     <th class="px-4 py-2 text-left text-sm font-medium text-gray-500">Status</th>
@@ -55,7 +55,7 @@
 
                 <div class="grid grid-cols-2 gap-2 text-sm mt-2">
                     <div>
-                        <p class="text-gray-500 text-xs">Customer</p>
+                        <p class="text-gray-500 text-xs">Client</p>
                         <p>{{ job.customer?.name || '—' }}</p>
                     </div>
                     <div>

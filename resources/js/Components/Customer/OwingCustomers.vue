@@ -1,13 +1,16 @@
 <template>
     <div class="p-6 bg-white rounded-2xl shadow-lg">
-        <h2 class="text-xl font-semibold mb-4">Owing Customers</h2>
+        <div class="mb-4">
+            <h2 class="text-xl font-semibold">Account Receivables </h2>
+            <p class="text-secondary-dark text-sm ">Clients who are yet to pay.</p>
+        </div>
 
         <!-- Desktop Table (hidden on mobile) -->
         <div class="hidden md:block overflow-x-auto">
             <table class="w-full border-collapse">
                 <thead>
                 <tr class="bg-gray-50 text-left text-sm text-gray-600">
-                    <th class="p-3">Customer</th>
+                    <th class="p-3">Client</th>
                     <th class="p-3">Job</th>
                     <th class="p-3">Amount</th>
                     <th class="p-3">Paid</th>
@@ -24,7 +27,10 @@
                 >
                     <td class="p-3">
                         <div class="font-medium whitespace-nowrap">{{ job.customer.name }}</div>
-                        <div class="text-gray-500 whitespace-nowrap">{{ job.customer.phone || job.customer.email }}</div>
+                        <div class="text-gray-500 whitespace-nowrap">{{
+                                job.customer.phone || job.customer.email
+                            }}
+                        </div>
                     </td>
                     <td class="p-3 whitespace-nowrap">
                         <div>{{ job.job_title }}</div>
@@ -100,7 +106,7 @@
         </div>
 
         <div v-if="owingJobs.length === 0" class="p-6 text-center text-gray-500">
-            No customers owing
+            No account receivables
         </div>
     </div>
 </template>

@@ -172,7 +172,7 @@ const toggleSidebar = () => {
 
 const navItems = [
     {name: 'Dashboard', path: '/dashboard', icon: HomeIcon},
-    {name: 'Customers', path: '/dashboard/customers', icon: UsersIcon},
+    {name: 'Clients', path: '/dashboard/customers', icon: UsersIcon},
     {name: 'Jobs', path: '/dashboard/jobs', icon: ClipboardIcon},
     {name: 'Invoices', path: '/dashboard/invoices', icon: DocumentTextIcon},
     {name: 'Payments', path: '/dashboard/payments', icon: CreditCardIcon},

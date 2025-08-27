@@ -17,7 +17,7 @@
                 <tr >
                     <th class="px-6 py-4 font-semibold text-primary-dark">S/N</th>
                     <th class="px-6 py-4 font-semibold text-primary-dark">Invoice #</th>
-                    <th class="px-6 py-4 font-semibold text-primary-dark">Customer</th>
+                    <th class="px-6 py-4 font-semibold text-primary-dark">Client</th>
                     <th class="px-6 py-4 font-semibold text-primary-dark">Status</th>
                     <th class="px-6 py-4 font-semibold text-primary-dark">Total</th>
                     <th class="px-6 py-4 font-semibold text-primary-dark">Issue Date</th>

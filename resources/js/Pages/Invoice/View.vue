@@ -132,16 +132,23 @@
                         <h4 class="mb-2 font-semibold text-gray-800">Notes</h4>
                         <p class="text-gray-500 text-sm italic leading-relaxed">{{ invoice.notes }}</p>
                     </div>
-
                 </footer>
 
             </div>
         </div>
-        <div class="w-full flex items-center justify-center py-2 m-1">
-                <InvoiceFooter
+        <div class="w-full flex items-center justify-center gap-4 py-2 m-1">
+            <SendInvoiceModal
+                :invoice="invoice"
+                :personalEmail="user.email"
+                :businessEmail="user.business.business_email"
+                class="mb-8"
+            />
+            <InvoiceFooter
                 @print="printSection"
-                />
+                :invoice="invoice"
+            />
         </div>
+
 
     </AuthenticatedLayout>
 </template>
@@ -150,10 +157,12 @@
 import {computed} from "vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import InvoiceFooter from "@/Pages/Invoice/InvoiceFooter.vue";
+import SendInvoiceModal from "@/Components/Invoice/SendInvoiceModal.vue";
 import {Head} from "@inertiajs/vue3";
 
 const props = defineProps({
-    invoice: Object
+    invoice: Object,
+    user: Object
 });
 
 // Parse snapshots

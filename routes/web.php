@@ -76,6 +76,10 @@ Route::middleware('auth')->group(function () {
     Route::patch('/update_invoice/status/{invoice}', [InvoiceController::class, 'update'])->name('update.invoice');
     Route::get('/dashboard/invoice/{invoice}', [InvoiceController::class, 'viewInvoice'])->name('view.invoice');
     Route::get('/dashboard/job/{job}/view', [JobController::class, 'viewJob'])->name('view.job');
+
+    Route::get('/invoice/{id}/download', [InvoiceController::class, 'downloadInvoice']);
+    Route::post('/invoice/{invoice}/send', [InvoiceController::class, 'sendInvoiceInvoice']);
+
 });
 
 

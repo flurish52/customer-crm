@@ -39,7 +39,7 @@
                 <div class="bg-tertiary-50 rounded-xl shadow-2xl p-8 border border-tertiary-200">
                     <h3 class="text-2xl font-bold text-primary-dark mb-3">Get Started in 30 Seconds</h3>
                     <p class="text-primary-700 mb-6">
-                        Free forever • No credit card needed • Upgrade anytime
+                        Free • No credit card needed • Upgrade anytime
                     </p>
 
                     <div class="space-y-4">

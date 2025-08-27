@@ -125,7 +125,7 @@ const formatActivity = (activity) => {
         case 'job_created':
             return `You got a job "${activity.subject?.job_title}" from ${customerName}, Congrats!`
         case 'customer_created':
-            return `New customer ${customerName} added, congrats!`
+            return `New Client ${customerName} added, congrats!`
         default:
             return 'New activity logged'
     }

@@ -1,5 +1,5 @@
 <template>
-    <section class="bg-primary text-primary-dark px-6 rounded-xl shadow-md text-sm">
+    <section class="bg-primary text-primary-dark px-6 rounded-xl shadow-md text-sm mb-6 pb-3">
         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
             <div>
                 <h1 class="text-xl font-bold">Invoices</h1>
@@ -30,24 +30,24 @@
 
         </div>
 
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 border-b-2 border-t-2 mb-3 border-primary">
-            <div class="bg-white/20 backdrop-blur-sm rounded-lg p-4 text-center">
-                <div class="text-xl font-bold">{{ totalInvoices }}</div>
-                <div class="text-sm opacity-90">Total Invoices</div>
-            </div>
-            <div class="bg-white/20 backdrop-blur-sm rounded-lg p-4 text-center">
-                <div class="text-xl font-bold">{{ outstandingBalance }}</div>
-                <div class="text-sm opacity-90">Outstanding Balance</div>
-            </div>
-            <div class="bg-white/20 backdrop-blur-sm rounded-lg p-4 text-center">
-                <div class="text-xl font-bold">{{ overdueInvoices }}</div>
-                <div class="text-sm opacity-90">Overdue Invoices</div>
-            </div>
-            <div class="bg-white/20 backdrop-blur-sm rounded-lg p-4 text-center">
-                <div class="text-xl font-bold">{{ paidPercentage }}%</div>
-                <div class="text-sm opacity-90">Paid Invoices</div>
-            </div>
-        </div>
+<!--        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 border-b-2 border-t-2 mb-3 border-primary">-->
+<!--            <div class="bg-white/20 backdrop-blur-sm rounded-lg p-4 text-center">-->
+<!--                <div class="text-xl font-bold">{{ totalInvoices }}</div>-->
+<!--                <div class="text-sm opacity-90">Total Invoices</div>-->
+<!--            </div>-->
+<!--            <div class="bg-white/20 backdrop-blur-sm rounded-lg p-4 text-center">-->
+<!--                <div class="text-xl font-bold">{{ outstandingBalance }}</div>-->
+<!--                <div class="text-sm opacity-90">Outstanding Balance</div>-->
+<!--            </div>-->
+<!--            <div class="bg-white/20 backdrop-blur-sm rounded-lg p-4 text-center">-->
+<!--                <div class="text-xl font-bold">{{ overdueInvoices }}</div>-->
+<!--                <div class="text-sm opacity-90">Overdue Invoices</div>-->
+<!--            </div>-->
+<!--            <div class="bg-white/20 backdrop-blur-sm rounded-lg p-4 text-center">-->
+<!--                <div class="text-xl font-bold">{{ paidPercentage }}%</div>-->
+<!--                <div class="text-sm opacity-90">Paid Invoices</div>-->
+<!--            </div>-->
+<!--        </div>-->
     </section>
 </template>
 

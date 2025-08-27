@@ -108,7 +108,7 @@ const satisfactionRate = computed(() => {
 
 const statCards = computed(() => [
     {
-        title: 'Total Customers',
+        title: 'Total Clients',
         value: customers.value.length,
         icon: UserGroupIcon,
         iconBg: 'bg-blue-50',
@@ -134,7 +134,7 @@ const statCards = computed(() => [
         footer: null
     },
     {
-        title: 'Customer Satisfaction',
+        title: 'Satisfaction rates',
         value: `${satisfactionRate.value}%`,
         icon: FaceSmileIcon,
         iconBg: 'bg-yellow-50',

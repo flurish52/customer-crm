@@ -6,11 +6,15 @@ use App\Models\Invoice;
 use App\Http\Requests\StoreInvoiceRequest;
 use App\Http\Requests\UpdateInvoiceRequest;
 use App\Models\Job;
+use App\Models\User;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
+use Resend\Laravel\Facades\Resend;
 
 class InvoiceController extends Controller
 {
@@ -29,9 +33,11 @@ class InvoiceController extends Controller
     public function viewInvoice(Invoice $invoice)
     {
         if ($invoice->user_id !== Auth::id()) return;
+        $user = User::with('business')->findOrFail(Auth::id());
         $invoice->load('items');
         return inertia::render('Invoice/View', [
             'invoice' => $invoice,
+            'user'=> $user,
         ]);
     }
 
@@ -43,6 +49,27 @@ class InvoiceController extends Controller
         $job->load('customer', 'business');
         return $job;
     }
+
+
+    public function downloadInvoice($id)
+    {
+        $invoice = Invoice::with('items')->findOrFail($id);
+
+        // Decode snapshots into PHP objects
+        $business = json_decode($invoice->business_snapshot);
+        $customer = json_decode($invoice->customer_snapshot);
+        $job = $invoice->job_snapshot ? json_decode($invoice->job_snapshot) : null;
+
+        $pdf = PDF::loadView('pdf.invoice', [
+            'invoice' => $invoice,
+            'business' => $business,
+            'customer' => $customer,
+            'job' => $job
+        ]);
+
+        return $pdf->download('invoice-'.$invoice->invoice_number.'.pdf');
+    }
+
 
 
     /**
@@ -159,6 +186,62 @@ class InvoiceController extends Controller
     /**
      * Remove the specified resource from storage.
      */
+
+
+
+    public function sendInvoiceInvoice(Request $request, Invoice $invoice)
+    {
+
+        $replyTo = $request->replyToEmail;
+        $authUser = User::with('business')->find(auth()->id());
+        $allowedEmails = [
+            $authUser->email,
+            $authUser->business->business_email ?? null,
+            json_decode($invoice->business_snapshot, true)['email']?? null
+        ];
+        if (!in_array($replyTo, array_filter($allowedEmails))) {
+            return response()->json(['message' => 'Invalid reply-to email'], 403);
+        }
+
+        $email = $request->email;
+        $message = $request->message ?? 'Please find attached invoice for your necessary action.';
+        $invoiceId = $invoice->id;
+        $fromName = $request->from_name?? $authUser->business->name;
+        $subject = $request->subject;
+
+        $invoice->load('items')->findOrFail($invoiceId);
+        $business = json_decode($invoice->business_snapshot);
+        $job = json_decode($invoice->job_snapshot);
+        $customer = json_decode($invoice->customer_snapshot);
+        $pdf = PDF::loadView('pdf.invoice', [
+            'invoice' => $invoice,
+            'business' => $business,
+            'job' => $job,
+            'customer' => $customer,
+        ]);
+
+        $pdfContent = base64_encode($pdf->output());
+        Resend::emails()->send([
+            'from' => $fromName.'<user@entroly.com.ng>',
+            'reply_to' => $request->reply,
+            'to' => $email,
+            'subject' => $subject,
+            'html' => '<p>'.$message.'</p>',
+            'attachments' => [
+                [
+                    'filename' => 'invoice-'.$invoice->invoice_number.'.pdf',
+                    'content' => $pdfContent,
+                    'type' => 'application/pdf'
+                ]
+            ]
+        ]);
+        return response()->json(['status' => 'success', 'message' => 'Email with invoice sent']);
+    }
+
+
+
+
+
     public function destroy(Invoice $invoice)
     {
         //

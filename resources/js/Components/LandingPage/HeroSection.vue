@@ -23,7 +23,13 @@
                         Entroly
                     </h1>
                 </div>
-                <div class="hidden md:flex justify-center items-center space-x-4">
+                <div v-if="$page.props.auth.user" class="hidden md:flex justify-center items-center space-x-4">
+                    <button @click="navigateUser('dashboard')"
+                            class="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary-dark rounded-full transition-all duration-300 hover:scale-105 shadow-md hover:shadow-primary/40">
+                        Dashboard
+                    </button>
+                </div>
+                <div v-else class="hidden md:flex justify-center items-center space-x-4">
                     <button @click="navigateUser('login')"
                             class="px-4 py-2 text-sm font-medium text-gray-300 hover:text-primary transition-colors duration-300">
                         Login
@@ -45,12 +51,20 @@
                 <div class="max-w-4xl mx-auto text-center">
                     <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 leading-tight text-white">
                         <span class="bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary-light">Organize</span>
-                        your customers, jobs, and receipts
+                        your Clients, jobs, and Invoices
                     </h1>
                     <p class="text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto mb-8">
-                        Entroly helps you manage client relationships, track jobs, and generate professional receipts - all in one beautiful interface.
+                        Entroly helps you manage client relationships, track jobs, and generate professional Invoices - all in one beautiful interface.
                     </p>
-                    <div class="flex flex-col sm:flex-row justify-center gap-4 mb-12">
+                    <div
+                        v-if="$page.props.auth.user"
+                        class="flex flex-col sm:flex-row justify-center gap-4 mb-12">
+                        <Link @click="navigateUser('dashboard')"
+                              class="px-8 py-3 text-lg font-medium text-white bg-transparent border-2 border-primary hover:bg-gray-800/50 rounded-full transition-all duration-300 transform hover:scale-105">
+                            Return to Dashboard
+                        </Link>
+                    </div>
+                    <div v-else class="flex flex-col sm:flex-row justify-center gap-4 mb-12">
                         <Link @click="navigateUser('login')"
                               class="px-8 py-3 text-lg font-medium text-white bg-transparent border-2 border-primary hover:bg-gray-800/50 rounded-full transition-all duration-300 transform hover:scale-105">
                             Login
@@ -60,6 +74,7 @@
                             Start for free
                         </Link>
                     </div>
+
                 </div>
             </main>
 
@@ -74,7 +89,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
                                 </svg>
                             </div>
-                            <span class="text-sm font-medium text-gray-200">Customer Management</span>
+                            <span class="text-sm font-medium text-gray-200">Client Management</span>
                         </div>
                         <div class="flex-grow bg-gray-700/30 rounded-lg p-3">
                             <div class="space-y-2">
@@ -127,7 +142,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"></path>
                                 </svg>
                             </div>
-                            <span class="text-sm font-medium text-gray-200">Receipts</span>
+                            <span class="text-sm font-medium text-gray-200">Invoices/Receipts</span>
                         </div>
                         <div class="flex-grow bg-gray-700/30 rounded-lg p-3 flex items-center justify-center">
                             <div class="w-4/5 h-10 bg-tertiary/20 rounded flex items-center justify-center border border-tertiary/30">

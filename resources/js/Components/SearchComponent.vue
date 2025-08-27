@@ -4,7 +4,7 @@
             type="text"
             v-model="searchQuery"
             @keyup="sendSearchQuery(searchQuery)"
-            placeholder="Search customers..."
+            placeholder="Search Clients..."
             class="pl-10 pr-4 py-2 border border-tertiary-dark rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary-light"
         >
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 absolute left-3 top-2.5"

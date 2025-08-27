@@ -15,13 +15,13 @@
             <!-- Page Header -->
             <div class="flex flex-col justify-between gap-4 md:flex-row md:items-center bg-primary-light/10 p-6 rounded-xl shadow-inner border border-primary/20">
                 <div>
-                    <h1 class="text-2xl font-bold text-primary-dark">Customers</h1>
-                    <p class="mt-1 text-sm text-secondary-dark/80">Manage your customer relationships</p>
+                    <h1 class="text-2xl font-bold text-primary-dark">Clients</h1>
+                    <p class="mt-1 text-sm text-secondary-dark/80">Manage your Clients relationships</p>
                 </div>
 
                 <div class="flex flex-col md:flex-row xs:flex-row gap-3 w-full md:w-auto items-stretch">
 
-                    <div class="flex items-center gap-3 w-full">
+                    <div class="flex items-center gap-3  flex-col">
                         <!-- Search Component (always shows on desktop, conditional on mobile) -->
                         <SearchComponent
                             v-if="showSearchBar || !isMobile"
@@ -36,13 +36,12 @@
                             @click="openAddCustomerModal"
                         >
                             <PlusIcon class="w-5 h-5 md:mr-2" />
-                            <span class="hidden md:inline">Add Customer</span>
+                            <span class="inline">Add Client</span>
                         </button>
                     </div>
                 </div>
             </div>
 
-            <!-- Mount existing Customers component -->
             <CustomerList
                 class="mt-6 animate-fade-in"
                 @update="refreshPage"
