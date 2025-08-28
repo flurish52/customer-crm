@@ -223,7 +223,7 @@ class InvoiceController extends Controller
         $pdfContent = base64_encode($pdf->output());
         Resend::emails()->send([
             'from' => $fromName.'<user@entroly.com.ng>',
-            'reply_to' => $request->reply,
+            'reply_to' => $replyTo,
             'to' => $email,
             'subject' => $subject,
             'html' => '<p>'.$message.'</p>',
