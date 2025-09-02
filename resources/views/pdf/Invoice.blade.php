@@ -49,6 +49,17 @@
         .notes { margin-top: 30px; padding: 15px; background: #f1f8ff; border-left: 4px solid #2b6cb0; border-radius: 4px; }
         .notes-title { font-weight: bold; margin-bottom: 5px; color: #2b6cb0; }
         .footer { margin-top: 30px; padding-top: 15px; border-top: 1px solid #e2e8f0; text-align: center; color: #718096; font-size: 12px; }
+
+        .table-container {width: 100%;font-family: Arial, sans-serif;}
+        .table-header {display: flex;justify-content: space-between;margin-bottom: 10px;}
+        .table-header h2 {font-size: 18px;font-weight: bold;color: #333;}
+        .table-header span {font-size: 14px;color: #666;}
+        table {width: 100%;border-collapse: collapse;font-size: 14px;}
+        thead tr {background: #f3f3f3;color: #333;}
+        th, td {border: 1px solid #ccc;padding: 8px;text-align: left; }
+        tbody tr:nth-child(even) {background: #fafafa;}
+        tfoot tr {background: #f9f9f9;font-weight: bold;}
+        .totals {display: flex;justify-content: flex-end; gap: 20px;}
     </style>
 </head>
 <body>
@@ -166,6 +177,53 @@
             <div class="notes-title">Notes</div>
             <div>{{ $invoice->notes }}</div>
         </div>
+    @endif
+    @if(count($payments) > 0)
+
+    <div class="w-full">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-bold text-gray-800">Payments Made</h2>
+            <span class="text-sm text-gray-500" style="text-align: right">{{ count($payments) }} Records</span>
+        </div>
+
+        <!-- Table -->
+        <div class="overflow-x-auto bg-white shadow rounded-lg">
+            <table class="min-w-full text-sm">
+                <thead>
+                <tr class="bg-gray-100 text-left text-gray-700">
+                    <th class="py-2 px-4 border">#</th>
+                    <th class="py-2 px-4 border">Amount</th>
+                    <th class="py-2 px-4 border">Method</th>
+                    <th class="py-2 px-4 border">Paid At</th>
+                    <th class="hidden md:table-cell py-2 px-4 border">Notes</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach($payments as $index => $payment)
+                    <tr class="hover:bg-gray-50">
+                        <td class="py-2 px-4 border">{{ $index + 1 }}</td>
+                        <td class="py-2 px-4 border font-semibold">{{ $invoice->curency }}{{number_format($payment->amount, 2) }}</td>
+                        <td class="py-2 px-4 border capitalize">{{ str_replace('_', ' ', $payment->method) }}</td>
+                        <td class="py-2 px-4 border">{{ $payment->paid_at }}</td>
+                        <td class="hidden md:table-cell py-2 px-4 border">{{ $payment->notes ?? '-' }}</td>
+                    </tr>
+                @endforeach
+                </tbody>
+
+                <!-- Totals -->
+                <tfoot>
+                <tr class="bg-gray-50 font-bold text-gray-800">
+                            <td colspan="2" >Total Paid:</td>
+                            <td colspan="3" style="text-align: right">{{ number_format($payments->sum('amount'), 2) }}</td>
+{{--                    <td colspan="3" class="py-3 px-4 text-right">--}}
+{{--                        <span>Balance: {{ number_format($invoice->amount - $payments->sum('amount'), 2) }}</span>--}}
+{{--                    </td>--}}
+                </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
     @endif
 
     <!-- Footer -->

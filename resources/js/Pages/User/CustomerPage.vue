@@ -61,9 +61,6 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import {Head, router} from "@inertiajs/vue3";
 import AddCustomerModal from "@/Components/Customer/AddCustomerModal.vue";
 import SearchComponent from "@/Components/SearchComponent.vue";
-
-
-const componentKey = ref(0)
 const searchQuery = ref('')
 let isEditing = ref(false)
 let customerToEdit = ref({})
@@ -80,9 +77,8 @@ const isEditingCustomer = ({payload})=>{
     openAddCustomerModal()
 }
 const refreshPage = () => {
-    router.reload()
+    router.visit(window.location.href, {preserveScroll: true})
 }
-
 const showAddCustomerModal = ref(false)
 const openAddCustomerModal = () => {
     showAddCustomerModal.value = true

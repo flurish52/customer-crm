@@ -21,6 +21,7 @@ class Job extends Model
         'description',
         'status',
         'amount',
+        'start_date',
         'due_date',
         'completed_at',
         'notes',
@@ -35,9 +36,9 @@ class Job extends Model
     {
         return $this->belongsTo(Business::class);
     }
-    public function invoice()
+    public function invoices()
     {
-        return $this->belongsTo(Invoice::class);
+        return $this->hasMany(Invoice::class);
     }
 
 

@@ -2,7 +2,8 @@
         <div class="bg-white rounded-xl shadow-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-bold text-primary-dark">Add New Customer</h3>
+                    <h3 v-if="!isEditing" class="text-lg font-bold text-primary-dark">Add new client</h3>
+                    <h3 v-else class="text-lg font-bold text-primary-dark">Update client details</h3>
                     <button @click="closeAddCustomerModal" class="text-red-400 hover:text-red-600">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="red" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />

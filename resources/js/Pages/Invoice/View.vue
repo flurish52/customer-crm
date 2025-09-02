@@ -1,11 +1,31 @@
 <template>
     <AuthenticatedLayout>
-        <Head title="Invoice" />
-        <div ref="invoiceContainer" id="invoiceContainer" class="max-w-5xl mx-auto p-8 bg-white text-gray-800 shadow-lg rounded-lg">
+        <Head :title="`Invoice ${invoice.invoice_number}`" />
+        <InvoicePagePaymentModal
+            @cancel="closePaymentModal"
+            @submit="paymentMade"
+            :invoice="invoice"
+            :showPaymentModal="showPaymentModal"
+        />
+            <div class="sticky top-16  flex items-center justify-end mb-3">
+                <button
+                    v-if="invoice.status === 'paid' || invoice.status === 'cancelled' "
+                        class=" "
+                    disabled
+                >
+                </button>
+                <button
+                    v-else
+                    @click="showPaymentModal=true"
+                        class="bg-primary-dark w-full md:w-fit text-white px-3 font-bold rounded-md h-10"
+                >Add payment
+                </button>
+            </div>
+        <div ref="invoiceContainer" id="invoiceContainer" class="max-w-5xl my-2 mx-auto px-4 md:px-8 bg-white text-gray-800 shadow-lg rounded-lg">
 
             <!-- Header Section -->
-            <header class="flex justify-between items-start mb-8 pb-6 border-b-2 border-gray-200">
-                <div class="flex items-start">
+            <header class=" flex flex-col-reverse md:flex-row justify-between items-start mb-8 pb-6 border-b-2 border-gray-200">
+                <div class="flex items-start mt-6">
                     <div v-if="business.logo" class="mr-4">
                         <img :src="`/storage/${business.logo}`" :alt="`${business.name} logo`" class="w-20 h-20 object-contain"/>
                     </div>
@@ -21,8 +41,8 @@
                 </div>
 
                 <div class="text-right">
-                    <h2 class="text-xl font-semibold mb-4">INVOICE</h2>
-                    <div class="space-y-1">
+                    <h2 class="text-xl font-semibold">INVOICE</h2>
+                    <div class="space-y-1 mt-">
                         <div>
                             <span class="font-bold mr-2">Invoice #:</span>
                             <span>{{ invoice.invoice_number }}</span>
@@ -93,10 +113,10 @@
                             <span class="font-bold md:hidden print:hidden">Quantity: </span>{{ item.quantity }}
                         </div>
                         <div>
-                            <span class="font-bold md:hidden print:hidden">Unit Price: </span>{{ formatCurrency(item.unit_price) }}
+                            <span class="font-bold md:hidden print:hidden">Unit Price: </span>{{ formatCurrency(item.unit_price, invoice.currency) }}
                         </div>
                         <div>
-                            <span class="font-bold md:hidden print:hidden">Amount: </span>{{ formatCurrency(item.total) }}
+                            <span class="font-bold md:hidden print:hidden">Amount: </span>{{ formatCurrency(item.total, invoice.currency) }}
                         </div>
                     </div>
                 </div>
@@ -107,19 +127,28 @@
                 <div class="w-full md:w-72 space-y-2">
                     <div class="flex justify-between font-bold">
                         <span>Subtotal</span>
-                        <span>{{ formatCurrency(invoice.subtotal) }}</span>
+                        <span>{{ formatCurrency(invoice.subtotal, invoice.currency) }}</span>
                     </div>
                     <div v-if="invoice.tax > 0" class="flex justify-between">
                         <span>Tax</span>
-                        <span>{{ formatCurrency(invoice.tax) }}</span>
+                        <span>{{ formatCurrency(invoice.tax, invoice.currency) }}</span>
                     </div>
                     <div v-if="invoice.discount > 0" class="flex justify-between">
                         <span>Discount</span>
-                        <span>-{{ formatCurrency(invoice.discount) }}</span>
+                        <span>{{ formatCurrency(invoice.discount, invoice.currency) }}</span>
                     </div>
                     <div class="flex justify-between border-t-2 border-gray-200 pt-2 font-bold text-lg">
                         <span>Total</span>
-                        <span>{{ formatCurrency(invoice.total) }}</span>
+                        <span>{{ formatCurrency(invoice.total, invoice.currency) }}</span>
+                    </div>
+
+                    <div class="flex justify-between border-t-2 border-gray-200 pt-6 text-lg">
+                        <span>Paid</span>
+                        <span>{{ formatCurrency(totalAmount, invoice.currency) || 0 }}</span>
+                    </div>
+                    <div class="flex bg-primary-dark text-white rounded-md font-bold px-2 justify-between border-t-2 border-gray-200 pt-2 text-lg">
+                        <span>Balance due</span>
+                        <span>{{ formatCurrency(totalBalance, invoice.currency) }}</span>
                     </div>
                 </div>
             </section>
@@ -135,6 +164,12 @@
                 </footer>
 
             </div>
+            <div v-if="invoice.payments && invoice.payments.length > 0" class="pb-6">
+                <PaymentsMade
+            :payments="invoice.payments"
+            :totalAmount="totalAmount"
+            />
+        </div>
         </div>
         <div class="w-full flex items-center justify-center gap-4 py-2 m-1">
             <SendInvoiceModal
@@ -154,11 +189,13 @@
 </template>
 
 <script setup>
-import {computed} from "vue";
+import {computed, onMounted, ref} from "vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import InvoiceFooter from "@/Pages/Invoice/InvoiceFooter.vue";
 import SendInvoiceModal from "@/Components/Invoice/SendInvoiceModal.vue";
-import {Head} from "@inertiajs/vue3";
+import {Head, router} from "@inertiajs/vue3";
+import InvoicePagePaymentModal from "@/Components/Invoice/InvoicePagePaymentModal.vue";
+import PaymentsMade from "@/Components/Invoice/PaymentsMade.vue";
 
 const props = defineProps({
     invoice: Object,
@@ -169,13 +206,24 @@ const props = defineProps({
 const business = computed(() => JSON.parse(props.invoice.business_snapshot));
 const customer = computed(() => JSON.parse(props.invoice.customer_snapshot));
 const job = computed(() => JSON.parse(props.invoice.job_snapshot));
+let showPaymentModal = ref(false);
+
+const  paymentMade = ()=>{
+    router.visit(`/dashboard/invoice/${props.invoice.id}`)
+}
+
+const closePaymentModal =()=> {
+    showPaymentModal.value = false
+}
 
 // Helper functions
-const formatCurrency = (amount) =>
-    new Intl.NumberFormat("en-NG", {
-        style: "currency",
-        currency: props.invoice.currency || "NGN"
-    }).format(Number(amount));
+const formatCurrency = (amount, currencyCode) => {
+    if (!amount) return ''
+    return new Intl.NumberFormat('en', {
+        style: 'currency',
+        currency: currencyCode // e.g., 'NGN' or 'USD' from invoice.currency
+    }).format(Number(amount))
+}
 
 const formatDate = (dateString) => {
     if (!dateString) return "—";
@@ -193,33 +241,15 @@ const statusClass = (status) => {
     return mapping[status.toUpperCase()] || "bg-gray-400 text-white px-2 py-0.5 rounded";
 };
 
+// Sum of filtered payments
+const totalAmount = computed(() => {
+    return props.invoice.payments.reduce((sum, p) => sum + parseFloat(p.amount), 0)
+})
 
-    const printSection = ({invoiceContainer}) => {
+const totalBalance = computed(() => {
+    return props.invoice.total - totalAmount.value
+})
 
-    const printContent = document.getElementById('invoiceContainer');
-    console.log(printContent)
-    if (!printContent) return;
-
-    const printWindow = window.open('', '', 'width=800,height=600');
-        const styles = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
-            .map(el => el.outerHTML)
-            .join('');
-    printWindow.document.write(`
-        <html>
-        <head>
-            <title>Print Invoice</title>
-        ${styles}
-        </head>
-        <body>
-            ${printContent.innerHTML}
-        </body>
-        </html>
-    `);
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
-    printWindow.close();
-};
 </script>
 <style scoped>
 @media print {

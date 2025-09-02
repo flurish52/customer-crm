@@ -1,6 +1,8 @@
 <script setup>
 import {useForm, Head} from '@inertiajs/vue3';
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
+import {watch} from "vue";
+
 const props = defineProps({
     user: Object,
     business: {
@@ -13,11 +15,30 @@ const props = defineProps({
             address: '',
             website: '',
             tax_id: '',
-            logo_path: null
+            logo_path: null,
+            settings: null
         })
     },
     saveRoute: {type: String, default: 'business.save'}
 });
+const settings = ref({})
+
+watch(
+    () => props.business.settings,
+    (val) => {
+        try {
+            if (typeof val === 'string') {
+                settings.value = JSON.parse(val)
+            } else {
+                settings.value = val
+            }
+        } catch (e) {
+            console.error('Failed to parse business settings:', e)
+            settings.value = {}
+        }
+    },
+    { immediate: true }
+)
 const form = useForm({
     id: props.business.id,
     name: props.business.business_name,
@@ -26,39 +47,53 @@ const form = useForm({
     address: props.business.business_address,
     website: props.business.business_website,
     tax_id: props.business.tax_id,
-    logo: props.business.logo
+    tax_percent: settings.value?.tax_percent,
+    logo: props.business.logo,
+    currency: settings.value?.currency
 });
 let isEditable = ref(true)
 let preview = ref('')
 let sameAsPersonal = ref('')
-const sameAsPersonalFunc = ()=>{
-        form.name = props.user?.name
-        form.email = props.user?.email
-        form.phone = props.user?.phone
-        form.address = props.user?.address
-        form.website = props.user?.website
-        form.tax_id = null
-        form.logo = null
+const sameAsPersonalFunc = () => {
+    form.name = props.user?.name
+    form.email = props.user?.email
+    form.phone = props.user?.phone
+    form.address = props.user?.address
+    form.website = props.user?.website
+    form.tax_id = null
+    form.tax_percent = null
+    form.currency = null
+    form.logo = null
     isEditable.value = !isEditable.value
     sameAsPersonal.value = !sameAsPersonal.value
 }
-const   handleLogoChange = (e) =>{
+const handleLogoChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
-        form.logo = file;
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            preview.value = event.target.result;
-        };
-        reader.readAsDataURL(file);
-    }
-}
+    if (!file) return;
 
+    const maxSizeMB = 2;
+    if (file.size / 1024 / 1024 > maxSizeMB) {
+        alert(`File is too large. Maximum allowed size is ${maxSizeMB}MB.`);
+        e.target.value = '';
+        return;
+    }
+    form.logo = file;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+        preview.value = event.target.result;
+    };
+    reader.readAsDataURL(file);
+};
 const submit = () => {
+    if (!form.currency){
+        form.errors.currency = 'Please select a default currency'
+        return;
+    }
     const options = {
         forceFormData: true,
         onSuccess: () => alert(form.id ? 'Updated successfully!' : 'Saved successfully!'),
-        onError: () => {}
+        onError: () => {
+        }
     };
     if (form.id && props.business) {
         form.post(`/save/business/info/${form.id}?_method=PATCH`, options)
@@ -84,21 +119,21 @@ const submit = () => {
                     </p>
                 </div>
 
-
-<div>
-
-                <label class="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" class="sr-only peer" @change="sameAsPersonalFunc">
-                    <div class="w-11 h-6 bg-gray-500 rounded-full peer peer-checked:bg-primary transition-colors"></div>
-                    <span class="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow-md transform transition-transform peer-checked:translate-x-5"></span>
-                    <p class="text-sm text-primary-dark">Same as personal details</p>
-                </label>
+                <div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" class="sr-only peer" @change="sameAsPersonalFunc">
+                        <div
+                            class="w-11 h-6 bg-gray-500 rounded-full peer peer-checked:bg-primary transition-colors"></div>
+                        <span
+                            class="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow-md transform transition-transform peer-checked:translate-x-5"></span>
+                        <p class="text-sm text-primary-dark">Same as personal details</p>
+                    </label>
                     <p
                         v-show="sameAsPersonal"
                         class="text-xs text-red-500 italic mt-1">
                         Please Click <strong>Save</strong> to apply changes.
                     </p>
-</div>
+                </div>
             </div>
             <!-- Row 1: Business Name & Email -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
@@ -186,20 +221,30 @@ const submit = () => {
                     <p v-if="form.errors.address" class="mt-1 text-sm text-red-600">{{ form.errors.address }}</p>
                 </div>
 
-                <div>
-                    <label class="block text-sm font-medium text-primary-dark mb-1">Tax ID</label>
+                <div class="relative w-fit flex  flex-col justify-center items-left">
+                    <label class="block text-sm mb-1 font-medium text-gray-700">Tax rate (optional)</label>
                     <input
-                        type="text"
-                        v-model="form.tax_id"
-                        class="w-full px-4 py-2 rounded-lg border border-tertiary-light text-primary-dark focus:ring-2 focus:ring-primary focus:border-primary"
-                        :disabled="!isEditable"
-                        :class="[
-        form.errors.tax_id ? 'border-red-500' : '',
-        !isEditable ? 'bg-gray-100 cursor-not-allowed' : 'bg-tertiary'
-      ]"
+                        v-model.number="form.tax_percent"
+                        type="number"
+                        class="border border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pr-10"
+                        placeholder="7.5%"
                     />
-                    <p v-if="form.errors.tax_id" class="mt-1 text-sm text-red-600">{{ form.errors.tax_id }}</p>
+                    <span
+                        class="absolute inset-y-0 right-3 font-bold flex items-center justify-start text-gray-500">%</span>
+                    <p class="text-xs text-red-500 mt-1">{{ form.errors.tax_percent}}</p>
                 </div>
+                <div>
+                    <label class="block text-sm mb-1 font-medium text-gray-700">Default Currency </label>
+                    <select v-model="form.currency"
+                            class="border border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="" selected disabled>Select currency</option>
+                        <option value="USD">USD</option>
+                        <option value="NGN">NGN</option>
+                        <option value="EUR">EURO</option>
+                    </select>
+                    <p class="text-xs text-red-500 mt-1">{{ form.errors.currency }}</p>
+                </div>
+            </div>
                 <div>
                     <label class="block text-sm font-medium text-primary-dark mb-1">Logo</label>
 
@@ -223,13 +268,10 @@ const submit = () => {
                         :class="[
             form.errors.logo ? 'border-red-500' : '',
             !isEditable ? 'bg-gray-100 cursor-not-allowed' : 'bg-tertiary'
-        ]"
-                    />
+        ]"/>
 
                     <p v-if="form.errors.logo" class="mt-1 text-sm text-red-600">{{ form.errors.logo }}</p>
                 </div>
-
-            </div>
 
             <!-- Buttons -->
             <div class="mt-6 flex items-center justify-end gap-3">

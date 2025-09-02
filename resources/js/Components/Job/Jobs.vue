@@ -62,7 +62,7 @@
                                     </svg>
                                 </div>
                                 <div>
-                                    <p class="text-xs text-gray-500">Amount</p>
+                                    <p class="text-xs text-gray-500">Expected Amount</p>
                                     <p class="text-sm font-medium">{{ formatCurrency(job.amount) }}</p>
                                 </div>
                             </div>
@@ -75,9 +75,16 @@
                                               d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                     </svg>
                                 </div>
-                                <div>
-                                    <p class="text-xs text-gray-500">Due Date</p>
-                                    <p class="text-sm font-medium">{{ formatDate(job.due_date) }}</p>
+                                <div class="flex justify-between">
+
+                                    <div class="mr-3">
+                                        <p class="text-xs text-gray-500">Start Date</p>
+                                        <p class="text-sm font-medium">{{ formatDate(job.start_date) }}</p>
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class="text-xs text-gray-500">Due Date</p>
+                                        <p class="text-sm font-medium">{{ formatDate(job.due_date) }}</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -92,10 +99,18 @@
                                               d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>
                                 </div>
+                                <div class="flex flex-col">
+
+                                <div>
+                                    <p class="text-xs text-gray-500">Billed</p>
+                                    <p class="text-sm font-medium text-green-600">
+                                        {{ formatCurrency(getJobBilledAmount(job)) }}</p>
+                                </div>
                                 <div>
                                     <p class="text-xs text-gray-500">Paid</p>
                                     <p class="text-sm font-medium text-green-600">
-                                        {{ formatCurrency(totalPaidPerJob[job.id]) }}</p>
+                                        {{ formatCurrency(totalPaidPerJob(job)) }}</p>
+                                </div>
                                 </div>
                             </div>
                             <div class="flex items-center">
@@ -127,7 +142,6 @@
                             <span class="text-xs font-medium">{{ job.satisfaction_score }}/5</span>
                         </div>
                         <div v-else></div>
-
                         <!-- Action Buttons -->
                         <div class="flex justify-end space-x-2 bg-tertiary-dark/20 p-1 rounded-md">
                             <div class="flex justify-center items-center space-x-2">
@@ -270,25 +284,31 @@ const openRatingModal = (jobId) => {
 }
 let isLoading = ref(false)
 let isDisabled = ref(false)
+const getJobBilledAmount = (job) => {
+    if (!job.invoices) return 0
+    return job.invoices
+        .filter(invoice => invoice.status !== 'cancelled')
+        .reduce((sum, invoice) => sum + Number(invoice.total || 0), 0)
+}
+
 const getJobBalance = (job) => {
-    const paid = totalPaidPerJob.value[job.id];
-    return Number(job.amount || 0) - Number(paid);
-};
+    const billed = getJobBilledAmount(job)
+    const paid = totalPaidPerJob(job) || 0
+    return billed - paid
+}
 const getBalanceClass = (job) => {
-    const balance = getJobBalance(job);
-    if (balance <= 0) return 'text-green-600';
-    if (dayjs().isAfter(dayjs(job.due_date)) && job.status !== 'completed') return 'text-yellow-600';
+    // const balance = getJobBalance(job);
+    // if (balance <= 0) return 'text-green-600';
+    // if (dayjs().isAfter(dayjs(job.due_date)) && job.status !== 'completed') return 'text-yellow-600';
     return 'text-red-600';
 };
-const getTotalPaid = (activities) => {
-    if (!activities) return 0;
-    return activities
-        .filter(a => a.type === "payment")
-        .reduce((sum, a) => {
-            const changes = JSON.parse(a.changes);
-            return sum + Number(changes.amount);
-        }, 0);
+const getTotalPaid = (invoice) => {
+    if (!invoice || !invoice.payments) return 0;
+    return invoice.payments.reduce((sum, p) => {
+        return 'asdfasdf' + sum + Number(p.amount);
+    }, 0);
 };
+
 const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-US', {
         style: 'currency',
@@ -354,12 +374,14 @@ const enter = (el, done) => {
 };
 
 // Stats computation
-const totalPaidPerJob = computed(() => {
-    return props.jobs.reduce((acc, job) => {
-        acc[job.id] = getTotalPaid(job.activities)
-        return acc
-    }, {})
-})
+const totalPaidPerJob = (job) => {
+    if (!job.invoices) return 0
+    return job.invoices
+        .flatMap(invoice => invoice.payments || [])
+        .filter(payment => payment.status !== 'cancelled')
+        .reduce((sum, payment) => sum + Number(payment.amount || 0), 0)
+}
+
 </script>
 
 <style scoped>

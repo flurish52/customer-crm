@@ -39,7 +39,9 @@ class StoreBusinessRequest extends FormRequest
             'website' => 'nullable|url|max:255',
             'logo_path' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'tax_id' => 'nullable|string|max:100',
-            'settings' => 'nullable|json'
+            'settings' => 'nullable|json',
+            'tax_percent' => 'nullable|numeric|min:0|max:100',
+            'currency' => 'required|string|size:3',
         ];
     }
 }

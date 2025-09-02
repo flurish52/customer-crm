@@ -268,7 +268,6 @@ const customerDetails = computed(() => [
     {label: 'Phone', value: props.selectedJob.customer.phone, icon: PhoneIcon},
     {label: 'Address', value: props.selectedJob.customer.address, icon: MapPinIcon}
 ].filter(item => item.value))
-
 // Formatting functions
 const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-US', {
@@ -286,7 +285,6 @@ const formatDateTime = (dateString) => {
         minute: '2-digit'
     })
 }
-
 const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {
         year: 'numeric',
@@ -294,15 +292,12 @@ const formatDate = (dateString) => {
         day: 'numeric'
     })
 }
-
 const formatActivityType = (type) => {
     return type.split('_').map(word =>
         word.charAt(0).toUpperCase() + word.slice(1)
     ).join(' ')
 }
-
 let showCreateInvoiceModal =  ref(false);
-
 const showCreateInvoiceFunc = () => {
     showCreateInvoiceModal.value = true
 }

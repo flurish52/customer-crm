@@ -50,11 +50,6 @@
                         @click="refreshPage"
                         class="flex items-center gap-2 px-4 py-2.5 border border-gray-300 hover:border-primary/30 bg-white hover:bg-primary/5 text-gray-700 rounded-lg transition-all shadow-sm hover:shadow-md"
                     >
-<!--                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"-->
-<!--                             stroke="currentColor">-->
-<!--                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"-->
-<!--                                  d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>-->
-<!--                        </svg>-->
                         <span>Refresh</span>
                     </button>
                 </div>
@@ -222,9 +217,29 @@ const isEditingJobFunc = ({payload, amountPaid}) => {
 const stats = computed(() => {
     const totalJobs = props.jobs.length;
     const completedJobs = props.jobs.filter(j => j.status === 'completed').length;
-    const totalAmount = props.jobs.reduce((sum, j) => sum + Number(j.amount || 0), 0);
-    const totalPaid = props.jobs.reduce((sum, j) => sum + getTotalPaid(j.activities), 0);
+
+    // Total billed amount
+    const totalAmount = props.jobs.reduce((sum, j) => {
+        if (!j.invoices) return sum;
+        return sum + j.invoices
+            .filter(invoice => invoice.status !== 'cancelled')
+            .reduce((invoiceSum, invoice) => invoiceSum + Number(invoice.total || 0), 0);
+    }, 0);
+
+    // Total paid
+    const totalPaid = props.jobs.reduce((sum, j) => {
+        if (!j.invoices) return sum;
+        return sum + j.invoices
+            .filter(invoice => invoice.status !== 'cancelled')
+            .reduce((invoiceSum, invoice) => {
+                if (!invoice.payments) return invoiceSum;
+                return invoiceSum + invoice.payments
+                    .reduce((pSum, payment) => pSum + Number(payment.amount || 0), 0);
+            }, 0);
+    }, 0);
+
     const totalBalance = totalAmount - totalPaid;
+
     const overdueJobs = props.jobs.filter(
         j => j.due_date && dayjs().isAfter(dayjs(j.due_date)) && j.status !== "completed"
     ).length;
@@ -273,6 +288,7 @@ const stats = computed(() => {
         }
     ];
 });
+
 const getCardStyle = (index) => {
     const colors = [
         {border: 'primary', bgTo: 'primary/20'},
@@ -320,7 +336,7 @@ const formatDate = (dateString) => {
 
 
 let completeJob = ({payload, jobId}) =>{
-    axios.patch(`/job_update/status/${jobId}`, {type: 'complete_job', satisfaction_score: payload})
+    axios.patch(`/job_update/status/${jobId}`, {type: 'completed', satisfaction_score: payload})
         .then(res=>{
             closeRatingModal()
             alert(res.data.message)

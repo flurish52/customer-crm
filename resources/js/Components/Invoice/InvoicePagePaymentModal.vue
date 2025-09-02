@@ -1,85 +1,138 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, onMounted } from 'vue'
+import {computed} from "vue";
+import axios from 'axios'
+import {router} from "@inertiajs/vue3";
 
 const props = defineProps({
-    jobs: {
-        type: Array,
+    invoice: {
+        type: Object
     },
     showPaymentModal: Boolean
-});
+})
 
-let selectedJob = ref('')
-let jobError = ref('')
-const emit = defineEmits(['submit', 'cancel']);
+let errorMessage = ref('')
+const emit = defineEmits(['submit', 'cancel'])
+
 const paymentForm = ref({
+    invoiceId: props.invoice.id,
     amount: '',
-    jobId: null,
     date: new Date().toISOString().split('T')[0],
-    method: 'bank_transfer',
+    payment_method: '',
     notes: ''
-});
+})
+
 const paymentMethods = ref([
     { value: 'cash', label: 'Cash' },
     { value: 'bank_transfer', label: 'Bank Transfer' },
     { value: 'card', label: 'Card' },
     { value: 'other', label: 'Other' }
-]);
-// Calculate max height based on viewport
-const maxHeight = ref('90vh');
-onMounted(() => {
-    maxHeight.value = window.innerHeight > 800 ? '80vh' : '90vh';
-});
-let showModal = ref(false)
-const payInFull = () => {
-    if (!selectedJob.value === '') {
-        alert('Please select a job')
-        return
-    }
-    paymentForm.value.amount = selectedJob.value.amount
-}
-const onJobSelected = () => {
-    paymentForm.value.jobId = selectedJob.value.id
-};
+])
 
-const submitForm = async () => {
-    if (paymentForm.value.jobId === null){
-        jobError.value = 'You must select a Job'
-        return
+const maxHeight = ref('90vh')
+onMounted(() => {
+    maxHeight.value = window.innerHeight > 800 ? '80vh' : '90vh'
+})
+
+
+const successMessage = ref('')
+const totalPaid = computed(() => {
+    if (!props.invoice || !props.invoice.payments) return 0
+    return props.invoice.payments.reduce((sum, payment) => {
+        return sum + Number(payment.amount || 0)
+    }, 0)
+})
+
+const invoiceBalance = computed(() => {
+    if (!props.invoice) return 0
+    const total = Number(props.invoice.total || 0)
+    const paid = props.invoice.payments
+        ? props.invoice.payments.reduce((sum, payment) => {
+            return sum + Number(payment.amount || 0)
+        }, 0)
+        : 0
+    return total - paid
+})
+const payInFull = () => {
+    paymentForm.value.amount = invoiceBalance.value
+}
+
+const validateForm = () => {
+    if (!paymentForm.value.amount || paymentForm.value.amount <= 0) {
+        errorMessage.value = 'Amount is required'
+        return false
     }
+    if (paymentForm.value.amount > invoiceBalance.value ) {
+        errorMessage.value = 'Amount filled cannot be greater than invoice balance!'
+        return false
+    }
+    if (!paymentForm.value.date) {
+        errorMessage.value = 'Date is required'
+        return false
+    }
+    if (paymentForm.value.date < new Date() || paymentForm.value.date < props.invoice.issue_date) {
+        errorMessage.value = 'Payment date cannot be before invoice date or after today'
+        return false
+    }
+    if (!paymentForm.value.payment_method) {
+        errorMessage.value = 'Payment method is required'
+        return false
+    }
+    if (!paymentForm.value.invoiceId) {
+        errorMessage.value = 'Invalid invoice, please refresh and try again.'
+        return false
+    }
+    errorMessage.value = ''
+    return true
+}
+const submitForm = async () => {
+    paymentForm.value.invoiceId = props.invoice.id;
+    if (!validateForm()) return
     try {
-        const response = await axios.post('/user/payments/received', paymentForm.value)
-        emit('submit', {payload: response.data.activity})
-        paymentForm.value = {
-            amount: '',
-            jobId: null,
-            date: new Date().toISOString().split('T')[0],
-            method: 'bank_transfer',
-            notes: ''
+        const { data } = await axios.post('/user/payment/on_invoice', paymentForm.value)
+        if (data.status === 'success') {
+            successMessage.value = data.message || 'Payment recorded successfully'
+            errorMessage.value = ''
+            paymentForm.value = {
+                invoiceId: null,
+                amount: '',
+                date: new Date().toISOString().split('T')[0],
+                payment_method: '',
+                notes: ''
+            }
+            errorMessage.value = ''
+            setTimeout(() => {
+                successMessage.value = ''
+            emit('submit')
+                emit('cancel')
+            }, 2000)
         }
-        jobError.value = ''
-        emit('cancel')
+        router.reload()
     } catch (error) {
-        alert('Failed to record payment')
+        console.error(error)
+       errorMessage.value = error
     }
 }
+
 const cancelForm = () => {
     paymentForm.value = {
+        invoiceId: props.invoice.id,
         amount: '',
-        jobId: null,
         date: new Date().toISOString().split('T')[0],
-        method: 'bank_transfer',
+        payment_method: '',
         notes: ''
     }
-    jobError.value = ''
     emit('cancel')
-};
+}
 </script>
 
+
 <template>
+
     <div
         v-show="showPaymentModal"
         class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30 backdrop-blur-sm"
-    @click.self="cancelForm"
+        @click.self="cancelForm"
     >
         <Transition
             enter-active-class="transition duration-200 ease-out"
@@ -96,28 +149,26 @@ const cancelForm = () => {
                 <!-- Header -->
                 <div class="px-6 py-5 border-b border-gray-100 dark:border-gray-700">
                     <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Record Payment</h2>
+                    <p v-if="errorMessage" class="text-red-500 text-sm mt-2">{{ errorMessage }}</p>
+                    <p v-if="successMessage" class="text-green-500 text-sm mt-2">{{ successMessage }}</p>
+
                 </div>
 
                 <!-- Scrollable Form Content -->
                 <div class="flex-1 overflow-y-auto px-6 py-5">
                     <div class="space-y-5">
                         <!-- Job Select -->
-                        <div>
-                            <label for="job" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Select Job
+                        <div v-if="invoice && Object.keys(invoice).length > 0">
+                            <label for="invoice"
+                                   class="block font-medium text-primary mb-1">
+                                Invoice Number
                             </label>
-                            <select
-                                id="job"
-                                v-model="selectedJob"
-                                @change="onJobSelected"
-                                class="block w-full py-3 px-4 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                            >
-                                <option :value="null" disabled selected>Select a job</option>
-                                <option v-for="job in jobs" :key="job.id" :value="job">
-                                    {{ job.job_title }}
-                                </option>
-                            </select>
-                            <span class="text-sm text-red-600 italic font-thin">{{jobError}}</span>
+                            <input type="text"
+                                   id="invoice"
+                                   v-model="invoice.invoice_number"
+                                   readonly
+                                   disabled
+                                   class="w-full bg-primary text-white font-semibold rounded-lg px-3 py-2 border border-tertiary focus:outline-none">
                         </div>
                         <!-- Amount Field -->
                         <div>
@@ -126,24 +177,39 @@ const cancelForm = () => {
                             </label>
                             <div class="relative rounded-md shadow-sm">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <span class="text-gray-500 dark:text-gray-400 sm:text-sm">₦</span>
+                                    <span class="text-gray-500 dark:text-gray-400 sm:text-sm">{{ invoice?.currency || '₦' }}</span>
                                 </div>
                                 <input
                                     type="number"
                                     id="amount"
                                     v-model="paymentForm.amount"
-                                    class="block w-full pl-7 pr-12 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                    class="block w-full pl-12  py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                                     placeholder="0.00"
                                     step="0.01"
                                     min="0"
                                 />
                             </div>
-                            <button
-                                @click="payInFull()"
-                                class="mt-2 text-xs font-medium text-primary-600 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-300 transition-colors"
-                            >
-                                Paid in full (₦{{ selectedJob.amount }})
-                            </button>
+                            <div class="mt-2 space-y-1">
+                                <button
+                                    @click="payInFull()"
+                                    class="px-3 flex justify-between items-center py-1 text-xs font-medium text-primary-600 hover:text-primary-800  transition-colors rounded bg-primary-50"
+                                >
+                                        Pay Remaining Balance ({{ invoice?.currency || '₦' }} {{ invoiceBalance }})
+
+                                </button>
+
+                                <div class="flex px-3 justify-between text-xs text-gray-700 dark:text-gray-300">
+                                    <span>Amount paid:</span>
+                                    <span>{{ invoice?.currency || '₦' }} {{ totalPaid }}</span>
+                                </div>
+                                <hr class="bg-primary">
+                                <div class="flex px-3 justify-between text-xs text-gray-700 dark:text-gray-300">
+                                    <span>Total amount: </span>
+                                    <span>({{ invoice?.currency || '₦' }} {{ invoice.total }})</span>
+                                </div>
+                                <hr class="bg-primary">
+                            </div>
+
                         </div>
 
                         <!-- Date Picker -->
@@ -166,10 +232,12 @@ const cancelForm = () => {
                             </label>
                             <select
                                 id="method"
-                                v-model="paymentForm.method"
+                                v-model="paymentForm.payment_method"
                                 class="block w-full py-3 px-4 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                             >
-                                <option v-for="method in paymentMethods" :key="method.value" :value="method.value">
+                                <option value="" selected disabled>
+                                    Select payment method
+                                </option>   <option v-for="method in paymentMethods" :key="method.value" :value="method.value">
                                     {{ method.label }}
                                 </option>
                             </select>
@@ -192,7 +260,8 @@ const cancelForm = () => {
                 </div>
 
                 <!-- Sticky Footer with Buttons -->
-                <div class="sticky bottom-0 px-6 py-4 bg-gray-50 dark:bg-gray-700/50 border-t border-gray-100 dark:border-gray-700 flex justify-end space-x-3">
+                <div
+                    class="sticky bottom-0 px-6 py-4 bg-gray-50 dark:bg-gray-700/50 border-t border-gray-100 dark:border-gray-700 flex justify-end space-x-3">
                     <button
                         @click="cancelForm"
                         class="px-4 py-2 text-sm border-2 border-red-500 hover:bg-red-200 font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white rounded-lg transition-colors"

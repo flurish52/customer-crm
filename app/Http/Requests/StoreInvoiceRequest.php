@@ -24,8 +24,8 @@ class StoreInvoiceRequest extends FormRequest
         return [
             'business_id' => 'required|exists:businesses,id',
             'customer_id' => 'required|exists:customers,id',
-            'job_id' => 'nullable|exists:customer_jobs,id',
-            'job_description' => 'required|string|max:255',
+            'job_id' => 'required|exists:customer_jobs,id',
+            'job_description' => 'nullable|string|max:255',
 
             'items' => 'required|array|min:1',
             'items.*.name' => 'required|string|max:255',
@@ -38,6 +38,7 @@ class StoreInvoiceRequest extends FormRequest
             'total.discount' => 'nullable|numeric|min:0',
             'total.vat' => 'required|numeric|min:0',
             'total.total' => 'required|numeric|min:0',
+            'currency'=>'required|string|Max:255'
         ];
 
     }

@@ -34,7 +34,12 @@ class InvoiceController extends Controller
     {
         if ($invoice->user_id !== Auth::id()) return;
         $user = User::with('business')->findOrFail(Auth::id());
-        $invoice->load('items');
+        $invoice->load([
+            'items',
+            'payments' => function ($query) {
+                $query->orderBy('paid_at', 'desc');
+            }
+        ]);
         return inertia::render('Invoice/View', [
             'invoice' => $invoice,
             'user'=> $user,
@@ -53,17 +58,19 @@ class InvoiceController extends Controller
 
     public function downloadInvoice($id)
     {
-        $invoice = Invoice::with('items')->findOrFail($id);
+        $invoice = Invoice::with('items', 'payments')->findOrFail($id);
 
         // Decode snapshots into PHP objects
         $business = json_decode($invoice->business_snapshot);
         $customer = json_decode($invoice->customer_snapshot);
+        $payments = $invoice->payments;
         $job = $invoice->job_snapshot ? json_decode($invoice->job_snapshot) : null;
 
         $pdf = PDF::loadView('pdf.Invoice', [
             'invoice' => $invoice,
             'business' => $business,
             'customer' => $customer,
+            'payments' => $payments,
             'job' => $job
         ]);
 
@@ -87,8 +94,8 @@ class InvoiceController extends Controller
         $logoFilename = basename($logoPath);
         $invoiceLogoPath = 'invoices/logos/' . $logoFilename;
 
-        if (!Storage::exists($invoiceLogoPath)) {
-            Storage::copy($logoPath, $invoiceLogoPath);
+        if (!Storage::disk('public')->exists($invoiceLogoPath)) {
+            Storage::disk('public')->copy($logoPath, $invoiceLogoPath);
         }
 
         $invoice = Invoice::create([
@@ -128,10 +135,10 @@ class InvoiceController extends Controller
             'status'     => 'pending',
 
             'subtotal'   => $request->total['subtotal'],
-            'tax'        => $request->total['vat'],
+            'tax'        => $request->total['vat'] ?? 0,
             'discount'   => $request->total['discount'] ?? 0,
             'total'      => $request->total['total'],
-            'currency'   => $request->currency ?? 'NGN',
+            'currency'   => $request->currency,
             'notes'      => $request->notes ?? null,
         ]);
 
@@ -209,14 +216,16 @@ class InvoiceController extends Controller
         $fromName = $request->from_name?? $authUser->business->name;
         $subject = $request->subject;
 
-        $invoice->load('items')->findOrFail($invoiceId);
+        $invoice->load('items', 'payments')->findOrFail($invoiceId);
         $business = json_decode($invoice->business_snapshot);
         $job = json_decode($invoice->job_snapshot);
+        $payments = $invoice->payments;
         $customer = json_decode($invoice->customer_snapshot);
         $pdf = PDF::loadView('pdf.Invoice', [
             'invoice' => $invoice,
             'business' => $business,
             'job' => $job,
+            'payments' => $payments,
             'customer' => $customer,
         ]);
 

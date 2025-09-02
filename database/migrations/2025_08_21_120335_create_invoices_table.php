@@ -23,7 +23,7 @@ return new class extends Migration
 
             $table->date('issue_date');
             $table->date('due_date')->nullable();
-            $table->enum('status', ['pending', 'paid', 'overdue', 'cancelled'])->default('pending');
+            $table->enum('status', ['pending', 'paid', 'overdue', 'partially_paid', 'cancelled'])->default('pending');
             $table->decimal('subtotal', 10, 2);
             $table->decimal('tax', 10, 2)->default(0);
             $table->decimal('discount', 10, 2)->default(0);

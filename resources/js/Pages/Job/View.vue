@@ -196,8 +196,20 @@
                 </div>
             </div>
             <!-- Submit -->
-            <div class="text-right p-3">
-                <button @click="showCreateInvoiceFunc"
+            <div
+                v-if="selectedJob.invoices.length > 0"
+
+                class="text-left p-3">
+                <JobInvoices
+                :invoices="selectedJob.invoices"
+                />
+
+            </div>
+            <div
+                v-if="!selectedJob.invoices.some(inv => inv.status !== 'cancelled')"
+                class="text-right p-3">
+                <button
+                    @click="showCreateInvoiceFunc"
                         class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
                     Generate Invoice
                 </button>
@@ -223,10 +235,10 @@ import 'aos/dist/aos.css';
 import CreateInvoiceModal from "@/Components/Invoice/CreateInvoiceModal.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import {Head, router} from "@inertiajs/vue3";
+import JobInvoices from "@/Components/Invoice/JobInvoices.vue";
 // Define props and emits
 const props = defineProps({
     selectedJob: Object,
-    fullPage: Boolean
 })
 const emit = defineEmits(['closeModal'])
 // Initialize animations
@@ -269,13 +281,11 @@ const jobDetails = computed(() => [
         icon: StarIcon
     }
 ].filter(item => item.value !== undefined))
-
 // Customer details array
 const customerDetails = computed(() => [
     {label: 'Phone', value: props.selectedJob.customer.phone, icon: PhoneIcon},
     {label: 'Address', value: props.selectedJob.customer.address, icon: MapPinIcon}
 ].filter(item => item.value))
-
 // Formatting functions
 const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-US', {
@@ -283,7 +293,6 @@ const formatCurrency = (amount) => {
         currency: 'NGN',
     }).format(amount)
 }
-
 const formatDateTime = (dateString) => {
     return new Date(dateString).toLocaleString('en-US', {
         year: 'numeric',
@@ -301,24 +310,21 @@ const formatDate = (dateString) => {
         day: 'numeric'
     })
 }
-
 const formatActivityType = (type) => {
     return type.split('_').map(word =>
         word.charAt(0).toUpperCase() + word.slice(1)
     ).join(' ')
 }
-
 let showCreateInvoiceModal = ref(false);
-
 const showCreateInvoiceFunc = () => {
     showCreateInvoiceModal.value = true
-}
-const closeCreateInvoiceFunc = () => {
-    emit('')
 }
 const closeModal = () => {
  router.back()
 }
+const canCreateInvoice = computed(() => {
+    return !props.selectedJob.invoices.some(inv => inv.status !== 'cancelled')
+})
 </script>
 
 <style scoped>

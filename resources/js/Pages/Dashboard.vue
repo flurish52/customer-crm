@@ -12,7 +12,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                             </svg>
                             <span class="text-2xl font-semibold text-gray-900 relative inline-block ml-2">
-        Client Management
+        Work Progress
         <span class="absolute bottom-0 left-0 h-0.5 w-12 bg-primary-dark rounded-full"></span>
       </span>
                             <span class="ml-3 text-xs font-normal text-gray-400">OVERVIEW</span>
@@ -24,26 +24,23 @@
             </div>
             <div>
                 <!-- Tab buttons -->
-                <div class="flex items-end relative z-10 pl-2 pt-2 bg-gray-100 dark:bg-gray-800 rounded-t-lg">
+                <div class="flex items-end relative z-10 pl-2 pt-2 bg-gray-100 dark:bg-gray-800 rounded-t-lg border-b-2 border-gray-300 dark:border-gray-700">
                     <button
                         v-for="tab in tabs"
                         :key="tab.id"
                         @click="activeTab = tab.id"
-                        class="relative px-4 py-2 rounded-t-lg mr-1 transition-all duration-200"
+                        class="relative px-4 py-2 mr-1 font-medium text-sm flex items-center gap-2 transition-all duration-200 border rounded-t-lg"
                         :class="{
-        'bg-white  text-primary shadow-[0_1px_0_0_rgba(255,255,255,0.7),1px_0_3px_-1px_rgba(0,0,0,0.1),-1px_0_3px_-1px_rgba(0,0,0,0.1)]': activeTab === tab.id,
-        'bg-primary text-tertiary-light hover:bg-primary-dark': activeTab !== tab.id
-      }"
+            'bg-white text-primary border-gray-300  bg-primary border-b-0 shadow-md':
+                activeTab === tab.id,
+            'bg-gray-200 text-tertiary bg-primary-dark hover:bg-primary   border-gray-300 dark:border-gray-600':
+                activeTab !== tab.id
+        }"
                     >
-                        <p class="font-medium text-sm flex items-center gap-2">
-                            {{ tab.label }}
-                        </p>
-                        <span
-                            v-if="activeTab === tab.id"
-                            class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
-                        ></span>
+                        {{ tab.label }}
                     </button>
                 </div>
+
 
                 <!-- Tab content -->
                 <div class="bg-white rounded-b-lg rounded-tr-lg shadow-lg relative -mt-1 z-0">
@@ -52,7 +49,7 @@
                             v-if="activeTab === tab.id"
                             class="rounded-lg min-w-0"
                         >
-                        <div class="relative overflow-hidden"> <!-- New constraining wrapper -->
+                        <div class="relative overflow-hidden py-6">
                             <component
                                 :is="tab.component"
                                 v-bind="tab.props || []"
@@ -73,11 +70,11 @@
 import {onMounted, ref} from 'vue'
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import StatCards from "@/Components/StatCards.vue"
-import OverDueJobs from "@/Components/Job/OverDueJobs.vue";
-import RecentActivities from "@/components/Job/RecentActivities.vue"
-import OwingCustomers from "@/Components/Customer/OwingCustomers.vue";
 import dayjs from "dayjs";
 import {Head} from "@inertiajs/vue3";
+import CompletedJobs from "@/Components/Job/DashboardJobView/CompletedJobs.vue";
+import PendingJobs from "@/Components/Job/DashboardJobView/PendingJobs.vue";
+import JobsInProgress from "@/Components/Job/DashboardJobView/JobsInProgress.vue";
 let props = defineProps({
     jobs: Array,
     recentActivities: Array,
@@ -86,14 +83,13 @@ let props = defineProps({
 let overdueJobs = ref([])
 let owingCustomers = ref()
 const tabs = [
-    {id: 1, label: 'Overdue Jobs', component: OverDueJobs, props: {overdueJobs}},
-    {id: 3, label: 'Accounts Receivable', component: OwingCustomers, props: {owingCustomers}},
-    {id: 2, label: ' Recent Activity', component: RecentActivities, props: {recentActivities: props.recentActivities}},
+    {id: 1, label: 'Pending Jobs', component: PendingJobs, props: {jobs: props.jobs}},
+    {id: 2, label: 'Jobs in progress', component: JobsInProgress, props: {jobs: props.jobs}},
+    {id: 3, label: ' Completed', component: CompletedJobs, props: {jobs: props.jobs}},
 ]
 const activeTab = ref(tabs[0].id)
 function getOwingCustomers(customers) {
     const today = new Date();
-
     return customers.filter(customer => {
         return customer.jobs.some(job => {
             const jobAmount = parseFloat(job.amount);
@@ -111,7 +107,6 @@ function getOwingCustomers(customers) {
                 job.status === "completed" &&
                 jobDueDate < today
             );
-
             return isOverdue;
         });
     });

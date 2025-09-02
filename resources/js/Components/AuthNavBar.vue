@@ -1,10 +1,15 @@
 <template>
-    <header class="bg-white shadow-sm sticky top-0 text-primary z-30">
-        <div class="px-4 sm:px-6 lg:px-8">
+    <div
+            @click="closeProfileDropdown"
+            v-if="showProfileDropdown || showNotifications"
+        class="fixed inset-0 bg-black bg-opacity-0 z-30"></div>
+
+    <header
+        class="bg-white shadow-sm sticky top-0 text-primary z-30">
+        <div
+            class="px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
-                <!-- Left section (logo and mobile menu button) -->
                 <div class="flex items-center">
-                    <!-- Mobile menu button (only visible when sidebar is hidden) -->
                     <button
                         @click="$emit('toggleSidebar')"
                         class="md:hidden p-2 rounded-md hover:text-primary-dark focus:outline-none"
@@ -16,12 +21,11 @@
                                   d="M4 6h16M4 12h16M4 18h16"/>
                         </svg>
                     </button>
-
                     <!-- App name - visible on mobile -->
                     <div class="flex-shrink-0 flex items-center md:hidden">
                         <div
                             class="hidden md:block w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white font-bold">
-                            <ApplicationLogo />
+                            <ApplicationLogo/>
                         </div>
                         <span class="ml-2 text-lg font-semibold text-white">Entroly</span>
                     </div>
@@ -32,24 +36,6 @@
                     <h1 class="text-lg font-semibold text-primary truncate max-w-[160px]">
                         {{ $page.props.auth.user.name }}
                     </h1>
-                </div>
-
-                <!-- Search bar (center section) -->
-                <div class="flex-1 max-w-md mx-4 hidden md:block">
-                    <div class="relative">
-<!--                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">-->
-<!--                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none"-->
-<!--                                 viewBox="0 0 24 24" stroke="currentColor">-->
-<!--                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"-->
-<!--                                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>-->
-<!--                            </svg>-->
-<!--                        </div>-->
-<!--                        <input-->
-<!--                            type="text"-->
-<!--                            placeholder="Search customers, jobs, receipts..."-->
-<!--                            class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-tertiary-light placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary-light sm:text-sm transition-all duration-200"-->
-<!--                        >-->
-                    </div>
                 </div>
 
                 <!-- Right section (user profile and notifications) -->
@@ -70,92 +56,6 @@
                             class="absolute top-0 right-0 h-3 w-3 rounded-full bg-secondary border-2 border-red-200"
                         ></span>
                     </button>
-
-                    <!-- Messages button -->
-<!--                    <button-->
-<!--                        class="ml-2 p-2 rounded-full text-gray-500 hover:text-primary-DEFAULT hover:bg-tertiary-light focus:outline-none relative transition-colors duration-200"-->
-<!--                    >-->
-<!--                        <span class="sr-only">View messages</span>-->
-<!--                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"-->
-<!--                             stroke="currentColor">-->
-<!--                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"-->
-<!--                                  d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>-->
-<!--                        </svg>-->
-<!--                        <span-->
-<!--                            v-if="unreadMessages > 0"-->
-<!--                            class="absolute top-0 right-0 h-3 w-3 rounded-full bg-secondary-DEFAULT border-2 border-white"-->
-<!--                        ></span>-->
-<!--                    </button>-->
-
-                    <!-- Quick action dropdown -->
-                    <div class="ml-4 relative">
-                        <button
-                            @click="toggleQuickActions"
-                            class="p-2 rounded-full text-primary hover:text-primary hover:bg-tertiary-light focus:outline-none transition-colors duration-200"
-                        >
-                            <span class="sr-only">Quick actions</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                                 stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                            </svg>
-                        </button>
-
-                        <!-- Quick actions dropdown menu -->
-                        <transition
-                            enter-active-class="transition ease-out duration-100"
-                            enter-from-class="transform opacity-0 scale-95"
-                            enter-to-class="transform opacity-100 scale-100"
-                            leave-active-class="transition ease-in duration-75"
-                            leave-from-class="transform opacity-100 scale-100"
-                            leave-to-class="transform opacity-0 scale-95"
-                        >
-                            <div
-                                v-show="showQuickActions"
-                                class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-50"
-                            >
-                                <div class="py-1">
-                                    <button
-                                        @click="openAddCustomerModal"
-                                        class="group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-tertiary-light hover:text-primary"
-                                    >
-                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                             class="mr-3 h-5 w-5 text-gray-400 group-hover:text-primary"
-                                             fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                                        </svg>
-                                        New Customer
-                                    </button>
-                                    <a
-                                        href="#"
-                                        class="group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-tertiary-light hover:text-primary-DEFAULT"
-                                    >
-                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                             class="mr-3 h-5 w-5 text-gray-400 group-hover:text-primary"
-                                             fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                  d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                        </svg>
-                                        Generate Receipt
-                                    </a>
-                                    <a
-                                        href="#"
-                                        class="group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-tertiary-light hover:text-primary-DEFAULT"
-                                    >
-                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                             class="mr-3 h-5 w-5 text-gray-400 group-hover:text-primary-DEFAULT"
-                                             fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                  d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
-                                        </svg>
-                                        Export Data
-                                    </a>
-                                </div>
-                            </div>
-                        </transition>
-                    </div>
-
                     <!-- Profile dropdown -->
                     <div class="ml-4 relative">
                         <div>
@@ -185,8 +85,8 @@
                                     stroke-linejoin="round"
                                     xmlns="http://www.w3.org/2000/svg"
                                 >
-                                    <circle cx="12" cy="8" r="4" />
-                                    <path d="M4 20c0-4 8-4 8-4s8 0 8 4" />
+                                    <circle cx="12" cy="8" r="4"/>
+                                    <path d="M4 20c0-4 8-4 8-4s8 0 8 4"/>
                                 </svg>
                             </button>
                         </div>
@@ -207,20 +107,13 @@
                                 aria-orientation="vertical"
                                 aria-labelledby="user-menu"
                             >
-                                <a
-                                    href="/dashboard/profile"
-                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-tertiary-light hover:text-primary"
-                                    role="menuitem"
-                                >
-                                    Your Profile
-                                </a>
-                                <a
+                                <Link
                                     href="/dashboard/settings"
                                     class="block px-4 py-2 text-sm text-gray-700 hover:bg-tertiary-light hover:text-primary"
                                     role="menuitem"
                                 >
-                                    Settings
-                                </a>
+                                    Your Profile
+                                </Link>
                                 <a
                                     href="#"
                                     class="block px-4 py-2 text-sm text-gray-700 hover:bg-tertiary-light hover:text-primary"
@@ -246,31 +139,18 @@
         <!-- Mobile search (hidden on desktop) -->
         <div class="md:hidden px-4 pb-3">
             <div class="relative">
-<div>
-    <!-- Greeting Text -->
-    <div class="flex flex-col">
-        <span class="text-xs text-primary-dark">Welcome back</span>
-        <span class="text-xl font-medium text-primary truncate max-w-[120px]">
+                <div>
+                    <!-- Greeting Text -->
+                    <div class="flex flex-col">
+                        <span class="text-xs text-primary-dark">Welcome back</span>
+                        <span class="text-xl font-medium text-primary truncate max-w-[120px]">
         {{ $page.props.auth.user.name.split(' ')[0] }}
       </span>
-    </div>
+                    </div>
 
-</div>
-<!--                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">-->
-<!--                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none"-->
-<!--                         viewBox="0 0 24 24" stroke="currentColor">-->
-<!--                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"-->
-<!--                              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>-->
-<!--                    </svg>-->
-<!--                </div>-->
-<!--                <input-->
-<!--                    type="text"-->
-<!--                    placeholder="Search..."-->
-<!--                    class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-tertiary-light placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary-light sm:text-sm"-->
-<!--                >-->
+                </div>
             </div>
         </div>
-
         <!-- Notifications panel (shown when notifications button is clicked) -->
         <transition
             enter-active-class="transform ease-out duration-300 transition"
@@ -329,57 +209,25 @@
             </div>
         </transition>
     </header>
-
-
-    <div v-if="showAddCustomerModal"
-         @click.self="closeAddCustomerModal"
-         class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <AddCustomerModal
-            @closeAddCustomerModal="closeAddCustomerModal"
-        />
-    </div>
 </template>
 
 <script setup>
 import {ref} from 'vue'
-
-import {
-    BellIcon,
-    ChatBubbleLeftIcon,
-    PlusIcon,
-    DocumentChartBarIcon,
-    ArrowDownTrayIcon,
-    UserIcon,
-    Cog6ToothIcon,
-    QuestionMarkCircleIcon,
-    CheckIcon,
-    DocumentTextIcon
-} from '@heroicons/vue/24/outline'
+import {Link} from "@inertiajs/vue3";
 import AddCustomerModal from "@/Components/Customer/AddCustomerModal.vue";
 import ApplicationLogo from "@/Components/ApplicationLogo.vue";
-
 const emit = defineEmits(['toggleSidebar'])
-
 const showProfileDropdown = ref(false)
 const showQuickActions = ref(false)
 const showNotifications = ref(false)
 const unreadNotifications = ref(3)
-const unreadMessages = ref(1)
-
-const notifications = ref([
-    // {
-    //     id: 1,
-    //     title: 'New customer added',
-    //     message: 'Sarah Johnson has been added to your customers',
-    //     time: '5 minutes ago',
-    //     unread: true,
-    //     icon: UserIcon
-    // },
-])
-
 const toggleProfileDropdown = () => {
     showProfileDropdown.value = !showProfileDropdown.value
     showQuickActions.value = false
+    showNotifications.value = false
+}
+const closeProfileDropdown = () => {
+    showProfileDropdown.value = false
     showNotifications.value = false
 }
 let showAddCustomerModal = ref(false)
@@ -390,20 +238,9 @@ const logout = () => {
             window.location.href = '/login'
         })
 }
-
 const openAddCustomerModal = () => {
     showAddCustomerModal.value = true
 }
-
-const closeAddCustomerModal = () => {
-    showAddCustomerModal.value = false
-}
-const toggleQuickActions = () => {
-    showQuickActions.value = !showQuickActions.value
-    showProfileDropdown.value = false
-    showNotifications.value = false
-}
-
 const toggleNotifications = () => {
     showNotifications.value = !showNotifications.value
     showProfileDropdown.value = false

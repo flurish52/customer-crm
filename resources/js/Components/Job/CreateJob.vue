@@ -4,10 +4,12 @@
         class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-all duration-300"
         @click.self="closeModal"
     >
+        <AddBusinessButton
+            :showModal="showAddBusinessModal"
+        />
         <!-- Modal Container -->
         <div
             class="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[95vh] overflow-hidden flex flex-col transform transition-all duration-300 scale-100 opacity-100">
-
             <!-- Header -->
             <div class="sticky top-0 bg-white px-6 py-4 border-b border-gray-100 flex justify-between items-center">
                 <div>
@@ -272,6 +274,8 @@ import {onMounted, ref} from 'vue'
 import {watch} from "vue";
 import axios, {toFormData} from "axios";
 import CompletedExtras from "@/Components/Job/CompletedExtras.vue";
+import AddBusinessButton from "@/Components/Customer/AddBusinessButton.vue";
+import BusinessInfo from "@/Components/User/BusinessInfo.vue";
 
 const props = defineProps({
     showModal: Boolean,
@@ -285,6 +289,7 @@ const emit = defineEmits(['close', 'submit'])
 const form = ref({})
 let errors = ref([])
 let jobBalance = ref(0)
+let showAddBusinessModal = ref(false)
 const closeModal = () => {
     form.value = {
         customer_id: props.customer.id,
@@ -410,7 +415,11 @@ const submitForm = () => {
                 }
             })
             .catch(error => {
-                alert(error.message)
+                if (error.response && error.response.status === 400) {
+                    showAddBusinessModal.value = true;
+                } else {
+                    console.error(error)
+                }
             })
     }
 

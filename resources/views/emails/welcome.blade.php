@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to Zelvra</title>
+    <title>Welcome to Entroly</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
@@ -223,13 +223,13 @@
                 <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
             </svg>
         </div>
-        <div class="logo">Zelvra</div>
+        <div class="logo">Entroly</div>
     </div>
 
     <div class="content">
         <h1>Welcome aboard, {{ $name ?? 'User' }}!</h1>
-        <p>We're absolutely thrilled to welcome you to the Zelvra family. You've taken the first step toward transforming how you manage your customers and jobs.</p>
-        <p>At Zelvra, we're committed to providing you with tools that make your workflow <span class="highlight">effortless, efficient, and enjoyable</span>.</p>
+        <p>We're absolutely thrilled to welcome you to the entroly family. You've taken the first step toward transforming how you manage your customers and jobs.</p>
+        <p>At Entroly, we're committed to providing you with tools that make your workflow <span class="highlight">effortless, efficient, and enjoyable</span>.</p>
 
         <div class="features">
             <div class="feature">
@@ -268,8 +268,8 @@
             <a href="#" class="social-link">Contact Support</a>
             <a href="#" class="social-link">Twitter</a>
         </div>
-        <p>Zelvra - Transforming customer and job management</p>
-        <p class="copyright">&copy; {{ date('Y') }} Zelvra. All rights reserved.</p>
+        <p>Entroly - Transforming customer and job management</p>
+        <p class="copyright">&copy; {{ date('Y') }} Entroly. All rights reserved.</p>
     </div>
 </div>
 </body>

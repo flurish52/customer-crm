@@ -27,7 +27,7 @@ class UpdateBusinessRequest extends FormRequest
         $business = $this->route('business');
         $businessId = $business->id;
         return [
-        'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255',
             'email' => [
                 'required',
                 'email',
@@ -38,12 +38,14 @@ class UpdateBusinessRequest extends FormRequest
                     })
                     ->ignore($businessId),
             ],
-        'phone' => 'nullable|string|max:20',
-        'address' => 'nullable|string|max:500',
-        'website' => 'nullable|url|max:255',
-        'logo' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-        'tax_id' => 'nullable|string|max:100',
-        'settings' => 'nullable|json'
+            'phone' => 'nullable|string|max:20',
+            'address' => 'nullable|string|max:500',
+            'website' => 'nullable|url|max:255',
+            'logo' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'tax_id' => 'nullable|string|max:100',
+            'settings' => 'nullable|json',
+            'tax_percent' => 'nullable|numeric|min:0|max:100',
+            'currency' => 'required|string|size:3',
         ];
     }
 }

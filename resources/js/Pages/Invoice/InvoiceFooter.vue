@@ -21,12 +21,12 @@
 <!--    Share via Email-->
 <!--</button>-->
 
-<button @click="printInvoice" class="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 flex items-center gap-2">
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9V3h12v6M6 15h12v6H6v-6z"/>
-    </svg>
-    Print
-</button>
+<!--<button @click="printInvoice" class="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 flex items-center gap-2">-->
+<!--    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">-->
+<!--        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9V3h12v6M6 15h12v6H6v-6z"/>-->
+<!--    </svg>-->
+<!--    Print-->
+<!--</button>-->
 </section>
 </template>
 

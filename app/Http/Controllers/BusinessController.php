@@ -40,7 +40,7 @@ class BusinessController extends Controller
             $data['logo_path'] = $path;
         }
 
-        // Create the store record
+
         $store = Business::create([
             'user_id' => Auth::id(),
             'business_name' => $data['name'],
@@ -50,7 +50,10 @@ class BusinessController extends Controller
             'business_website' => $data['website'] ?? null,
             'tax_id' => $data['tax_id'] ?? null,
             'logo_path' => $data['logo_path'] ?? null,
-            'settings' => $data['settings'] ?? null,
+            'settings' => json_encode([
+                    'tax_percent' => $data['tax_percent'],
+                    'currency' => strtoupper($data['currency']),
+                ]) ?? null,
         ]);
 
         return response()->json([
@@ -79,6 +82,8 @@ class BusinessController extends Controller
      */
     public function update(UpdateBusinessRequest $request, Business $business)
     {
+
+
         $data = $request->validated();
         if ($request->hasFile('logo')) {
             if ($business->business_logo_path && Storage::disk('public')->exists($business->business_logo_path)) {
@@ -87,6 +92,11 @@ class BusinessController extends Controller
             $path = $request->file('logo')->store('logos', 'public');
             $data['business_logo_path'] = $path;
         }
+        $settings = [
+            'currency'=> $data['currency'],
+            'tax_percent'=> $data['tax_percent']
+
+        ];
         $business->update([
             'business_name' => $data['name'],
             'business_email' => $data['email'],
@@ -95,7 +105,10 @@ class BusinessController extends Controller
             'business_website' => $data['website'] ?? null,
             'tax_id' => $data['tax_id'] ?? null,
             'logo_path' => $data['business_logo_path'] ?? $business->business_logo_path,
-            'settings' => $data['settings'] ?? $business->business_settings
+            'settings' => json_encode([
+                'tax_percent' => $data['tax_percent'],
+                'currency' => strtoupper($data['currency']),
+            ]) ?? $business->business_settings
         ]);
     }
 

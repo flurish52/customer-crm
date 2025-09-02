@@ -33,7 +33,6 @@
 
         <Head title="Customer" />
         <div class="">
-            <!-- Back Button -->
             <Link
                 href="/dashboard"
                 class="flex items-center text-primary hover:text-primary-dark transition-colors"
@@ -45,7 +44,7 @@
                 </svg>
                 Back
             </Link>
-            <!-- Customer Profile Header -->
+
             <div class="bg-white rounded-xl shadow-sm border border-tertiary-light overflow-hidden mb-8">
                 <!-- Avatar Section (Centered) -->
                 <div class="flex flex-col items-center pt-8">
@@ -145,26 +144,24 @@
 
                     <button
                         @click="openAddCustomerModal"
-                        class="px-6 py-3 border border-primary-DEFAULT text-primary-DEFAULT rounded-lg hover:bg-primary-light/10 transition-colors flex items-center justify-center"
+                        class="px-6 py-3 border border-primary text-primary rounded-lg hover:bg-primary-light/10 transition-colors flex items-center justify-center"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                         </svg>
                         Edit Profile
                     </button>
-                    <button
-                        @click="openPaymentForm"
-                        class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors flex items-center justify-center"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                        </svg>
-                        Made payment
-                    </button>
                 </div>
             </div>
+
+
+            <TabSystem
+            @switchTab="switchTab"
+            />
+
+
             <!-- Jobs Section -->
-            <div class="bg-white rounded-xl shadow-sm border border-tertiary-light overflow-hidden">
+            <div v-if="activeTab === 'Jobs'" class="bg-white rounded-xl shadow-sm border border-tertiary-light overflow-hidden">
                 <!-- Section Header -->
                 <div class="px-6 py-4 border-b border-tertiary-light flex justify-between items-center">
                     <h2 class="text-xl font-bold text-primary-dark">Job History</h2>
@@ -240,6 +237,14 @@
                     </button>
                 </div>
             </div>
+
+            <div v-if="activeTab === 'Invoices'">
+                <JobInvoices
+                    :invoices="invoices"
+                    :customerPage="true"
+                />
+            </div>
+
         </div>
     </AuthenticatedLayout>
 </template>
@@ -255,10 +260,12 @@ import JobRating from "@/Components/Job/JobRating.vue";
 import AddCustomerModal from "@/Components/Customer/AddCustomerModal.vue";
 import PaymentModal from "@/Components/Job/PaymentModal.vue";
 import Jobs from "@/Components/Job/Jobs.vue";
-import AOS from "aos";
+import TabSystem from "@/Components/TabSystem.vue";
+import JobInvoices from "@/Components/Invoice/JobInvoices.vue";
 let props = defineProps({
     customer: Object,
     totalSpent: Number,
+    invoices: Array
 })
 let showModal = ref(false)
 let showRatingModal = ref(false)
@@ -272,6 +279,13 @@ const showAddCustomerModal = ref(false)
 const showPaymentModal = ref(false)
 const jobToEdit = ref({})
 const jobCustomer = ref({})
+
+let activeTab  = ref('Jobs')
+const switchTab = ({payload})=>{
+    activeTab.value = payload
+    console.log(payload)
+}
+
 const isEditingJobFunc = ({payload, amountPaid}) => {
     previousPayment.value =  amountPaid
     isEditingJob.value = true

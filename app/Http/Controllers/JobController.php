@@ -45,7 +45,7 @@ class JobController extends Controller
     public function viewJob(Job $job)
     {
         if ($job->user_id !== Auth::id()) return;
-        $job->load('customer', 'invoice', 'business');
+        $job->load('customer', 'invoices.payments', 'business');
         return inertia::render('Job/View', [
             'selectedJob'=> $job,
         ]);
@@ -54,33 +54,26 @@ class JobController extends Controller
     public function updateJobStatus(Request $request, Job $job)
     {
         $validated = $request->validate([
-            'type' => 'required|in:complete_job',
-            'satisfaction_score' => 'required|integer|min:1|max:5',
+            'type' => 'required|in:completed,in_progress,pending',
+            'satisfaction_score' => 'nullable|integer|min:1|max:5',
         ]);
-
         DB::beginTransaction();
-
         try {
-            switch ($validated['type']) {
-                case 'complete_job':
-                    $job->status = 'completed';
-                    $job->completed_at = now();
-                    $job->satisfaction_score = $validated['satisfaction_score'];
-                    $job->save();
-                    Activity::create([
-                        'user_id' => Auth::id(),
-                        'subject_type' => Job::class,
-                        'subject_id' => $job->id,
-                        'customer_id' => $job->customer_id,
-                        'type' => 'complete_job',
-                        'changes' => json_encode([
-                            'status' => 'completed',
-                            'completed_at' => now()->toDateTimeString(),
-                        ]),
-                    ]);
-
-                    break;
-            }
+            $job->status = $validated['type'];
+            $job->completed_at = $validated['type'] === 'completed' ? now() : null;
+            $job->satisfaction_score = $validated['type'] === 'completed' ? ($validated['satisfaction_score'] ?? null) : null;
+            $job->save();
+            Activity::create([
+                'user_id' => Auth::id(),
+                'subject_type' => Job::class,
+                'subject_id' => $job->id,
+                'customer_id' => $job->customer_id,
+                'type' => $validated['type'] === 'completed' ? 'complete_job' : 'started',
+                'changes' => json_encode([
+                    'status' => $validated['type'],
+                    'completed_at' => $validated['type'] === 'completed' ? now()->toDateTimeString() : null,
+                ]),
+            ]);
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
@@ -97,8 +90,14 @@ class JobController extends Controller
      */
     public function store(StoreJobRequest $request)
     {
-        $business =  Business::where('user_id', Auth::id())->first();
 
+        $business =  Business::where('user_id', Auth::id())->first();
+        if (!$business) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please update your business details before proceeding.'
+            ], 400);
+        }
         DB::beginTransaction();
         $job = Job::create([
             'user_id' => auth()->id(),
@@ -107,7 +106,6 @@ class JobController extends Controller
             'satisfaction' => $request->completedExtras['satisfaction'] ?? null,
         ]);
         $now = now();
-        // Job completion activity (only if status is completed)
         if ($job->status === 'completed') {
             Activity::create([
                 'user_id' => auth()->id(),
@@ -167,7 +165,7 @@ class JobController extends Controller
     {
         return inertia::render('User/Jobs', [
         'jobs' => Job::orderBy('created_at', 'DESC')
-            ->with('activities', 'customer')
+            ->with('activities', 'customer', 'invoices.payments')
             ->where('user_id', Auth::id())
             ->get(),
         ]);
@@ -207,15 +205,12 @@ class JobController extends Controller
      */
     public function update(UpdateJobRequest $request, Job $job)
     {
-//        dd($request);
         DB::beginTransaction();
         try {
             $validated = $request->validated();
             $previousStatus = $job->status;
             $now = now();
-
             $job->update($validated);
-
 
             if (
                 isset($validated['status']) &&

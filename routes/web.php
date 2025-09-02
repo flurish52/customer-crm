@@ -5,6 +5,7 @@ use App\Http\Controllers\BusinessController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\JobController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Auth;
@@ -22,15 +23,15 @@ Route::get('/', function () {
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard', [
-        'jobs' => \App\Models\Job::with('customer', 'activities')
-            ->orderBy('created_at', 'DESC')
+        'jobs' => \App\Models\Job::with('customer', 'invoices.payments', 'activities')
+            ->orderBy('updated_at', 'DESC')
             ->where('user_id', Auth::id())->get(),
 
         'recentActivities' => \App\Models\Activity::with('subject', 'customer')
             ->orderBy('created_at', 'DESC')
         ->where('user_id', Auth::id())->paginate(),
 
-        'customers' => \App\Models\Customer::with('jobs.activities')
+        'customers' => \App\Models\Customer::with('jobs.activities', 'jobs.invoices.payments')
             ->orderBy('created_at', 'DESC')
         ->where('user_id', Auth::id())->paginate(),
     ]);
@@ -79,6 +80,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/invoice/{id}/download', [InvoiceController::class, 'downloadInvoice']);
     Route::post('/invoice/{invoice}/send', [InvoiceController::class, 'sendInvoiceInvoice']);
+    Route::post('/user/payment/on_invoice', [PaymentController::class, 'store']);
+
 
 });
 

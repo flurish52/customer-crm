@@ -6,6 +6,7 @@ use App\Models\Activity;
 use App\Models\Customer;
 use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateCustomerRequest;
+use App\Models\Invoice;
 use App\Models\Job;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -57,6 +58,10 @@ class CustomerController extends Controller
         return inertia::render('User/Customer', [
             'customer' => Customer::with('jobs.customer', 'jobs.activities', 'activities')->where('id', $customer_id)->where('user_id', $user_id)->first(),
             'totalSpent' => Job::where('customer_id', $customer_id)->where('user_id', Auth::id())->sum('amount'),
+            'invoices' => Invoice::with('items', 'customer', 'job', 'payments')
+                ->where('customer_id', $customer_id)
+                ->where('user_id', Auth::id())
+                ->get(),
             'jobs' => Job::orderBy('created_at', 'DESC')->with('activities', 'customer')
                 ->where('user_id', Auth::id())->get(),
         ]);
@@ -112,8 +117,14 @@ class CustomerController extends Controller
     public function update(UpdateCustomerRequest $request, $customer_id)
     {
         $customer = Customer::findOrFail($customer_id);
-
-        // Update basic fields
+        $path = null;
+        // Handle image upload if present
+        if ($request->hasFile('avatar')) {
+            if ($customer->avatar && Storage::disk('public')->exists($customer->avatar)) {
+                Storage::disk('public')->delete($customer->avatar);
+            }
+            $path = $request->file('avatar')->store('customer_avatar', 'public');
+        }
         $customer->update([
             'name' => $request->input('name'),
             'email' => $request->input('email'),
@@ -121,20 +132,9 @@ class CustomerController extends Controller
             'phone' => $request->input('phone'),
             'address' => $request->input('address'),
             'note' => $request->input('note'),
+            'avatar' => $path ?? $customer->avatar,
         ]);
-
-        // Handle image upload if present
-        if ($request->hasFile('avatar')) {
-
-
-            if ($customer->avatar && Storage::disk('public')->exists($customer->avatar)) {
-                Storage::disk('public')->delete($customer->avatar);
-            }
-
-            // Store new file
-            $path = $request->file('avatar')->store('avatars', 'public');
-            $customer->avatar = $path;
-        }
+        return redirect()->back()->with('success', 'Client updated successfully');
     }
 
 
