@@ -6,6 +6,7 @@
     >
         <AddBusinessButton
             :showModal="showAddBusinessModal"
+            @closeModal="closeAddBusinessModal"
         />
         <!-- Modal Container -->
         <div
@@ -141,9 +142,10 @@
 
                             <!-- Amount -->
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Amount (₦)</label>
+                                <label class="block text-sm font-medium text-gray-700">Amount</label>
+                                <span class="text-xs text-gray-500">Must be in client's the invoice currency</span>
                                 <div class="relative">
-                                    <span class="absolute left-3 top-3 text-gray-500">₦</span>
+                                    <span class="absolute left-3 top-3 text-gray-500"></span>
                                     <input
                                         v-model="form.amount"
                                         type="number"
@@ -157,27 +159,27 @@
                         </div>
 
                         <!-- Payment Summary (only when editing) -->
-                        <div v-if="isEditingJob"
-                             class="bg-blue-50 p-4 rounded-lg border border-blue-100 text-sm text-gray-700 grid grid-cols-2 gap-3">
-                            <div class="space-y-1">
-                                <p class="text-gray-500">Previous Payment:</p>
-                                <p class="font-semibold text-lg text-gray-800">{{ amountPaid }}</p>
-                            </div>
-                            <div class="space-y-1">
-                                <p class="text-gray-500">Balance:</p>
-                                <p class="font-semibold text-lg text-blue-600">{{ jobBalance }}</p>
-                            </div>
-                        </div>
+<!--                        <div v-if="isEditingJob"-->
+<!--                             class="bg-blue-50 p-4 rounded-lg border border-blue-100 text-sm text-gray-700 grid grid-cols-2 gap-3">-->
+<!--                            <div class="space-y-1">-->
+<!--                                <p class="text-gray-500">Previous Payment:</p>-->
+<!--                                <p class="font-semibold text-lg text-gray-800">{{ amountPaid }}</p>-->
+<!--                            </div>-->
+<!--                            <div class="space-y-1">-->
+<!--                                <p class="text-gray-500">Balance:</p>-->
+<!--                                <p class="font-semibold text-lg text-blue-600">{{ jobBalance }}</p>-->
+<!--                            </div>-->
+<!--                        </div>-->
                     </section>
 
                     <!-- Completed Extras Section -->
-                    <section v-if="form.status === 'completed'" class="space-y-4">
-                        <h3 class="text-lg font-semibold text-gray-800 border-b pb-2">Completed Extras</h3>
-                        <CompletedExtras
-                            :isEditingJob="isEditingJob"
-                            v-model="form.completedExtras"
-                        />
-                    </section>
+<!--                    <section v-if="form.status === 'completed'" class="space-y-4">-->
+<!--                        <h3 class="text-lg font-semibold text-gray-800 border-b pb-2">Completed Extras</h3>-->
+<!--                        <CompletedExtras-->
+<!--                            :isEditingJob="isEditingJob"-->
+<!--                            v-model="form.completedExtras"-->
+<!--                        />-->
+<!--                    </section>-->
 
                     <!-- Timeline Section -->
                     <section class="space-y-4">
@@ -257,39 +259,48 @@
                 >
                     Cancel
                 </button>
-                <button
-                    type="submit"
-                    @click="submitForm"
-                    class="px-5 py-2.5 rounded-lg text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-sm transition-all duration-200 transform hover:-translate-y-0.5"
-                >
-                    {{ isEditingJob ? 'Update Job' : 'Create Job' }}
-                </button>
+                <div>
+                    <button
+                        type="submit"
+                        @click="submitForm"
+                        :disabled="isSubmitting"
+                        class="px-5 py-2.5 rounded-lg text-sm font-medium text-white bg-gradient-to-r from-primary to-primary-dark hover:from-blue-700 hover:to-blue-800 shadow-sm transition-all duration-200 transform hover:-translate-y-0.5 flex items-center justify-center"
+                    >
+                        <span v-if="!isSubmitting">{{ isEditingJob ? 'Update Job' : 'Create Job' }}</span>
+                        <svg v-else class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8h4l-3 3 3 3h-4z"></path>
+                        </svg>
+                    </button>
+                </div>
+
             </div>
         </div>
     </div>
 </template>
 
 <script setup>
-import {onMounted, ref} from 'vue'
+import {ref} from 'vue'
 import {watch} from "vue";
 import axios, {toFormData} from "axios";
-import CompletedExtras from "@/Components/Job/CompletedExtras.vue";
 import AddBusinessButton from "@/Components/Customer/AddBusinessButton.vue";
-import BusinessInfo from "@/Components/User/BusinessInfo.vue";
-
+import {router} from "@inertiajs/vue3";
 const props = defineProps({
     showModal: Boolean,
     customer: Object,
     isEditingJob: Boolean,
     jobToEdit: Object,
     allCustomers: Array,
-    amountPaid: Number
 })
 const emit = defineEmits(['close', 'submit'])
 const form = ref({})
 let errors = ref([])
 let jobBalance = ref(0)
 let showAddBusinessModal = ref(false)
+let closeAddBusinessModal = ()=>{
+    showAddBusinessModal.value = false
+}
+const isSubmitting = ref(false);
 const closeModal = () => {
     form.value = {
         customer_id: props.customer.id,
@@ -299,11 +310,6 @@ const closeModal = () => {
         amount: null,
         due_date: '',
         start_date: '',
-        completedExtras: {
-            amount_paid: null,
-            satisfaction: '',
-            payment_method: 'banK_transfer'
-        }
     }
     emit('close')
 
@@ -323,107 +329,62 @@ watch(
                 amount: null,
                 start_date: '',
                 due_date: '',
-                completedExtras: {
-                    amount_paid: null,
-                    satisfaction: '',
-                    payment_method: 'banK_transfer'
-                }
             }
         }
     },
     {immediate: true}
 )
-const submitForm = () => {
-    let formData = form.value
+const submitForm = async () => {
+    isSubmitting.value = true;
+    errors.value = [];
 
-    // form validations
+    const formData = form.value;
 
-
-    errors.value = []
-    if (!form.value.customer_id) errors.value.push('Customer is required')
-    if (!form.value.job_title) errors.value.push('Job title is required')
-    if (!form.value.status) errors.value.push('Status is required')
-    if (!form.value.amount && form.value.amount !== 0) errors.value.push('Amount is required')
-    if (!form.value.due_date) errors.value.push('Due date is required')
-    if (!form.value.start_date) errors.value.push('Start date is required')
-
-    if (form.value.status === 'completed') {
-        if (
-            form.value.completedExtras.amount_paid === null ||
-            form.value.completedExtras.amount_paid === undefined
-        ) {
-            errors.value.push('Amount paid is required')
-        }
-        if (!form.value.completedExtras.satisfaction) {
-            errors.value.push('Satisfaction score is required')
-        }
-        if (!form.value.completedExtras.payment_method) {
-            errors.value.push('Payment method is required')
-        }
-        if (form.value.completedExtras.amount_paid > form.value.amount) {
-            errors.value.push('Amount paid cannot be greater than job amount')
-        }
-        if (props.isEditingJob && form.value.completedExtras.amount_paid > jobBalance.value) {
-            errors.value.push('Amount paid cannot be greater than remaining Balance')
-        }
-    }
+    if (!formData.customer_id) errors.value.push('Customer is required');
+    if (!formData.job_title) errors.value.push('Job title is required');
+    if (!formData.status) errors.value.push('Status is required');
+    if (!formData.amount && formData.amount !== 0) errors.value.push('Amount is required');
+    if (!formData.start_date) errors.value.push('Start date is required');
+    if (!formData.due_date) errors.value.push('Due date is required');
 
     if (errors.value.length) {
-        return
+        isSubmitting.value = false;
+        return;
     }
 
+    const url = props.isEditingJob ? `/update_job/${props.jobToEdit.id}` : `/store_job`;
+    const method = props.isEditingJob ? 'patch' : 'post';
 
-    if (props.isEditingJob) {
-        axios.patch(`/update_job/${props.jobToEdit.id}`, formData)
-            .then(res => {
-                emit('submit', {payload: res.data.jobs})
-                emit('close')
-                form.value = {
-                    customer_id: props.customer.id,
-                    job_title: '',
-                    description: '',
-                    status: 'pending',
-                    amount: null,
-                    start_date: '',
-                    due_date: '',
-                    completedExtras: {
-                        amount_paid: null,
-                        satisfaction: '',
-                        payment_method: 'banK_transfer'
-                    }
-                }
-            })
-
-    } else {
-        axios.post(`/store_job`, formData)
-            .then(res => {
-                emit('submit', {payload: res.data.jobs})
-                emit('close')
-                form.value = {
-                    customer_id: props.customer.id,
-                    job_title: '',
-                    description: '',
-                    status: 'pending',
-                    amount: null,
-                    start_date: '',
-                    due_date: '',
-                    completedExtras: {
-                        amount_paid: null,
-                        satisfaction: '',
-                        payment_method: 'banK_transfer'
-                    }
-                }
-            })
-            .catch(error => {
-                if (error.response && error.response.status === 400) {
-                    showAddBusinessModal.value = true;
-                } else {
-                    console.error(error)
-                }
-            })
+    try {
+        const res = await axios[method](url, formData);
+        emit('submit', { payload: res.data.jobs });
+        alert("Successful. Click the view icon to generate the invoice.");
+        router.visit(window.location.href, {preserveScroll: true})
+        emit('close');
+        resetForm();
+    } catch (error) {
+        if (!props.isEditingJob && error.response?.status === 400) {
+            showAddBusinessModal.value = true;
+        } else {
+            console.error(error);
+        }
+    } finally {
+        isSubmitting.value = false;
     }
+};
 
-}
+const resetForm = () => {
+    form.value = {
+        customer_id: props.customer.id,
+        job_title: '',
+        description: '',
+        status: 'pending',
+        amount: null,
+        start_date: '',
+        due_date: '',
+    };
+};
+
 </script>
 
 <style scoped>

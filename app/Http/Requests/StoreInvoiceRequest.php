@@ -26,6 +26,9 @@ class StoreInvoiceRequest extends FormRequest
             'customer_id' => 'required|exists:customers,id',
             'job_id' => 'required|exists:customer_jobs,id',
             'job_description' => 'nullable|string|max:255',
+            'status' => 'required|string|in:unpaid,paid,partially_paid,cancelled',
+            'issue_date' => 'required|date',
+            'due_date' => 'required|date|after_or_equal:issue_date',
 
             'items' => 'required|array|min:1',
             'items.*.name' => 'required|string|max:255',

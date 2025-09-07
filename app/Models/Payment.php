@@ -12,7 +12,15 @@ class Payment extends Model
 
 
     protected $fillable = [
-        'user_id', 'customer_id', 'job_id', 'invoice_id', 'amount', 'method', 'paid_at', 'notes'
+        'user_id',
+        'customer_id',
+        'job_id', 'invoice_id',
+        'amount_in_business_currency',
+        'amount_in_invoice_currency',
+        'exchange_rate', 'method',
+        'paid_at',
+        'notes',
+        'reference_number'
     ];
 
 

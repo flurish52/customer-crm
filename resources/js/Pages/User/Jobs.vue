@@ -1,5 +1,14 @@
 <template>
     <AuthenticatedLayout>
+        <div v-if="showNotifyClient">
+            <ConfirmNotifyEmail
+                :successMessage="successMessage"
+                :item="emailItem"
+                subject="Job is completed"
+                @cancel="closeConfirmNotifyEmailModal"
+                :message="`Hello ${emailItem?.customer.name},Your job “${emailItem?.job_title}” has been completed successfully. Thank you for trusting ${emailItem?.business.business_name}. We hope you are satisfied with our service.`"
+        />
+        </div>
         <CreateJob
             :showModal="showModal"
             :customer="customer"
@@ -17,7 +26,6 @@
             @submit="completeJob"
             @close="closeRatingModal"
         />
-
         <Head title="Jobs" />
         <header class="mb-8">
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -29,6 +37,7 @@
                         <p class="text-gray-500 dark:text-gray-400 mt-1">
                             Overview of all your active and completed jobs
                         </p>
+                        <GeneralTips />
                     </div>
                 </div>
 
@@ -156,8 +165,12 @@ import {
     StarIcon,
     UserGroupIcon
 } from '@heroicons/vue/24/outline';
+import GeneralTips from "@/Components/GeneralTips.vue";
+import ConfirmNotifyEmail from "@/Components/AlertsAndPrompts/confirmNotifyEmail.vue";
+import ConfirmAlert from "@/Components/User/ConfirmAlert.vue";
 const props = defineProps({
     jobs: Array,
+    userCurrency: String,
 });
 const customer = ref({});
 const isEditingJob = ref(false);
@@ -168,12 +181,19 @@ const isRefreshing = ref(false);
 const selectedJobId = ref(null);
 let showRatingModal = ref(false)
 let previousPayment = ref(0)
+
+let showNotifyClient = ref(false)
+let emailItem = ref({})
+let successMessage = ref('')
+
+const closeConfirmNotifyEmailModal =()=>{
+    showNotifyClient.value = false
+}
 const openRatingModal = ({payload})=>{
     selectedJobId.value = payload
     showRatingModal.value = true
 }
 const closeRatingModal = ()=>{
-    selectedJobId.value = null
     showRatingModal.value = false
 }
 const getUserCustomers = () => {
@@ -212,12 +232,10 @@ const isEditingJobFunc = ({payload, amountPaid}) => {
     customer.value = jobToEdit.value.customer
     showModal.value = true;
 };
-
 // Stats computation
 const stats = computed(() => {
     const totalJobs = props.jobs.length;
     const completedJobs = props.jobs.filter(j => j.status === 'completed').length;
-
     // Total billed amount
     const totalAmount = props.jobs.reduce((sum, j) => {
         if (!j.invoices) return sum;
@@ -225,25 +243,22 @@ const stats = computed(() => {
             .filter(invoice => invoice.status !== 'cancelled')
             .reduce((invoiceSum, invoice) => invoiceSum + Number(invoice.total || 0), 0);
     }, 0);
-
     // Total paid
+    const getTotalPaid = (invoices) => {
+        if (!invoices) return 0;
+        return invoices
+            .flatMap(invoice => invoice.payments || [])
+            .filter(payment => payment && (payment.is_invalid === 0 || payment.is_invalid === false))
+            .reduce((sum, payment) => sum + Number(payment.amount_in_business_currency || 0), 0);
+    };
     const totalPaid = props.jobs.reduce((sum, j) => {
         if (!j.invoices) return sum;
-        return sum + j.invoices
-            .filter(invoice => invoice.status !== 'cancelled')
-            .reduce((invoiceSum, invoice) => {
-                if (!invoice.payments) return invoiceSum;
-                return invoiceSum + invoice.payments
-                    .reduce((pSum, payment) => pSum + Number(payment.amount || 0), 0);
-            }, 0);
+        return sum + getTotalPaid(j.invoices);
     }, 0);
-
     const totalBalance = totalAmount - totalPaid;
-
     const overdueJobs = props.jobs.filter(
         j => j.due_date && dayjs().isAfter(dayjs(j.due_date)) && j.status !== "completed"
     ).length;
-
     const jobsWithRating = props.jobs.filter(j => j.satisfaction_score);
     const avgRating = jobsWithRating.length > 0
         ? (jobsWithRating.reduce((sum, j) => sum + Number(j.satisfaction_score), 0) / jobsWithRating.length)
@@ -261,8 +276,8 @@ const stats = computed(() => {
         },
         {
             label: "Total Amount",
-            value: formatCurrency(totalAmount),
-            subValue: formatCurrency(totalBalance) + ' outstanding',
+            value: props.userCurrency +' '+totalAmount,
+            subValue: props.userCurrency +' '+totalBalance + ' outstanding',
             icon: CurrencyDollarIcon,
             color: '#3B82F6',
             bgColor: 'rgba(59, 130, 246, 0.1)',
@@ -270,7 +285,7 @@ const stats = computed(() => {
         },
         {
             label: "Total Paid",
-            value: formatCurrency(totalPaid),
+            value: props.userCurrency +' '+totalPaid,
             subValue: `${overdueJobs} overdue jobs`,
             icon: CheckCircleIcon,
             color: '#10B981',
@@ -288,7 +303,6 @@ const stats = computed(() => {
         }
     ];
 });
-
 const getCardStyle = (index) => {
     const colors = [
         {border: 'primary', bgTo: 'primary/20'},
@@ -301,45 +315,20 @@ const getCardStyle = (index) => {
         background: `linear-gradient(to bottom right, white, var(--${colors[index].bgTo}))`
     };
 };
-const getJobBalance = (job) => {
-    const paid = totalPaidPerJob.value[job.id];
-    return Number(job.amount || 0) - Number(paid);
-};
-const getBalanceClass = (job) => {
-    const balance = getJobBalance(job);
-    if (balance <= 0) return 'text-green-600';
-    if (dayjs().isAfter(dayjs(job.due_date)) && job.status !== 'completed') return 'text-yellow-600';
-    return 'text-red-600';
-};
-
-const getTotalPaid = (activities) => {
-    if (!activities) return 0;
-    return activities
-        .filter(a => a.type === "payment")
-        .reduce((sum, a) => {
-            const changes = JSON.parse(a.changes);
-            return sum + Number(changes.amount);
-        }, 0);
-};
-
-const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'NGN',
-    }).format(amount)
-};
-
 const formatDate = (dateString) => {
     if (!dateString) return 'Not set';
     return dayjs(dateString).format('MMM D, YYYY');
 };
-
-
 let completeJob = ({payload, jobId}) =>{
-    axios.patch(`/job_update/status/${jobId}`, {type: 'completed', satisfaction_score: payload})
+    const reqData = {payload, jobId}
+    axios.patch(`/job_update/status/${reqData.jobId.id}`, {type: 'completed', satisfaction_score: reqData.payload})
         .then(res=>{
             closeRatingModal()
-            alert(res.data.message)
+            if (res.status === 200) {
+                successMessage.value = res.data.message
+                emailItem.value =  jobId
+                showNotifyClient.value = true
+            }
         })
 }
 // Initialize animations

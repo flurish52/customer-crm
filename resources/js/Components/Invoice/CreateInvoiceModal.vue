@@ -1,7 +1,6 @@
 <template>
     <div class="p-6 bg-white rounded-lg shadow max-w-4xl mx-auto">
         <h2 class="text-xl font-bold mb-4">Create Invoice</h2>
-
         <!-- Business, Customer & Job Info Cards -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 p-4 bg-gray-50 rounded-xl">
             <!-- Business Info -->
@@ -113,7 +112,6 @@
                 </div>
             </div>
         </div>
-
         <!-- Invoice Meta -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6 mb-4">
             <!-- Issue Date -->
@@ -138,7 +136,7 @@
                 <select v-model="form.status"
                         class="border border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     <option value="" selected disabled>Select invoice status</option>
-                    <option value="pending">Pending</option>
+                    <option value="unpaid">Unpaid</option>
                     <option value="paid">Paid</option>
                     <option value="overdue">Overdue</option>
                     <option value="cancelled">Cancelled</option>
@@ -158,11 +156,12 @@
                 <p class="text-xs text-red-500 mt-1">{{ errors.currency }}</p>
             </div>
         </div>
-
         <!-- Invoice Items -->
         <div class="mb-2">
             <label class="block font-bold mb-1 text-gray-700">Invoice Items</label>
-            <div v-for="(item, index) in invoiceItems" :key="index"
+            <div
+                v-if="invoiceItems"
+                v-for="(item, index) in invoiceItems" :key="index"
                  class="grid grid-cols-1 md:grid-cols-8 gap-4 mb-2 px-3 bg-gray-50 rounded-lg items-center">
 
                 <!-- Name -->
@@ -230,7 +229,6 @@
                 Add Item
             </button>
         </div>
-
         <!-- Tax & Discount -->
         <div class="flex flex-col ">
             <h2 class="text-2xl font-bold text-gray-800 mb-6 pb-2 border-b border-gray-200 flex items-center">
@@ -270,7 +268,6 @@
             </div>
 
         </div>
-
         <!-- Notes -->
         <div class="mb-6">
             <label class="block text-sm mb-1 font-medium text-gray-700">Notes</label>
@@ -284,14 +281,37 @@
             <p class="font-bold text-xl text-gray-800">Invoice Total: {{ invoiceTotal.total }}</p>
         </div>
         <!-- Submit -->
-        <div class="text-right">
-            <button @click="submitInvoice"
-                    class="px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors font-medium">
-                Generate Invoice
-            </button>
-        </div>
+            <div class="text-right flex items-center justify-end">
+                <button
+                    @click="submitInvoice"
+                    :disabled="isSubmitting"
+                    class="px-6 py-3 bg-primary text-white rounded-md font-medium transition-colors hover:bg-primary-dark flex items-center justify-center"
+                >
+                    <span v-if="!isSubmitting">Generate Invoice</span>
+                    <svg
+                        v-else
+                        class="animate-spin h-5 w-5 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                    >
+                        <circle
+                            class="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            stroke-width="4"
+                        ></circle>
+                        <path
+                            class="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                        ></path>
+                    </svg>
+                </button>
+            </div>
     </div>
-
 </template>
 
 <script setup>
@@ -302,26 +322,41 @@ import {router} from "@inertiajs/vue3";
 const props = defineProps({
     selectedJob: Number,
 })
-const invoiceItems = reactive([
-    {name: "", description: "", quantity: 1, unit_price: 0}
-]);
+
+const isSubmitting = ref(false)
+
+const job = ref({})
+const invoiceItems = ref([]);
+
+onMounted(() => {
+    axios.get(`/get_user/job_details/${props.selectedJob}`)
+        .then(res => {
+            if (res.status === 200) {
+                job.value = res.data
+                invoiceItems.value.push(
+                    {
+                        name: job.value?.job_title || '',
+                        description: job.value?.description || '',
+                        quantity: 1,
+                        unit_price: Number(job.value?.amount || 0)
+                    }
+                )
+            }
+        })
+})
 const form = ref(
     {
         issue_date: "",
         discount: 0,
         due_date: "",
-        status: '',
+        status: 'unpaid',
         notes: '',
         tax: 0,
         currency: "",
     }
 );
 
-
-
-const job = ref({})
 let businessSettings = ref({})
-
 const statusColor = computed(() => {
     const jobStatus = job.status ? job.status.toLowerCase() : "";
 
@@ -330,7 +365,7 @@ const statusColor = computed(() => {
             return "bg-green-100 text-green-800";
         case "in progress":
             return "bg-blue-100 text-blue-800";
-        case "pending":
+        case "unpaid":
             return "bg-yellow-100 text-yellow-800";
         case "cancelled":
             return "bg-red-100 text-red-800";
@@ -338,36 +373,35 @@ const statusColor = computed(() => {
             return "bg-gray-100 text-gray-800";
     }
 });
-const invoiceTotal = computed(() => {
-    const subtotal = invoiceItems.reduce((sum, i) => sum + i.quantity * i.unit_price, 0);
 
-    const discount = subtotal * ((form.value.discount || 0) / 100);
-    const vat = (subtotal - discount) * ((form.value.tax || 0) / 100);
+const invoiceTotal = computed(() => {
+    const subtotal = invoiceItems.value.reduce((sum, i) => sum + (Number(i.quantity) || 0) * (Number(i.unit_price) || 0), 0);
+    const discount = subtotal * ((Number(form.value.discount) || 0) / 100);
+    const vat = (subtotal - discount) * ((Number(form.value.tax) || 0) / 100);
     return {
         subtotal: +subtotal.toFixed(2),
         discount: +discount.toFixed(2),
         vat: +vat.toFixed(2),
         total: +(subtotal - discount + vat).toFixed(2)
     };
-});
+})
 
 let errors = ref([])
 
 function addItem() {
-    invoiceItems.push({name: "", description: "", quantity: 1, unit_price: 0});
+    invoiceItems.value.push({name: "", description: "", quantity: 1, unit_price: 0});
 }
 
 function removeItem(index) {
-    invoiceItems.splice(index, 1);
+    invoiceItems.value.splice(index, 1);
 }
 
 function submitInvoice() {
-    invoiceItems.forEach(item => {
+    isSubmitting.value = false
+
+    invoiceItems.value.forEach(item => {
         if (!item.name) {
             errors.value.name = 'Name field is required'
-        }
-        if (!item.description) {
-            errors.value.description = 'Description field is required'
         }
         if (!item.quantity) {
             errors.value.quantity = 'Quantity field is required'
@@ -402,7 +436,7 @@ function submitInvoice() {
         customer_id: job.value.customer.id,
         job_id: job.value.id,
         job_description: job.value.description,
-        items: invoiceItems,
+        items: invoiceItems.value,
         total: invoiceTotal.value,
         issue_date: form.value.issue_date,
         due_date: form.value.due_date,
@@ -411,30 +445,18 @@ function submitInvoice() {
         currency: form.value.currency,
         notes: form.value.notes
     };
-
     axios.post(`/store/invoice/generate`, invoiceData)
         .then((res) => {
             router.visit(`/dashboard/invoice/${res.data.invoice.id}`)
-            invoiceItems.value = reactive([
+            invoiceItems.value = [
                 {name: "", description: "", quantity: 1, unit_price: 0}
-            ]);
-            form.value = ref(
-                {issue_date: "", due_date: "", status: '', tax: 0, notes: ''}
-            );
+            ]
+            form.value = {issue_date: "", due_date: "", status: '', tax: 0, notes: ''}
         })
         .catch((err) => {
             console.error("Error submitting invoice:", err.response || err);
         });
 }
-
-onMounted(() => {
-    axios.get(`/get_user/job_details/${props.selectedJob}`)
-        .then(res => {
-            if (res.status === 200) {
-                job.value = res.data
-            }
-        })
-})
 
 watch(
     () => job.value.business?.settings,

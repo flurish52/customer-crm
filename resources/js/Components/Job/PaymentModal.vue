@@ -2,7 +2,7 @@
 import { ref, computed, onMounted } from 'vue';
 
 const props = defineProps({
-    jobs: {
+    invoices: {
         type: Array,
     },
     showPaymentModal: Boolean
@@ -13,7 +13,7 @@ let jobError = ref('')
 const emit = defineEmits(['submit', 'cancel']);
 const paymentForm = ref({
     amount: '',
-    jobId: null,
+    invoice_id: null,
     date: new Date().toISOString().split('T')[0],
     method: 'bank_transfer',
     notes: ''

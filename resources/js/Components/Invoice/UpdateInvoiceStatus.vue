@@ -7,7 +7,7 @@
         >
             <!-- Modal Content -->
             <div class="bg-white text-center rounded-lg shadow-lg w-full max-w-md p-6">
-                <h2 class="text-lg font-semibold mb-4">Update Invoice Status</h2>
+                <h2 class="text-lg font-semibold mb-4">Cancel invoice</h2>
                 <h1 class="text-xl font-semibold text-gray-800 mb-2">
                     <span class="text-primary">Invoice #{{ invoice.invoice_number }}</span>
                     <div>
@@ -63,6 +63,11 @@ const submit = () => {
         message.value = 'Please select status'
         return;
     }
+    console.log(props.invoice.payments)
+if (props.invoice.payments.length > 0){
+    alert("Can't cancel invoice, payment has already been initiated!.")
+    return;
+}
     axios.patch(`/update_invoice/status/${props.invoice.id}`, {selectedStatus: selectedStatus.value})
         .then(res => {
             if (res.status === 200) {

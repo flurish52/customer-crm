@@ -24,12 +24,12 @@
             </div>
             <div>
                 <!-- Tab buttons -->
-                <div class="flex items-end relative z-10 pl-2 pt-2 bg-gray-100 dark:bg-gray-800 rounded-t-lg border-b-2 border-gray-300 dark:border-gray-700">
+                <div class="flex items-end relative z-0  pt-2 bg-gray-100 dark:bg-gray-800 rounded-t-lg border-b-2 border-gray-300 dark:border-gray-700">
                     <button
                         v-for="tab in tabs"
                         :key="tab.id"
                         @click="activeTab = tab.id"
-                        class="relative px-4 py-2 mr-1 font-medium text-sm flex items-center gap-2 transition-all duration-200 border rounded-t-lg"
+                        class="relative px-2 py-2 mr-1 font-medium text-sm flex items-center gap-1 transition-all duration-200 border rounded-t-lg"
                         :class="{
             'bg-white text-primary border-gray-300  bg-primary border-b-0 shadow-md':
                 activeTab === tab.id,
@@ -67,7 +67,7 @@
 </template>
 
 <script setup>
-import {onMounted, ref} from 'vue'
+import {computed, onMounted, ref} from 'vue'
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import StatCards from "@/Components/StatCards.vue"
 import dayjs from "dayjs";
@@ -75,6 +75,7 @@ import {Head} from "@inertiajs/vue3";
 import CompletedJobs from "@/Components/Job/DashboardJobView/CompletedJobs.vue";
 import PendingJobs from "@/Components/Job/DashboardJobView/PendingJobs.vue";
 import JobsInProgress from "@/Components/Job/DashboardJobView/JobsInProgress.vue";
+import OverDueJobsComp from "@/Components/Job/DashboardJobView/OverDueJobs.vue";
 let props = defineProps({
     jobs: Array,
     recentActivities: Array,
@@ -82,12 +83,6 @@ let props = defineProps({
 })
 let overdueJobs = ref([])
 let owingCustomers = ref()
-const tabs = [
-    {id: 1, label: 'Pending Jobs', component: PendingJobs, props: {jobs: props.jobs}},
-    {id: 2, label: 'Jobs in progress', component: JobsInProgress, props: {jobs: props.jobs}},
-    {id: 3, label: ' Completed', component: CompletedJobs, props: {jobs: props.jobs}},
-]
-const activeTab = ref(tabs[0].id)
 function getOwingCustomers(customers) {
     const today = new Date();
     return customers.filter(customer => {
@@ -114,10 +109,19 @@ function getOwingCustomers(customers) {
 onMounted(()=>{
     overdueJobs.value = props.jobs.filter(job =>
         job.status !== 'completed' &&
-        dayjs(job.due_date).isBefore(dayjs(), 'day') // due_date is before today
+        dayjs(job.due_date).isBefore(dayjs(), 'day')
     )
+    console.log(overdueJobs.value)
     owingCustomers.value = getOwingCustomers(props.customers.data)
 })
+const tabs = computed(() => [
+    {id: 1, label: 'Pending Jobs', component: PendingJobs, props: {jobs: props.jobs}},
+    {id: 4, label: 'Overdue jobs', component: OverDueJobsComp, props: {overdueJobs: overdueJobs.value}},
+    {id: 2, label: 'Jobs in progress', component: JobsInProgress, props: {jobs: props.jobs}},
+    {id: 3, label: 'Completed', component: CompletedJobs, props: {jobs: props.jobs}},
+])
+
+const activeTab = ref(tabs.value[0].id)
 </script>
 
 <style scoped>

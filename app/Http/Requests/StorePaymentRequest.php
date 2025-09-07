@@ -23,7 +23,8 @@ class StorePaymentRequest extends FormRequest
     {
         return [
             'invoiceId' => 'required|integer|exists:invoices,id',
-            'amount' => 'required|numeric|min:0.01',
+            'amount_in_business_currency' => 'required|numeric|min:0.01',
+            'amount_in_invoice_currency' => 'required|numeric|min:0.01',
             'date' => 'required|date',
             'payment_method' => 'required|string|in:cash,bank_transfer,card,other',
             'notes' => 'nullable|string|max:500',

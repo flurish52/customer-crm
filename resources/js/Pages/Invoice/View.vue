@@ -167,7 +167,10 @@
             <div v-if="invoice.payments && invoice.payments.length > 0" class="pb-6">
                 <PaymentsMade
             :payments="invoice.payments"
+            :invoice="invoice"
             :totalAmount="totalAmount"
+            :currency="invoice?.currency"
+            :totalAmountInBusinessCurrency="totalAmountInBusinessCurrency"
             />
         </div>
         </div>
@@ -176,6 +179,7 @@
                 :invoice="invoice"
                 :personalEmail="user.email"
                 :businessEmail="user.business.business_email"
+                :business="user.business"
                 class="mb-8"
             />
             <InvoiceFooter
@@ -243,8 +247,17 @@ const statusClass = (status) => {
 
 // Sum of filtered payments
 const totalAmount = computed(() => {
-    return props.invoice.payments.reduce((sum, p) => sum + parseFloat(p.amount), 0)
+    return props.invoice.payments
+        .filter(p => !p.is_invalid)
+        .reduce((sum, p) => sum + parseFloat(p.amount_in_invoice_currency || 0), 0)
 })
+
+const totalAmountInBusinessCurrency = computed(() => {
+    return props.invoice.payments
+        .filter(p => !p.is_invalid) // only valid payments
+        .reduce((sum, p) => sum + parseFloat(p.amount_in_business_currency || 0), 0)
+})
+
 
 const totalBalance = computed(() => {
     return props.invoice.total - totalAmount.value

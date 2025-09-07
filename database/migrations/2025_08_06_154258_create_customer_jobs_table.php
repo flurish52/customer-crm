@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('business_id')->constrained()->onDelete('cascade');
             $table->string('job_title');
             $table->text('description')->nullable();
-            $table->enum('status', ['pending', 'in_progress', 'completed', 'overdue', 'cancelled'])
+            $table->enum('status', ['pending', 'in_progress', 'completed', 'cancelled'])
                 ->default('pending');
             $table->decimal('amount', 10, 2)->default(0);
             $table->date('start_date')->nullable();

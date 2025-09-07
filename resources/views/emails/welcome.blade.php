@@ -106,6 +106,7 @@
         .button-container {
             text-align: center;
             margin: 30px 0;
+            color: white;
         }
 
         .button {
@@ -228,7 +229,7 @@
 
     <div class="content">
         <h1>Welcome aboard, {{ $name ?? 'User' }}!</h1>
-        <p>We're absolutely thrilled to welcome you to the entroly family. You've taken the first step toward transforming how you manage your customers and jobs.</p>
+        <p>We're absolutely thrilled to welcome you to the entroly family. You've taken the first step toward transforming how you manage your Clients and jobs.</p>
         <p>At Entroly, we're committed to providing you with tools that make your workflow <span class="highlight">effortless, efficient, and enjoyable</span>.</p>
 
         <div class="features">
@@ -239,7 +240,7 @@
                     </svg>
                 </div>
                 <h3>Streamlined Management</h3>
-                <p>Organize customers and jobs in one place</p>
+                <p>Organize clients and jobs in one place</p>
             </div>
 
             <div class="feature">
@@ -264,11 +265,11 @@
 
     <div class="footer">
         <div class="social-links">
-            <a href="#" class="social-link">Help Center</a>
-            <a href="#" class="social-link">Contact Support</a>
-            <a href="#" class="social-link">Twitter</a>
+            <a href="/help" class="social-link">Help Center</a>
+            <a href="/contact" class="social-link">Contact Support</a>
+            <a href="/https://x.com/entroly" class="social-link">Twitter</a>
         </div>
-        <p>Entroly - Transforming customer and job management</p>
+        <p>Entroly - Transforming clients and job management</p>
         <p class="copyright">&copy; {{ date('Y') }} Entroly. All rights reserved.</p>
     </div>
 </div>

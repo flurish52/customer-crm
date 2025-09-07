@@ -26,8 +26,8 @@
             <AddCustomerModal
                 :customerToEdit="customer"
                 :isEditing="isEditing"
-
                 @closeAddCustomerModal="closeAddCustomerModal"
+                @customerCreated_Updated="refreshPage"
             />
         </div>
 
@@ -44,7 +44,6 @@
                 </svg>
                 Back
             </Link>
-
             <div class="bg-white rounded-xl shadow-sm border border-tertiary-light overflow-hidden mb-8">
                 <!-- Avatar Section (Centered) -->
                 <div class="flex flex-col items-center pt-8">
@@ -122,7 +121,8 @@
                     </div>
                     <div class="p-4 text-center">
                         <p class="text-sm text-gray-500">Total Spent</p>
-                        <p class="text-xl font-bold text-primary-dark">₦ {{ totalSpent }}</p>
+                        <p v-if="business?.settings" class="text-xl font-bold text-primary-dark">{{JSON.parse(business.settings).currency}} {{ totalSpent }}</p>
+                        <p v-else class="text-xl font-bold text-primary-dark">0.00</p>
                     </div>
                     <div class="p-4 text-center">
                         <p class="text-sm text-gray-500">Since</p>
@@ -207,7 +207,7 @@
                             :jobs="customer.jobs || {}"
                             @isEditing="isEditingJobFunc"
                             @showModal="showModalComponent"
-                            @completeJob="openRatingModal"
+                            @jobCompleted="openRatingModal"
                             class=""
                         />
 
@@ -237,9 +237,14 @@
                     </button>
                 </div>
             </div>
-
             <div v-if="activeTab === 'Invoices'">
                 <JobInvoices
+                    :invoices="invoices"
+                    :customerPage="true"
+                />
+            </div>
+            <div v-if="activeTab === 'Activities'">
+                <CustomerActivities
                     :invoices="invoices"
                     :customerPage="true"
                 />
@@ -262,10 +267,13 @@ import PaymentModal from "@/Components/Job/PaymentModal.vue";
 import Jobs from "@/Components/Job/Jobs.vue";
 import TabSystem from "@/Components/TabSystem.vue";
 import JobInvoices from "@/Components/Invoice/JobInvoices.vue";
+import GeneralTips from "@/Components/GeneralTips.vue";
+import CustomerActivities from "@/Components/Customer/CustomerActivities.vue";
 let props = defineProps({
     customer: Object,
     totalSpent: Number,
-    invoices: Array
+    invoices: Array,
+    business: Object,
 })
 let showModal = ref(false)
 let showRatingModal = ref(false)
@@ -311,7 +319,6 @@ const closeAddCustomerModal = () => {
 const refreshPage = () =>{
     router.reload({
         preserveScroll: true,
-        preserveState: true
     })
 }
 let closeModal = () =>{
@@ -329,11 +336,12 @@ const closeRatingModal = () => {
     showRatingModal.value = false
 }
 let completeJob = ({payload, jobId}) =>{
-    axios.patch(`/job_update/status/${jobId}`, {type: 'complete_job', satisfaction_score: payload})
+    axios.patch(`/job_update/status/${jobId.id}`, {type: 'completed', satisfaction_score: payload})
         .then(res=>{
             jobs.value =  res.data.job
             closeRatingModal()
             alert(res.data.message)
+            router.reload({ preserverScroll: true })
         })
 }
 let activeJobs = ref([])

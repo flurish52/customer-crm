@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\GenerateInvoicePdf;
+use App\Jobs\GenerateReceiptJob;
 use App\Models\Invoice;
 use App\Http\Requests\StoreInvoiceRequest;
 use App\Http\Requests\UpdateInvoiceRequest;
 use App\Models\Job;
 use App\Models\User;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -25,11 +26,10 @@ class InvoiceController extends Controller
     {
         return inertia::render('Invoice/Index', [
             'invoices' => Invoice::orderBy('created_at', 'DESC')
-                ->with('items')->where('user_id', Auth::id())
+                ->with('items', 'payments')->where('user_id', Auth::id())
             ->paginate(),
         ]);
     }
-
     public function viewInvoice(Invoice $invoice)
     {
         if ($invoice->user_id !== Auth::id()) return;
@@ -37,7 +37,7 @@ class InvoiceController extends Controller
         $invoice->load([
             'items',
             'payments' => function ($query) {
-                $query->orderBy('paid_at', 'desc');
+                $query->orderBy('created_at', 'desc');
             }
         ]);
         return inertia::render('Invoice/View', [
@@ -54,27 +54,49 @@ class InvoiceController extends Controller
         $job->load('customer', 'business');
         return $job;
     }
-
-
-    public function downloadInvoice($id)
+    public function downloadInvoice($invoice)
     {
-        $invoice = Invoice::with('items', 'payments')->findOrFail($id);
+        if (!($invoice instanceof Invoice)) {
+            $invoice = Invoice::findOrFail($invoice);
+        }
 
-        // Decode snapshots into PHP objects
-        $business = json_decode($invoice->business_snapshot);
-        $customer = json_decode($invoice->customer_snapshot);
-        $payments = $invoice->payments;
-        $job = $invoice->job_snapshot ? json_decode($invoice->job_snapshot) : null;
+        $pdfPath = 'invoices/pdfs/invoice-' . $invoice->invoice_number . '.pdf';
+        $fullPath = storage_path('app/public/' . $pdfPath);
 
-        $pdf = PDF::loadView('pdf.Invoice', [
-            'invoice' => $invoice,
-            'business' => $business,
-            'customer' => $customer,
-            'payments' => $payments,
-            'job' => $job
-        ]);
+        // Ensure the directory exists
+        $directory = dirname($fullPath);
+        if (!file_exists($directory)) {
+            mkdir($directory, 0755, true);
+        }
 
-        return $pdf->download('invoice-'.$invoice->invoice_number.'.pdf');
+        // Generate PDF if missing
+        if (!$invoice->pdf_path || !file_exists($fullPath)) {
+            GenerateInvoicePdf::dispatch($invoice->id);
+            return response()->json([
+                'message' => 'Invoice is being generated. Please try again in a few seconds.'
+            ], 202);
+        }
+
+        return response()->download($fullPath);
+    }
+
+
+    public function serveInvoice($invoice)
+    {
+        // Same logic reused
+        if ($invoice instanceof Invoice) {
+            $invoice = $invoice;
+        } else {
+            $invoice = Invoice::findOrFail($invoice);
+        }
+
+        $path = storage_path('app/public/' . $invoice->pdf_path);
+
+        if (!$invoice->pdf_path || !file_exists($path)) {
+            abort(404, 'Invoice not ready yet');
+        }
+
+        return response()->download($path);
     }
 
 
@@ -85,19 +107,15 @@ class InvoiceController extends Controller
     public function store(StoreInvoiceRequest $request)
     {
         DB::beginTransaction();
-
         $job = Job::with('customer', 'business')->findOrFail($request->job_id);
         $business = $job->business;
         $customer = $job->customer;
-
         $logoPath = $business->logo_path;
         $logoFilename = basename($logoPath);
         $invoiceLogoPath = 'invoices/logos/' . $logoFilename;
-
         if (!Storage::disk('public')->exists($invoiceLogoPath)) {
             Storage::disk('public')->copy($logoPath, $invoiceLogoPath);
         }
-
         $invoice = Invoice::create([
             'invoice_number' => 'INV-' . strtoupper(Str::random(8)),
             'user_id'        => Auth::id(),
@@ -128,11 +146,12 @@ class InvoiceController extends Controller
                 'phone'   => $business->business_phone,
                 'address' => $business->business_address,
                 'logo'    => $invoiceLogoPath,
+                'currency'    => json_decode($business->settings)->currency,
             ]),
 
             'issue_date' => $request->issue_date,
             'due_date'   => $request->due_date,
-            'status'     => 'pending',
+            'status'     => $request->status,
 
             'subtotal'   => $request->total['subtotal'],
             'tax'        => $request->total['vat'] ?? 0,
@@ -151,8 +170,8 @@ class InvoiceController extends Controller
                 'total'       => $item['quantity'] * $item['unit_price'],
             ]);
         }
+        GenerateInvoicePdf::dispatch($invoice->id);
         DB::commit();
-
         return response()->json([
             'success' => true,
             'invoice' => $invoice
@@ -183,7 +202,7 @@ class InvoiceController extends Controller
     {
 
         $data = $request->validate([
-            'selectedStatus' => 'required|string|in:paid,pending,overdue,cancelled',
+            'selectedStatus' => 'required|string|in:paid,unpaid,overdue,cancelled',
         ]);
         $invoice->status = $data['selectedStatus'];
         $invoice->save();
@@ -195,50 +214,39 @@ class InvoiceController extends Controller
      */
 
 
-
     public function sendInvoiceInvoice(Request $request, Invoice $invoice)
     {
-
         $replyTo = $request->replyToEmail;
         $authUser = User::with('business')->find(auth()->id());
         $allowedEmails = [
             $authUser->email,
             $authUser->business->business_email ?? null,
-            json_decode($invoice->business_snapshot, true)['email']?? null
+            json_decode($invoice->business_snapshot, true)['email'] ?? null
         ];
         if (!in_array($replyTo, array_filter($allowedEmails))) {
             return response()->json(['message' => 'Invalid reply-to email'], 403);
         }
-
         $email = $request->email;
         $message = $request->message ?? 'Please find attached invoice for your necessary action.';
-        $invoiceId = $invoice->id;
-        $fromName = $request->from_name?? $authUser->business->name;
+        $fromName = $request->from_name ?? $authUser->business->name;
         $subject = $request->subject;
 
-        $invoice->load('items', 'payments')->findOrFail($invoiceId);
-        $business = json_decode($invoice->business_snapshot);
-        $job = json_decode($invoice->job_snapshot);
-        $payments = $invoice->payments;
-        $customer = json_decode($invoice->customer_snapshot);
-        $pdf = PDF::loadView('pdf.Invoice', [
-            'invoice' => $invoice,
-            'business' => $business,
-            'job' => $job,
-            'payments' => $payments,
-            'customer' => $customer,
-        ]);
+        $filePath = $invoice->pdf_path;
+        if (!$filePath || !Storage::disk('public')->exists($filePath)) {
+            return response()->json(['message' => 'Invoice file not found'], 404);
+        }
 
-        $pdfContent = base64_encode($pdf->output());
+        $pdfContent = base64_encode(Storage::disk('public')->get($filePath));
         Resend::emails()->send([
-            'from' => $fromName.'<user@entroly.com.ng>',
+            'from' => $fromName .'<user@entroly.com.ng>',
             'reply_to' => $replyTo,
+            'bcc' => [$replyTo],
             'to' => $email,
             'subject' => $subject,
-            'html' => '<p>'.$message.'</p>',
+            'html' => '<p>' . $message . '</p>',
             'attachments' => [
                 [
-                    'filename' => 'invoice-'.$invoice->invoice_number.'.pdf',
+                    'filename' => 'invoice-' . $invoice->invoice_number . '.pdf',
                     'content' => $pdfContent,
                     'type' => 'application/pdf'
                 ]
@@ -246,9 +254,6 @@ class InvoiceController extends Controller
         ]);
         return response()->json(['status' => 'success', 'message' => 'Email with invoice sent']);
     }
-
-
-
 
 
     public function destroy(Invoice $invoice)

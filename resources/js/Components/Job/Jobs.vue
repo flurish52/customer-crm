@@ -35,6 +35,9 @@
                             </span>
                         </div>
                     </div>
+                    <span v-if="isOverdueJob(job)" class="bg-red-800 text-white px-2 rounded-md">
+                       Overdue
+                    </span>
                     <span
                         :class="{
                             'bg-gray-100 text-gray-700': !job.status,
@@ -45,7 +48,7 @@
                         }"
                         class="text-xs font-medium px-3 py-1 rounded-full capitalize shadow-sm transform transition-all hover:scale-105"
                     >
-                        {{ job.status || 'Pending' }}
+                        {{ job.status}}
                     </span>
                 </div>
                 <!-- Job Details -->
@@ -63,7 +66,7 @@
                                 </div>
                                 <div>
                                     <p class="text-xs text-gray-500">Expected Amount</p>
-                                    <p class="text-sm font-medium">{{ formatCurrency(job.amount) }}</p>
+                                    <p class="text-sm font-medium">{{ job.amount }}</p>
                                 </div>
                             </div>
                             <div v-if="job.due_date" class="flex items-center">
@@ -104,12 +107,12 @@
                                 <div>
                                     <p class="text-xs text-gray-500">Billed</p>
                                     <p class="text-sm font-medium text-green-600">
-                                        {{ formatCurrency(getJobBilledAmount(job)) }}</p>
+                                       {{totalPaidPerJob(job).currency}} {{ getJobBilledAmount(job)}}</p>
                                 </div>
                                 <div>
                                     <p class="text-xs text-gray-500">Paid</p>
                                     <p class="text-sm font-medium text-green-600">
-                                        {{ formatCurrency(totalPaidPerJob(job)) }}</p>
+                                        {{totalPaidPerJob(job).currency }} {{totalPaidPerJob(job).total }}</p>
                                 </div>
                                 </div>
                             </div>
@@ -125,7 +128,7 @@
                                 <div>
                                     <p class="text-xs text-gray-500">Balance</p>
                                     <p class="text-sm font-medium" :class="getBalanceClass(job)">
-                                        {{ formatCurrency(getJobBalance(job)) }}</p>
+                                        {{totalPaidPerJob(job).currency}} {{ getJobBalance(job)}}</p>
                                 </div>
                             </div>
                         </div>
@@ -149,11 +152,12 @@
                                     type="button"
                                     v-if="job.status !== 'completed'"
                                     :disabled="isDisabled || isLoading"
-                                    @click="$emit('completeJob', {payload: job.id})"
-                                    class="flex items-center justify-center gap-2 h-6 w-6 rounded-2xl border border-emerald-600 text-emerald-700 hover:bg-emerald-50 disabled:opacity-60 disabled:cursor-not-allowed shadow-sm"
+                                    @click="openRatingModal(job)"
+                                    class="flex items-center justify-between gap-2 h-6 w-6 rounded-2xl border border-emerald-600 text-emerald-700 hover:bg-emerald-50 disabled:opacity-60 disabled:cursor-not-allowed shadow-sm"
                                     aria-label="Mark complete"
                                     title="Mark complete"
                                 >
+
                                     <svg
                                         v-if="!loading"
                                         xmlns="http://www.w3.org/2000/svg"
@@ -179,7 +183,6 @@
                                         <path d="M22 12a10 10 0 0 1-10 10" stroke="currentColor" stroke-width="4"
                                               opacity="0.95"/>
                                     </svg>
-
                                 </button>
                                 <button
                                     @click.stop="selectJob(job)"
@@ -195,6 +198,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                               d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                     </svg>
+                                    View
                                 </button>
                                 <button
                                     @click.stop="editJob(job)"
@@ -207,6 +211,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                               d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                     </svg>
+                                    Edit
                                 </button>
                                 <button
                                     @click.stop="deleteJob(job)"
@@ -219,6 +224,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                               d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                     </svg>
+                                    Delete
                                 </button>
                             </div>
                         </div>
@@ -264,7 +270,6 @@ import {gsap} from 'gsap';
 import dayjs from 'dayjs';
 import {router} from "@inertiajs/vue3";
 import ViewJob from "@/Components/Job/ViewJob.vue";
-
 const props = defineProps({
     jobs: {
         type: Array,
@@ -278,9 +283,8 @@ const selectedJob = ref(null);
 const customer = ref({});
 const isEditingJob = ref(false);
 const jobToEdit = ref({});
-
-const openRatingModal = (jobId) => {
-    emits('jobCompleted', {payload: jobId})
+const openRatingModal = (job) => {
+    emits('jobCompleted', {payload: job})
 }
 let isLoading = ref(false)
 let isDisabled = ref(false)
@@ -290,10 +294,9 @@ const getJobBilledAmount = (job) => {
         .filter(invoice => invoice.status !== 'cancelled')
         .reduce((sum, invoice) => sum + Number(invoice.total || 0), 0)
 }
-
 const getJobBalance = (job) => {
     const billed = getJobBilledAmount(job)
-    const paid = totalPaidPerJob(job) || 0
+    const paid = totalPaidPerJob(job).total || 0
     return billed - paid
 }
 const getBalanceClass = (job) => {
@@ -301,19 +304,6 @@ const getBalanceClass = (job) => {
     // if (balance <= 0) return 'text-green-600';
     // if (dayjs().isAfter(dayjs(job.due_date)) && job.status !== 'completed') return 'text-yellow-600';
     return 'text-red-600';
-};
-const getTotalPaid = (invoice) => {
-    if (!invoice || !invoice.payments) return 0;
-    return invoice.payments.reduce((sum, p) => {
-        return 'asdfasdf' + sum + Number(p.amount);
-    }, 0);
-};
-
-const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'NGN',
-    }).format(amount)
 };
 const formatDate = (dateString) => {
     if (!dateString) return 'Not set';
@@ -372,14 +362,21 @@ const enter = (el, done) => {
         onComplete: done
     });
 };
-
-// Stats computation
 const totalPaidPerJob = (job) => {
-    if (!job.invoices) return 0
-    return job.invoices
-        .flatMap(invoice => invoice.payments || [])
-        .filter(payment => payment.status !== 'cancelled')
-        .reduce((sum, payment) => sum + Number(payment.amount || 0), 0)
+    if (!job.invoices) return { total: 0, currency: null }
+    for (const invoice of job.invoices) {
+        const payments = (invoice.payments || [])
+            .filter(payment => payment && (payment.is_invalid === 0 || payment.is_invalid === false))
+        if (payments.length > 0) {
+            const total = payments.reduce((sum, payment) => sum + Number(payment.amount_in_invoice_currency || 0), 0)
+            return { total, currency: invoice.currency }
+        }
+    }
+
+    return { total: 0, currency: job.invoices[0]?.currency || null }
+}
+const isOverdueJob = (job) => {
+    return dayjs(job.due_date).isBefore(dayjs()) && job.status !== 'completed'
 }
 
 </script>

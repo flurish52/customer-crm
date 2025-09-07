@@ -44,7 +44,7 @@
 
                         <label class="flex items-center space-x-3 cursor-pointer">
                             <div class="relative inline-block w-12 h-6 rounded-full bg-gray-300">
-                                <input type="checkbox" v-model="useCustomerEmail" class="absolute w-0 h-0 opacity-0">
+                                <input type="checkbox" v-model="useCustomerEmail"  class="absolute w-0 h-0 opacity-0">
                                 <span
                                     class="toggle-label absolute cursor-pointer top-0 left-0 right-0 bottom-0 rounded-full transition duration-200"
                                     :class="{'bg-indigo-100': useCustomerEmail}"></span>
@@ -54,7 +54,7 @@
                             </div>
                             <span class="text-gray-700">Use Client email
                 <span class="text-indigo-600 font-semibold ml-1">{{
-                        JSON.parse(invoice.business_snapshot).email
+                        JSON.parse(invoice.customer_snapshot).email
                     }}</span>
               </span>
                         </label>
@@ -117,6 +117,7 @@
                                     type="radio"
                                     value="business"
                                     v-model="replyToOption"
+                                    checked
                                     class="text-indigo-600 focus:ring-indigo-500 h-4 w-4"
                                 />
                                 <span class="text-gray-700">Business email <span
@@ -223,12 +224,13 @@ const props = defineProps({
     invoice: Object,
     personalEmail: String,
     businessEmail: String,
+    business: Object,
 })
 
 const show = ref(false)
 const useCustomerEmail = ref(false)
-const fromName = ref('')
-const subject = ref('')
+const fromName = ref(props.business.business_name)
+const subject = ref('Invoice from ' + props.business.business_name)
 const message = ref('')
 const recipientEmail = ref('')
 let emailOnInvoice = ref(JSON.parse(props.invoice.business_snapshot).email)
@@ -256,11 +258,11 @@ const sendInvoice = async () => {
         if (replyToOption.value === 'business') return props.businessEmail;
         if (replyToOption.value === 'personal') return props.personalEmail;
         if (replyToOption.value === 'receipt') return emailOnInvoice.value;
-        return null
+        return props.businessEmail
     });
 
     const emailToSend = useCustomerEmail.value
-        ? JSON.parse(props.invoice.business_snapshot).email
+        ? JSON.parse(props.invoice.customer_snapshot).email
         : recipientEmail.value
 
     if (!emailToSend) {

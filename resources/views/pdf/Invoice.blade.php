@@ -143,8 +143,8 @@
                     <td><strong>{{ $item->name }}</strong></td>
                     <td>{{ $item->description }}</td>
                     <td style="text-align: center;">{{ $item->quantity }}</td>
-                    <td style="text-align: right;">{{ number_format($item->unit_price, 2) }} {{ $invoice->currency }}</td>
-                    <td style="text-align: right;">{{ number_format($item->total, 2) }} {{ $invoice->currency }}</td>
+                    <td style="text-align: right;"> {{ $invoice->currency }} {{ number_format($item->unit_price, 2) }}</td>
+                    <td style="text-align: right;"> {{ $invoice->currency }} {{ number_format($item->total, 2) }}</td>
                 </tr>
             @endforeach
             </tbody>
@@ -155,19 +155,19 @@
     <div class="totals">
         <div class="total-row">
             <div class="total-label">Subtotal:</div>
-            <div class="total-value">{{ number_format($invoice->subtotal, 2) }} {{ $invoice->currency }}</div>
+            <div class="total-value"> {{ $invoice->currency }} {{ number_format($invoice->subtotal, 2) }}</div>
         </div>
         <div class="total-row">
             <div class="total-label">Tax:</div>
-            <div class="total-value">{{ number_format($invoice->tax, 2) }} {{ $invoice->currency }}</div>
+            <div class="total-value"> {{ $invoice->currency }} {{ number_format($invoice->tax, 2) }}</div>
         </div>
         <div class="total-row">
             <div class="total-label">Discount:</div>
-            <div class="total-value">-{{ number_format($invoice->discount, 2) }} {{ $invoice->currency }}</div>
+            <div class="total-value"> {{ $invoice->currency }} {{ number_format($invoice->discount, 2) }}</div>
         </div>
         <div class="total-row grand-total">
             <div class="total-label">TOTAL:</div>
-            <div class="total-value">{{ number_format($invoice->total, 2) }} {{ $invoice->currency }}</div>
+            <div class="total-value">{{ $invoice->currency }} {{ number_format($invoice->total, 2) }}</div>
         </div>
     </div>
 
@@ -186,46 +186,25 @@
             <h2 class="text-xl font-bold text-gray-800">Payments Made</h2>
             <span class="text-sm text-gray-500" style="text-align: right">{{ count($payments) }} Records</span>
         </div>
-
+        <hr>
         <!-- Table -->
         <div class="overflow-x-auto bg-white shadow rounded-lg">
             <table class="min-w-full text-sm">
-                <thead>
-                <tr class="bg-gray-100 text-left text-gray-700">
-                    <th class="py-2 px-4 border">#</th>
-                    <th class="py-2 px-4 border">Amount</th>
-                    <th class="py-2 px-4 border">Method</th>
-                    <th class="py-2 px-4 border">Paid At</th>
-                    <th class="hidden md:table-cell py-2 px-4 border">Notes</th>
-                </tr>
-                </thead>
-                <tbody>
-                @foreach($payments as $index => $payment)
-                    <tr class="hover:bg-gray-50">
-                        <td class="py-2 px-4 border">{{ $index + 1 }}</td>
-                        <td class="py-2 px-4 border font-semibold">{{ $invoice->curency }}{{number_format($payment->amount, 2) }}</td>
-                        <td class="py-2 px-4 border capitalize">{{ str_replace('_', ' ', $payment->method) }}</td>
-                        <td class="py-2 px-4 border">{{ $payment->paid_at }}</td>
-                        <td class="hidden md:table-cell py-2 px-4 border">{{ $payment->notes ?? '-' }}</td>
-                    </tr>
-                @endforeach
-                </tbody>
-
-                <!-- Totals -->
                 <tfoot>
                 <tr class="bg-gray-50 font-bold text-gray-800">
-                            <td colspan="2" >Total Paid:</td>
-                            <td colspan="3" style="text-align: right">{{ number_format($payments->sum('amount'), 2) }}</td>
-{{--                    <td colspan="3" class="py-3 px-4 text-right">--}}
-{{--                        <span>Balance: {{ number_format($invoice->amount - $payments->sum('amount'), 2) }}</span>--}}
-{{--                    </td>--}}
+                    <td colspan="2">Total Paid:</td>
+                    <td colspan="3" class="text-right">{{ $invoice->currency }} {{ number_format($totalPaid, 2) }}</td>
+                </tr>
+                <tr class="bg-gray-50 font-bold text-gray-800">
+                    <td colspan="2">Balance:</td>
+                    <td colspan="3" class="text-right"> {{ $invoice->currency }} {{ number_format($balance, 2) }}</td>
                 </tr>
                 </tfoot>
+
             </table>
         </div>
     </div>
     @endif
-
     <!-- Footer -->
     <div class="footer">
         <div>{{ $business->name }} | {{ $business->email }} | {{ $business->phone }}</div>

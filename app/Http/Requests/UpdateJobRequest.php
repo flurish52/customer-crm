@@ -29,12 +29,9 @@ class UpdateJobRequest extends FormRequest
             'description' => 'nullable|string',
             'status' => 'required|in:pending,completed,cancelled,in_progress',
             'amount' => 'required|numeric|min:0',
-            'start_date' => 'nullable|date',
-            'due_date' => 'nullable|date',
+            'start_date' => 'required|date',
+            'due_date' => 'required|date',
             'completed_at' => 'nullable|date',
-            'completedExtras.amount_paid' => 'nullable|required_if:status,completed|numeric|min:0',
-            'completedExtras.satisfaction' => 'nullable|required_if:status,completed|integer|between:1,5',
-            'completedExtras.payment_method' => 'nullable|required_if:status,completed|string',
         ];
 
     }

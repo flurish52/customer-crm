@@ -11,7 +11,7 @@
             <div class="p-6">
                 <div class="text-center">
                     <h3 class="text-xl font-bold text-primary-dark mb-2">Rate his satisfaction</h3>
-                    <p class="text-secondary-dark mb-6">How would you rate your customer's satisfaction?</p>
+                    <p class="text-secondary-dark mb-6">How would you rate your satisfaction with this client?</p>
                     <!-- Rating Options with Emoji and Label -->
                     <div class="flex flex-col items-center mb-8">
                         <div class="flex justify-center space-x-2 mb-2">
@@ -89,7 +89,6 @@ const getEmoji = (rating) => {
 
 const submitRating = async () => {
     if (!selectedRating.value || !props.jobId) return
-
     emits('submit', {payload: selectedRating.value, jobId: props.jobId})
 }
 const close = ()=>{

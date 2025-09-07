@@ -1,136 +1,269 @@
-<template>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receipt #{{ $receipt['receipt_number'] }}</title>
+    <style>
+        /* Base styles optimized for PDF */
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #2d3748;
+            background-color: #ffffff;
+            line-height: 1.4;
+            font-size: 12px;
+        }
 
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
-        <div>
-            <h1 class="text-2xl font-bold text-primary-dark">Customer Management</h1>
-            <p class="text-secondary-dark">View and manage all your customers</p>
+        .container {
+            width: 100%;
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            padding: 25px;
+            box-sizing: border-box;
+        }
+
+        /* Header section */
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding: 20px 0;
+            border-bottom: 2px solid #e2e8f0;
+            position: relative;
+        }
+
+        .header h1 {
+            color: #2d3748;
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0 0 8px 0;
+            letter-spacing: 0.5px;
+        }
+
+        .header p {
+            color: #718096;
+            font-size: 14px;
+            margin: 4px 0;
+        }
+
+        .payment-amount {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 15px 0;
+            color: #2d3748;
+            letter-spacing: 0.5px;
+        }
+
+        .status {
+            display: inline-block;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 6px 12px;
+            margin-top: 8px;
+            border-radius: 20px;
+            color: white;
+            background: #38a169;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        /* Summary cards */
+        .summary-container {
+            width: 100%;
+            margin: 20px 0;
+            display: table;
+            border-collapse: separate;
+            border-spacing: 10px;
+        }
+
+        .summary-card {
+            display: table-cell;
+            width: 33.33%;
+            text-align: center;
+            padding: 15px 10px;
+            border-radius: 8px;
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            vertical-align: middle;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+        }
+
+        .summary-card.primary {
+            background: #ebf8ff;
+            border-color: #bee3f8;
+        }
+
+        .summary-card h3 {
+            font-size: 12px;
+            font-weight: normal;
+            color: #718096;
+            margin: 0 0 8px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .summary-card .amount {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2d3748;
+        }
+
+        /* Details section */
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #2d3748;
+            margin: 25px 0 15px 0;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .details-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+
+        .details-table tr {
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        .details-table tr:last-child {
+            border-bottom: none;
+        }
+
+        .details-table td {
+            padding: 10px 5px;
+            font-size: 13px;
+            vertical-align: top;
+        }
+
+        .detail-label {
+            color: #718096;
+            font-weight: 500;
+            width: 40%;
+        }
+
+        .detail-value {
+            text-align: right;
+            font-weight: 500;
+            color: #2d3748;
+            width: 60%;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #718096;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .footer p {
+            margin: 5px 0;
+        }
+
+        .note {
+            font-style: italic;
+            margin: 15px 0;
+            padding: 10px;
+            background: #f7fafc;
+            border-radius: 6px;
+            border-left: 3px solid #bee3f8;
+        }
+
+        /* Decorative elements */
+        .decoration {
+            position: absolute;
+            top: 0;
+            right: 0;
+            opacity: 0.1;
+            font-size: 60px;
+            transform: rotate(15deg);
+        }
+
+        /* Utility classes */
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-20 {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div class="decoration">✓</div>
+        <h1>Payment Successful</h1>
+        <p>{{ $receipt['business'] }} received your payment</p>
+        <p class="payment-amount">{{ $receipt['currency'] }} {{ $receipt['payment_amount'] }}</p>
+        <span class="status">COMPLETED</span>
+    </div>
+
+    <div class="summary-container">
+        <div class="summary-card primary">
+            <h3>Total Amount</h3>
+            <div class="amount">{{ $receipt['currency'] }} {{ $receipt['total_amount'] }}</div>
         </div>
-        <div class="flex gap-3 flex-col-reverse md:flex-row">
-            <button
-                @click="openAddCustomerModal"
-                class="flex flex-col md:flex-row items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-secondary-dark transition-colors"
-            >
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                     stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                </svg>
-                Add Customer
-            </button>
-            <div>
-                <SearchComponent
-                    @sendSearchQuery="sendSearchQuery"
-                />
-            </div>
+
+        <div class="summary-card primary">
+            <h3>Total Paid</h3>
+            <div class="amount">{{ $receipt['currency'] }} {{ $receipt['total_paid'] }}</div>
+        </div>
+
+        <div class="summary-card">
+            <h3>Balance</h3>
+            <div class="amount">{{ $receipt['currency'] }} {{ $receipt['remaining_balance'] }}</div>
         </div>
     </div>
-    <CustomerList
-        @openAddCustomerModal="openAddCustomerModal"
-        :searchQuery="searchQuery"
-        @isEditing="editCustomer"
-        :newUpdate="newUpdate"
-    />
 
-    <!-- Add Customer Modal -->
-    <div v-if="showAddCustomerModal"
-         @click.self="closeAddCustomerModal"
-         class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <AddCustomerModal
-            :customerToEdit="customerToEdit"
-            :isEditing="isEditing"
-            @customerCreated_Updated="customerCreated_Updated"
-            @closeAddCustomerModal="closeAddCustomerModal"
-        />
-    </div>
+    <h2 class="section-title">Receipt Details</h2>
+    <table class="details-table">
+        <tr>
+            <td class="detail-label">Receipt Number</td>
+            <td class="detail-value">{{ $receipt['receipt_number'] }}</td>
+        </tr>
+        <tr>
+            <td class="detail-label">Invoice Number</td>
+            <td class="detail-value">{{ $receipt['invoice_number'] }}</td>
+        </tr>
+        <tr>
+            <td class="detail-label">Business</td>
+            <td class="detail-value">{{ $receipt['business'] }}</td>
+        </tr>
+        <tr>
+            <td class="detail-label">Customer</td>
+            <td class="detail-value">{{ $receipt['customer'] }}</td>
+        </tr>
+        <tr>
+            <td class="detail-label">Job/Service</td>
+            <td class="detail-value">{{ $receipt['job'] }}</td>
+        </tr>
+        <tr>
+            <td class="detail-label">Payment Method</td>
+            <td class="detail-value">{{ $receipt['method'] }}</td>
+        </tr>
+        <tr>
+            <td class="detail-label">Payment Date</td>
+            <td class="detail-value">{{ $receipt['date'] }}</td>
+        </tr>
+    </table>
 
-
-
-
-
-
-
-    <button
-        @click="toggleQuickActions"
-        class="p-2 rounded-full text-primary hover:text-primary hover:bg-tertiary-light focus:outline-none transition-colors duration-200"
-    >
-        <span class="sr-only">Quick actions</span>
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-             stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-        </svg>
-    </button>
-    </div>
-
-    <!-- Quick actions dropdown menu -->
-    <transition
-        enter-active-class="transition ease-out duration-100"
-        enter-from-class="transform opacity-0 scale-95"
-        enter-to-class="transform opacity-100 scale-100"
-        leave-active-class="transition ease-in duration-75"
-        leave-from-class="transform opacity-100 scale-100"
-        leave-to-class="transform opacity-0 scale-95"
-    >
-        <div
-            v-show="showQuickActions"
-            class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-50"
-        >
-            <div class="py-1">
-                <button
-                    @click="openAddCustomerModal"
-                    class="group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-tertiary-light hover:text-primary"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg"
-                         class="mr-3 h-5 w-5 text-gray-400 group-hover:text-primary"
-                         fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                    </svg>
-                    New Customer
-                </button>
-                <a
-                    href="#"
-                    class="group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-tertiary-light hover:text-primary-DEFAULT"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg"
-                         class="mr-3 h-5 w-5 text-gray-400 group-hover:text-primary"
-                         fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                    </svg>
-                    Generate Receipt
-                </a>
-                <a
-                    href="#"
-                    class="group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-tertiary-light hover:text-primary-DEFAULT"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg"
-                         class="mr-3 h-5 w-5 text-gray-400 group-hover:text-primary-DEFAULT"
-                         fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
-                    </svg>
-                    Export Data
-                </a>
-            </div>
+    <div class="footer">
+        <div class="note">
+            {{ $receipt['note'] ?: 'Thank you for your business!' }}
         </div>
-    </transition>
-
-</template>
-
-<script setup>
-import AddCustomerModal from "@/Components/Customer/AddCustomerModal.vue";
-import CustomerList from "@/Components/Customer/CustomerList.vue";
-import SearchComponent from "@/Components/SearchComponent.vue";
-
-const editCustomer = ({payload}) => {
-    customerToEdit.value = payload
-    isEditing.value = true
-    openAddCustomerModal()
-}
-
-</script>
-
-<style scoped>
-
-</style>
+        <p>{{ $receipt['business'] }}</p>
+        <p class="mt-20">
+            This receipt was generated on {{ \Carbon\Carbon::now()->format('M d, Y') }}
+        </p>
+    </div>
+</div>
+</body>
+</html>

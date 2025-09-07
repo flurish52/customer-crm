@@ -38,6 +38,7 @@
                             <input
                                 type="email"
                                 id="email"
+                                required
                                 v-model="newCustomer.email"
                                 class="mt-1 block w-full border border-tertiary-dark rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-light focus:border-primary-light"
                             >
@@ -99,18 +100,25 @@
                             >
                                 Cancel
                             </button>
-                            <button
-                                type="submit"
-                                class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary-light"
-                            >
-                                Save Customer
-                            </button>
+                            <div>
+                                <button
+                                    type="submit"
+                                    :disabled="loading"
+                                    class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary-light flex items-center justify-center"
+                                >
+                                    <span v-if="!loading">Save Customer</span>
+                                    <svg v-else class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                                    </svg>
+                                </button>
+                            </div>
+
                         </div>
                     </div>
                 </form>
             </div>
         </div>
-
 </template>
 
 <script setup>
@@ -148,12 +156,25 @@ const resetNewCustomer = () => {
 const photoPreview = ref(null)
 const previewPhoto = (event) => {
     const file = event.target.files[0]
-    if (file) {
-        newCustomer.value.avatar = file
-        photoPreview.value = URL.createObjectURL(file)
+    if (!file) return
+
+    const maxSizeMB = 2
+    const maxSizeBytes = maxSizeMB * 1024 * 1024
+
+    if (file.size > maxSizeBytes) {
+        alert(`File size should not exceed ${maxSizeMB} MB`)
+        event.target.value = ''
+        return
     }
+    newCustomer.value.avatar = file
+    photoPreview.value = URL.createObjectURL(file)
 }
+
+const loading = ref(false);
+
 const saveCustomer = () => {
+    loading.value = true;
+
     const formData = new FormData()
     formData.append('name', newCustomer.value.name)
     formData.append('email', newCustomer.value.email)
@@ -163,25 +184,31 @@ const saveCustomer = () => {
     formData.append('address', newCustomer.value.address)
     formData.append('note', newCustomer.value.note)
 
-    if (props.isEditing === true){
-        axios.post(`/customer_update/${props.customerToEdit.id}?_method=PATCH`, formData)
-            .then(res=>{
-                closeAddCustomerModal()
-            })
-        emit('customerCreated_Updated')
-    }else {
-    axios.post('/customer_store', formData, {
-        headers: {
-            'Content-Type': 'multipart/form-data'
+    const request = props.isEditing
+        ? axios.post(`/customer_update/${props.customerToEdit.id}?_method=PATCH`, formData)
+        : axios.post('/customer_store', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+
+    request.then(res => {
+        alert('Success! Click the view icon to manage the client.')
+        if (!props.isEditing) resetNewCustomer();
+        closeAddCustomerModal();
+        emit('customerCreated_Updated');
+    }).catch(error => {
+        const msg = error.response?.data?.message || 'Something went wrong';
+        if (msg.includes('Duplicate entry')) {
+            alert('This phone number is already used for another client')
+        } else if (msg.includes('email')) {
+            alert('This email has already been used for a different client')
+        } else if (msg.includes('required') && msg.includes('email')) {
+            alert('Email field cannot be empty')
+        } else {
+            alert(msg)
         }
-    })
-        .then(res=>{
-            resetNewCustomer()
-            closeAddCustomerModal()
-        emit('customerCreated_Updated')
-        })
-    }
+    }).finally(() => {
+        loading.value = false;
+    });
 }
+
 const closeAddCustomerModal=()=>{
     resetNewCustomer()
     emit('closeAddCustomerModal')

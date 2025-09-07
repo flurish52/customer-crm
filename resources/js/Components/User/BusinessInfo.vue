@@ -1,5 +1,5 @@
 <script setup>
-import {useForm, Head} from '@inertiajs/vue3';
+import {useForm, Head, router} from '@inertiajs/vue3';
 import {onMounted, ref} from "vue";
 import {watch} from "vue";
 
@@ -91,7 +91,10 @@ const submit = () => {
     }
     const options = {
         forceFormData: true,
-        onSuccess: () => alert(form.id ? 'Updated successfully!' : 'Saved successfully!'),
+        onSuccess: () => {
+            alert(form.id ? 'Business details updated successfully!' : 'Business details saved successfully!')
+            router.visit(window.location.href, {preventScroll: true})
+        },
         onError: () => {
         }
     };

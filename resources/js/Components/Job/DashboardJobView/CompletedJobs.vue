@@ -40,7 +40,6 @@
             </tbody>
         </table>
     </div>
-
     <!-- Mobile Card View -->
     <div class="block md:hidden space-y-4">
         <div v-for="job in completedJobs" :key="job.id"
@@ -73,7 +72,7 @@
                 </div>
                 <div class="flex flex-col space-y-2">
                     <Link :href="`/dashboard/job/${job.id}/view`"
-                          class="px-3 py-1 bg-secondary text-white rounded-md hover:bg-secondary-dark transition-colors font-medium">
+                          class="text-center px-3 py-1 bg-secondary text-white rounded-md hover:bg-secondary-dark transition-colors font-medium">
                         View
                     </Link>
                 </div>
@@ -95,10 +94,16 @@ const props = defineProps({
 })
 const {jobs} = toRefs(props)
 const completedJobs = computed(() => jobs.value.filter(job => job.status === 'completed'))
-const billedAmount = (job) => job.invoices.reduce((sum, inv) => sum + parseFloat(inv.total || 0), 0)
+const billedAmount = (job) => job.invoices
+    .filter(inv => inv.status !== 'cancelled')
+    .reduce((sum, inv) => sum + parseFloat(inv.total || 0), 0)
+
 const paidAmount = (job) => job.invoices.reduce((sum, inv) => {
-    return sum + inv.payments.reduce((pSum, pay) => pSum + parseFloat(pay.amount || 0), 0)
+    return sum + inv.payments
+        .filter(pay => !pay.is_invalid) // only valid payments
+        .reduce((pSum, pay) => pSum + parseFloat(pay.amount_in_invoice_currency || 0), 0)
 }, 0)
+
 const balanceAmount = (job) => billedAmount(job) - paidAmount(job)
 const jobCurrency = (job) => {
     const invoice = job.invoices.find(inv => inv.status !== 'cancelled')

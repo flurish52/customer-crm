@@ -3,14 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Models\Activity;
+use App\Models\Business;
 use App\Models\Customer;
 use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateCustomerRequest;
 use App\Models\Invoice;
 use App\Models\Job;
+use App\Models\Payment;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
+use Intervention\Image\Encoders\WebpEncoder;
+use Intervention\Image\Laravel\Facades\Image;
+
+// add this
 
 class CustomerController extends Controller
 {
@@ -20,22 +28,14 @@ class CustomerController extends Controller
     public function index()
     {
         return $customers = Customer::orderBy('created_at', 'DESC')
-            ->with('jobs', 'activities')
-            ->where('user_id', auth()
-                ->user()->id)->get();
+            ->with('jobs.invoices.payments', 'invoices.payments', 'activities')
+            ->where('user_id', Auth::id())->get();
     }
 
     public function getReceivables()
     {
-        $total_receiveables = Activity::where('type', 'payment')
-            ->where('user_id', Auth::id())->get();
-        $total_amount = $total_receiveables->sum(function ($activity) {
-            $changes = json_decode($activity->changes, true);
-            return $changes['amount'] ?? 0;
-        });
-
+        $total_amount = Payment::where('user_id', Auth::id())->where('is_invalid', false)->sum('amount_in_business_currency');
         return $total_amount;
-
     }
 
     public function returnCustomers()
@@ -56,12 +56,27 @@ class CustomerController extends Controller
     {
         $user_id = Auth::user()->id;
         return inertia::render('User/Customer', [
-            'customer' => Customer::with('jobs.customer', 'jobs.activities', 'activities')->where('id', $customer_id)->where('user_id', $user_id)->first(),
-            'totalSpent' => Job::where('customer_id', $customer_id)->where('user_id', Auth::id())->sum('amount'),
+            'customer' => Customer::with([
+                'jobs' => function($query) {
+                    $query->orderBy('created_at', 'desc'); // or 'asc' for oldest first
+                },
+                'jobs.customer',
+                'jobs.invoices.payments',
+                'jobs.activities',
+                'activities'
+            ])
+                ->where('id', $customer_id)
+                ->where('user_id', $user_id)
+                ->first(),
+
+
+
+            'totalSpent' => Payment::where('customer_id', $customer_id)->where('user_id', Auth::id())->sum('amount_in_business_currency'),
             'invoices' => Invoice::with('items', 'customer', 'job', 'payments')
                 ->where('customer_id', $customer_id)
                 ->where('user_id', Auth::id())
                 ->get(),
+            'business' => Business::where('user_id', Auth::id())->first(),
             'jobs' => Job::orderBy('created_at', 'DESC')->with('activities', 'customer')
                 ->where('user_id', Auth::id())->get(),
         ]);
@@ -85,9 +100,39 @@ class CustomerController extends Controller
         $data['company'] = $data['company'] ?? 'Individual';
         $data['user_id'] = auth()->id();
 
-        if ($request->hasFile('avatar')) {
-            $data['avatar'] = $request->file('avatar')->store('customer_avatar', 'public');
+        if ($request->hasFile('logo')) {
+
+            $file = $request->file('logo');
+            $image = Image::read($file)->resize(200, 200);
+
+            // Generate unique name
+            $uniqueName = Str::uuid() . '.webp';
+            $path = 'logos/' . $uniqueName;
+
+            // Encode and compress to WebP
+            $encoded = $image->encode(new WebpEncoder(80));
+
+            // Save optimized file
+            Storage::disk('public')->put($path, $encoded);
+
+            $data['logo_path'] = $path;
         }
+
+        if ($request->hasFile('avatar')) {
+            $file = $request->file('avatar');
+
+            $fileName = uniqid() . '.webp';
+            $path = 'customer_avatar/' . $fileName;
+
+            $image = Image::read($file->getRealPath());
+            $encoded = $image->encode(new WebpEncoder(80));
+
+            // Save optimized file
+            Storage::disk('public')->put($path, $encoded);
+            $data['avatar'] = $path;
+        }
+
+
 
         $customer = Customer::create($data);
 
@@ -118,12 +163,20 @@ class CustomerController extends Controller
     {
         $customer = Customer::findOrFail($customer_id);
         $path = null;
+        DB::beginTransaction();
         // Handle image upload if present
         if ($request->hasFile('avatar')) {
             if ($customer->avatar && Storage::disk('public')->exists($customer->avatar)) {
                 Storage::disk('public')->delete($customer->avatar);
             }
-            $path = $request->file('avatar')->store('customer_avatar', 'public');
+            $file = $request->file('avatar');
+            $fileName = uniqid() . '.webp';
+            $path = 'customer_avatar/' . $fileName;
+            $image = Image::read($file->getRealPath());
+            $encoded = $image->encode(new WebpEncoder(80));
+            Storage::disk('public')->put($path, $encoded);
+
+            $data['avatar'] = $path;
         }
         $customer->update([
             'name' => $request->input('name'),
@@ -134,6 +187,7 @@ class CustomerController extends Controller
             'note' => $request->input('note'),
             'avatar' => $path ?? $customer->avatar,
         ]);
+        DB::commit();
         return redirect()->back()->with('success', 'Client updated successfully');
     }
 

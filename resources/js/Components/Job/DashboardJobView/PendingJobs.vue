@@ -1,4 +1,22 @@
 <template>
+    <div v-if="showConfirmAlertModal">
+        <ConfirmAlert
+            :item="alertData"
+            @cancel="closeConfirmAlertModal"
+            @confirmAction="markInProgress"
+            subject="Job has started"
+            message="Are you sure you want to mark this job as in progress? It will be moved to Jobs in Progress."/>
+    </div>
+
+    <div v-if="showNotifyClient">
+    <ConfirmNotifyEmail
+            subject="Job has started"
+            :successMessage="successMessage"
+        :item="emailItem"
+            @cancel="closeConfirmNotifyEmailModal"
+            :message="`Hello ${emailItem?.customer.name}, \n\nWork on your job “${emailItem?.job_title}” has now started. You will be updated as progress is made. \n\nThank you,\n ${emailItem?.business.business_name}`"
+    />
+    </div>
     <!-- Desktop Table View -->
     <div class="hidden md:block overflow-x-auto rounded-lg shadow">
         <table class="w-full border-collapse bg-white text-left text-sm border-b-2 border-gray-900">
@@ -29,10 +47,13 @@
                 <td class="px-6 py-4">{{ formatCurrency(balanceAmount(job), jobCurrency(job)) }}</td>
                 <td class="px-6 py-4">
                     <div class="flex justify-center space-x-2">
-                        <Link :href="`/dashboard/job/${job.id}/view`" class="text-secondary hover:text-secondary-dark p-1 rounded transition-colors" title="View">
+                        <Link :href="`/dashboard/job/${job.id}/view`"
+                              class="text-secondary hover:text-secondary-dark p-1 rounded transition-colors"
+                              title="View">
                             View
                         </Link>
-                        <button v-if="job.status === 'pending'" @click="markInProgress(job)" class="px-3 py-1 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition-colors duration-200 font-medium text-sm flex items-center">
+                        <button v-if="job.status === 'pending'" @click="openConfirmAlertModal(job)"
+                                class="px-3 py-1 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition-colors duration-200 font-medium text-sm flex items-center">
                             Mark In Progress
                         </button>
                     </div>
@@ -44,11 +65,13 @@
 
     <!-- Mobile Card View -->
     <div class="block md:hidden space-y-4">
-        <div v-for="job in pendingJobs" :key="job.id" class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
+        <div v-for="job in pendingJobs" :key="job.id"
+             class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
             <div class="p-4 border-b border-gray-100 bg-gray-50">
                 <div class="flex justify-between items-start">
                     <h3 class="font-semibold text-lg text-primary">{{ job.job_title }}</h3>
-                    <span :class="statusBadgeClass(job.status)" class="px-3 py-1 text-xs font-medium rounded-full">{{ job.status }}</span>
+                    <span :class="statusBadgeClass(job.status)"
+                          class="px-3 py-1 text-xs font-medium rounded-full">{{ job.status }}</span>
                 </div>
             </div>
             <div class="p-4">
@@ -71,35 +94,67 @@
                     </div>
                 </div>
                 <div class="flex flex-col space-y-2">
-                    <Link :href="`/dashboard/job/${job.id}/view`" class="px-3 py-1 bg-secondary text-white rounded-md hover:bg-secondary-dark transition-colors font-medium">View</Link>
-                    <button v-if="job.status === 'pending'" @click="markInProgress(job)" class="px-3 py-1 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition-colors font-medium">Mark In Progress</button>
+                    <Link :href="`/dashboard/job/${job.id}/view`"
+                          class="text-center px-3 py-1 bg-secondary text-white rounded-md hover:bg-secondary-dark transition-colors font-medium">
+                        View
+                    </Link>
+                    <button v-if="job.status === 'pending'" @click="openConfirmAlertModal(job)"
+                            class="px-3 py-1 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition-colors font-medium">
+                        Mark In Progress
+                    </button>
                 </div>
             </div>
         </div>
     </div>
-
     <div v-if="pendingJobs.length <= 0">
         <p class="text-center py-4 text-gray-500">No pending jobs</p>
     </div>
 </template>
 <script setup>
 import {Link} from "@inertiajs/vue3";
-import { computed } from 'vue'
-import { toRefs } from 'vue'
+import {computed, ref} from 'vue'
+import {toRefs} from 'vue'
 import axios from "axios";
 import {router} from "@inertiajs/vue3";
-import PendingJobs from "@/Components/Job/DashboardJobView/PendingJobs.vue";
+import ConfirmAlert from "@/Components/User/ConfirmAlert.vue";
+import ConfirmNotifyEmail from "@/Components/AlertsAndPrompts/confirmNotifyEmail.vue";
+
 const props = defineProps({
     jobs: Array
 })
-const { jobs } = toRefs(props)
+const {jobs} = toRefs(props)
 const pendingJobs = computed(() => jobs.value.filter(job => job.status === 'pending'
-|| job.status === 'overdue'
+    || job.status === 'overdue'
 ))
-const billedAmount = (job) => job.invoices.reduce((sum, inv) => sum + parseFloat(inv.total || 0), 0)
+let showConfirmAlertModal = ref(false)
+let showNotifyClient = ref(false)
+let alertData = ref({})
+let emailItem = ref({})
+let successMessage = ref('')
+const openConfirmAlertModal =(jobData)=>{
+    alertData.value = jobData
+    showConfirmAlertModal.value = true
+}
+const closeConfirmAlertModal =()=>{
+    showConfirmAlertModal.value = false
+}
+const closeConfirmNotifyEmailModal =()=>{
+    showNotifyClient.value = false
+    router.visit(window.location.pathname, {
+        replace: true,
+        preserveScroll: true
+    })
+}
+const billedAmount = (job) => job.invoices
+    .filter(inv => inv.status !== 'cancelled')
+    .reduce((sum, inv) => sum + parseFloat(inv.total || 0), 0)
+
 const paidAmount = (job) => job.invoices.reduce((sum, inv) => {
-    return sum + inv.payments.reduce((pSum, pay) => pSum + parseFloat(pay.amount || 0), 0)
+    return sum + inv.payments
+        .filter(pay => !pay.is_invalid) // only valid payments
+        .reduce((pSum, pay) => pSum + parseFloat(pay.amount_in_invoice_currency || 0), 0)
 }, 0)
+
 const balanceAmount = (job) => billedAmount(job) - paidAmount(job)
 const jobCurrency = (job) => {
     const invoice = job.invoices.find(inv => inv.status !== 'cancelled')
@@ -107,24 +162,32 @@ const jobCurrency = (job) => {
 }
 const formatCurrency = (amount, currency) => `${currency} ${parseFloat(amount).toLocaleString()}`
 const statusBadgeClass = (status) => {
-    switch(status) {
-        case 'pending': return 'bg-yellow-100 text-yellow-800'
-        case 'in_progress': return 'bg-blue-100 text-blue-800'
-        case 'completed': return 'bg-green-100 text-green-800'
-        default: return 'bg-gray-100 text-gray-800'
+    switch (status) {
+        case 'pending':
+            return 'bg-yellow-100 text-yellow-800'
+        case 'in_progress':
+            return 'bg-blue-100 text-blue-800'
+        case 'completed':
+            return 'bg-green-100 text-green-800'
+        default:
+            return 'bg-gray-100 text-gray-800'
     }
 }
 const emit = defineEmits(['view-job', 'mark-in-progress'])
-const markInProgress = (job) =>{
-    axios.patch(`/job_update/status/${job.id}`, {type: 'in_progress'})
-        .then(res=>{
-            if (res.status === 200){
-                alert(res.data.message)
-                router.visit(window.location.href, { preserveScroll: true})
+const markInProgress = (item) => {
+    axios.patch(`/job_update/status/${item.id}`, {type: 'in_progress'})
+        .then(res => {
+            if (res.status === 200) {
+                // alert(res.data.message)
+                successMessage.value = res.data.message
+                emailItem.value =  item
+                showNotifyClient.value = true
+                closeConfirmAlertModal()
+                // router.visit(window.location.href, {preserveScroll: true})
             }
         })
-        .catch(errors =>{
-           alert(errors.response.data.message)
+        .catch(errors => {
+            alert(errors.response.data.message)
         })
 }
 </script>

@@ -24,7 +24,7 @@ class StoreCustomerRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'company' => 'nullable|string|max:255',
-            'email' => 'nullable|email|max:255|unique:customers,email,NULL,id,user_id,' . auth()->id(),
+            'email' => 'required|email|max:255|unique:customers,email,NULL,id,user_id,' . auth()->id(),
             'phone' => 'required|string|max:20|unique:customers,phone,NULL,id,user_id,' . auth()->id(),
             'address' => 'nullable|string|max:255',
             'note' => 'nullable|string|max:255',

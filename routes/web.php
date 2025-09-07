@@ -5,6 +5,7 @@ use App\Http\Controllers\BusinessController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\JobController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
@@ -23,7 +24,7 @@ Route::get('/', function () {
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard', [
-        'jobs' => \App\Models\Job::with('customer', 'invoices.payments', 'activities')
+        'jobs' => \App\Models\Job::with('customer', 'invoices.payments', 'activities', 'business')
             ->orderBy('updated_at', 'DESC')
             ->where('user_id', Auth::id())->get(),
 
@@ -57,7 +58,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard/customers', [CustomerController::class, 'returnCustomers'])->name('return.customers');
     Route::get('/dashboard/jobs', [JobController::class, 'returnJobs'])->name('return.jobs');
     Route::get('/dashboard/receipts', [JobController::class, 'returnReceipts'])->name('return.receipts');
-    Route::get('/dashboard/payments', [JobController::class, 'returnPayments'])->name('return.payments');
+    Route::get('/dashboard/payments', [PaymentController::class, 'returnPayments'])->name('return.payments');
     Route::get('/dashboard/reports', [CustomerController::class, 'returnReports'])->name('return.reports');
     Route::get('/dashboard/settings', [ProfileController::class, 'returnSettings'])->name('return.settings');
     Route::get('/dashboard/profile', [ProfileController::class, 'returnProfile'])->name('return.profile');
@@ -80,7 +81,15 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/invoice/{id}/download', [InvoiceController::class, 'downloadInvoice']);
     Route::post('/invoice/{invoice}/send', [InvoiceController::class, 'sendInvoiceInvoice']);
+    Route::get('/invoice/{invoice}/serve', [InvoiceController::class, 'serveInvoice']);
+    Route::get('/invoice/{invoice}/download', [InvoiceController::class, 'downloadInvoice']);
     Route::post('/user/payment/on_invoice', [PaymentController::class, 'store']);
+    Route::patch('/mark_payment/invalid/{payment}', [PaymentController::class, 'update']);
+    Route::post('/dashboard/user/notify_client', [NotificationController::class, 'sendJobProgressEmail']);
+    Route::get('/dashboard/serve/{ref_number}', [PaymentController::class, 'index']);
+    Route::post('/dashboard/user/{ref_number}/send_receipt', [PaymentController::class, 'resendReceipt']);
+
+
 
 
 });

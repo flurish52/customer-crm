@@ -2,67 +2,85 @@
 import { ref, onMounted } from 'vue'
 import {computed} from "vue";
 import axios from 'axios'
+import ConfirmNotifyEmail from "@/Components/AlertsAndPrompts/confirmNotifyEmail.vue";
+import PaymentReceipt from "@/Components/Invoice/PaymentReceipt.vue";
 import {router} from "@inertiajs/vue3";
-
 const props = defineProps({
     invoice: {
         type: Object
     },
     showPaymentModal: Boolean
 })
-
 let errorMessage = ref('')
 const emit = defineEmits(['submit', 'cancel'])
-
 const paymentForm = ref({
     invoiceId: props.invoice.id,
-    amount: '',
+    amount_in_business_currency: '',
+    amount_in_invoice_currency: '',
     date: new Date().toISOString().split('T')[0],
     payment_method: '',
     notes: ''
 })
-
 const paymentMethods = ref([
     { value: 'cash', label: 'Cash' },
     { value: 'bank_transfer', label: 'Bank Transfer' },
     { value: 'card', label: 'Card' },
     { value: 'other', label: 'Other' }
 ])
-
 const maxHeight = ref('90vh')
+let showNotifyClient = ref(false)
+let showPaymentReceiptModal = ref(false)
+let emailMessage = ref('')
+let paymentProof = ref({})
+let closePaymentReceiptModal = ()=>{
+    showPaymentReceiptModal.value = false
+    router.visit(window.location.href, {preserveScroll: true})
+}
+let emailItem = ref({
+    customer: {},
+    business: {
+        business_email: ''
+    }
+})
+const closeConfirmNotifyEmailModal =()=>{
+    showNotifyClient.value = false
+}
 onMounted(() => {
     maxHeight.value = window.innerHeight > 800 ? '80vh' : '90vh'
 })
-
-
 const successMessage = ref('')
 const totalPaid = computed(() => {
     if (!props.invoice || !props.invoice.payments) return 0
-    return props.invoice.payments.reduce((sum, payment) => {
-        return sum + Number(payment.amount || 0)
-    }, 0)
+    return props.invoice.payments
+        .filter(payment => !payment.is_invalid)
+        .reduce((sum, payment) => {
+            return sum + Number(payment.amount_in_invoice_currency || 0)
+        }, 0)
 })
-
 const invoiceBalance = computed(() => {
     if (!props.invoice) return 0
     const total = Number(props.invoice.total || 0)
     const paid = props.invoice.payments
-        ? props.invoice.payments.reduce((sum, payment) => {
-            return sum + Number(payment.amount || 0)
-        }, 0)
+        ? props.invoice.payments
+            .filter(payment => !payment.is_invalid)
+            .reduce((sum, payment) => sum + Number(payment.amount_in_invoice_currency || 0), 0)
         : 0
+
     return total - paid
 })
 const payInFull = () => {
-    paymentForm.value.amount = invoiceBalance.value
+    paymentForm.value.amount_in_invoice_currency = invoiceBalance.value
 }
-
 const validateForm = () => {
-    if (!paymentForm.value.amount || paymentForm.value.amount <= 0) {
-        errorMessage.value = 'Amount is required'
+    if (!paymentForm.value.amount_in_invoice_currency || paymentForm.value.amount_in_invoice_currency <= 0) {
+        errorMessage.value = 'Amount in invoice currency is required'
         return false
     }
-    if (paymentForm.value.amount > invoiceBalance.value ) {
+    if (!paymentForm.value.amount_in_business_currency || paymentForm.value.amount_in_business_currency <= 0) {
+        errorMessage.value = 'Amount in business currency is required'
+        return false
+    }
+    if (paymentForm.value.amount_in_invoice_currency > invoiceBalance.value ) {
         errorMessage.value = 'Amount filled cannot be greater than invoice balance!'
         return false
     }
@@ -70,10 +88,12 @@ const validateForm = () => {
         errorMessage.value = 'Date is required'
         return false
     }
-    if (paymentForm.value.date < new Date() || paymentForm.value.date < props.invoice.issue_date) {
+    if (new Date(paymentForm.value.date) < new Date(props.invoice.issue_date) ||
+        new Date(paymentForm.value.date) > new Date()) {
         errorMessage.value = 'Payment date cannot be before invoice date or after today'
         return false
     }
+
     if (!paymentForm.value.payment_method) {
         errorMessage.value = 'Payment method is required'
         return false
@@ -87,37 +107,36 @@ const validateForm = () => {
 }
 const submitForm = async () => {
     paymentForm.value.invoiceId = props.invoice.id;
+    if (JSON.parse(props.invoice?.business_snapshot).currency === props.invoice.currency){
+        paymentForm.value.amount_in_business_currency = paymentForm.value.amount_in_invoice_currency
+    }
     if (!validateForm()) return
     try {
         const { data } = await axios.post('/user/payment/on_invoice', paymentForm.value)
         if (data.status === 'success') {
-            successMessage.value = data.message || 'Payment recorded successfully'
-            errorMessage.value = ''
+            paymentProof.value = data.receipt
+            showPaymentReceiptModal.value = true
             paymentForm.value = {
                 invoiceId: null,
-                amount: '',
+                amount_in_business_currency: '',
+                amount_in_invoice_currency: '',
                 date: new Date().toISOString().split('T')[0],
                 payment_method: '',
                 notes: ''
             }
             errorMessage.value = ''
-            setTimeout(() => {
-                successMessage.value = ''
-            emit('submit')
-                emit('cancel')
-            }, 2000)
+            cancelForm()
         }
-        router.reload()
     } catch (error) {
         console.error(error)
-       errorMessage.value = error
+       errorMessage.value = error.response.data.message
     }
 }
-
 const cancelForm = () => {
     paymentForm.value = {
-        invoiceId: props.invoice.id,
-        amount: '',
+        invoiceId: null,
+        amount_in_business_currency: '',
+        amount_in_invoice_currency: '',
         date: new Date().toISOString().split('T')[0],
         payment_method: '',
         notes: ''
@@ -126,9 +145,22 @@ const cancelForm = () => {
 }
 </script>
 
-
 <template>
-
+    <div v-if="showPaymentReceiptModal">
+    <PaymentReceipt
+    :receipt="paymentProof"
+    @cancel="closePaymentReceiptModal"
+    />
+    </div>
+    <div v-if="showNotifyClient">
+        <ConfirmNotifyEmail
+            :successMessage="successMessage"
+            :item="emailItem"
+            @cancel="closeConfirmNotifyEmailModal"
+            subject="Payment received"
+            :message="emailMessage"
+        />
+    </div>
     <div
         v-show="showPaymentModal"
         class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30 backdrop-blur-sm"
@@ -172,22 +204,25 @@ const cancelForm = () => {
                         </div>
                         <!-- Amount Field -->
                         <div>
-                            <label for="amount" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Amount
-                            </label>
-                            <div class="relative rounded-md shadow-sm">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <span class="text-gray-500 dark:text-gray-400 sm:text-sm">{{ invoice?.currency || '₦' }}</span>
+                            <!-- Amount in Invoice Currency -->
+                            <div>
+                                <label for="amount_invoice" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    Amount (Invoice Currency)
+                                </label>
+                                <div class="relative rounded-md shadow-sm">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <span class="text-gray-500 dark:text-gray-400 sm:text-sm">{{ invoice?.currency || '₦' }}</span>
+                                    </div>
+                                    <input
+                                        type="number"
+                                        id="amount_invoice"
+                                        v-model="paymentForm.amount_in_invoice_currency"
+                                        class="block w-full pl-12 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                        placeholder="0.00"
+                                        step="0.01"
+                                        min="0"
+                                    />
                                 </div>
-                                <input
-                                    type="number"
-                                    id="amount"
-                                    v-model="paymentForm.amount"
-                                    class="block w-full pl-12  py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                                    placeholder="0.00"
-                                    step="0.01"
-                                    min="0"
-                                />
                             </div>
                             <div class="mt-2 space-y-1">
                                 <button
@@ -209,7 +244,30 @@ const cancelForm = () => {
                                 </div>
                                 <hr class="bg-primary">
                             </div>
+                        </div>
 
+                        <!-- Amount in Business Currency -->
+                        <div
+                            v-if="props.invoice.business_snapshot && JSON.parse(props.invoice.business_snapshot).currency !== invoice.currency"
+                        >
+                            <label for="amount_business" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                Amount (in business Currency)
+                            </label>
+                            <div class="relative rounded-md shadow-sm">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <span class="text-gray-500 dark:text-gray-400 sm:text-sm">{{JSON.parse(invoice?.business_snapshot).currency}}</span>
+                                </div>
+
+                                <input
+                                    type="number"
+                                    id="amount_business"
+                                    v-model="paymentForm.amount_in_business_currency"
+                                    class="block w-full pl-12 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                    placeholder="0.00"
+                                    step="0.01"
+                                    min="0"
+                                />
+                            </div>
                         </div>
 
                         <!-- Date Picker -->

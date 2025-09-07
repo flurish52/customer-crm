@@ -3,11 +3,22 @@
         <PaymentModal
             @cancel="closePaymentModal"
             @submit="paymentMade"
-            :jobs="jobs"
+            :invoices="invoices"
             :showPaymentModal="showPaymentModal"
         />
-
-        <Head title="Payments" />
+        <div v-if="showReceiptDetails">
+            <PaymentReceipt
+                :receipt="receiptDetails"
+                @cancel="closeReceiptDetailsModal"
+            />
+        </div>
+        <div v-if="showMarkPaymentAsInvalid">
+            <MarkPaymentInvalid
+                :payment="paymentToBeMarked"
+                @cancel="closeMarkPaymentAsInvalidModal"
+            />
+        </div>
+        <Head title="Payments"/>
         <div class="space-y-6">
             <!-- Page Header with Animation -->
             <div
@@ -25,18 +36,19 @@
                         @mouseenter="hoverButton('filter')"
                         @mouseleave="resetButton"
                     >
-                        <FunnelIcon class="w-5 h-5 mr-2 transition-transform" :class="{ 'rotate-12': activeButton === 'filter' }"/>
+                        <FunnelIcon class="w-5 h-5 mr-2 transition-transform"
+                                    :class="{ 'rotate-12': activeButton === 'filter' }"/>
                         Filters
                     </button>
-                    <button
-                        class="btn-primary hover:scale-[1.02] transition-transform"
-                        @mouseenter="hoverButton('record')"
-                        @mouseleave="resetButton"
-                        @click="openPaymentModal"
-                    >
-                        <BanknotesIcon class="w-5 h-5 mr-2 transition-transform" :class="{ 'scale-110': activeButton === 'record' }"/>
-                        Record Payment
-                    </button>
+                    <!--                    <button-->
+                    <!--                        class="btn-primary hover:scale-[1.02] transition-transform"-->
+                    <!--                        @mouseenter="hoverButton('record')"-->
+                    <!--                        @mouseleave="resetButton"-->
+                    <!--                        @click="openPaymentModal"-->
+                    <!--                    >-->
+                    <!--                        <BanknotesIcon class="w-5 h-5 mr-2 transition-transform" :class="{ 'scale-110': activeButton === 'record' }"/>-->
+                    <!--                        Record Payment-->
+                    <!--                    </button>-->
                 </div>
             </div>
 
@@ -48,16 +60,17 @@
             >
                 <Payments
                     :payments="payments"
+                    @view="viewReceipt"
+                    @mark_invalid="markPaymentAsInvalid"
                     class="mt-6"
                 />
             </div>
         </div>
     </AuthenticatedLayout>
 </template>
-
 <script setup>
-import { ref } from 'vue';
-import { BanknotesIcon, FunnelIcon } from '@heroicons/vue/24/outline';
+import {ref} from 'vue';
+import {BanknotesIcon, FunnelIcon} from '@heroicons/vue/24/outline';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import {onMounted} from "vue";
@@ -65,34 +78,49 @@ import Payments from '@/components/Payments/Payments.vue';
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import PaymentModal from "@/Components/Job/PaymentModal.vue";
 import {Head, router} from "@inertiajs/vue3";
-
+import PaymentReceipt from "@/Components/Invoice/PaymentReceipt.vue";
+import MarkPaymentInvalid from "@/Components/MarkPaymentInvalid.vue";
 let props = defineProps({
     payments: Array,
     jobs: Array
 });
-
+function getTotalPaid(payments, invoiceId) {
+    return payments
+        .filter(p => p.invoice_id === invoiceId && p.is_invalid === 0)
+        .reduce((sum, p) => sum + parseFloat(p.amount_in_invoice_currency), 0);
+}
 const activeButton = ref(null);
 const showPaymentModal = ref(false);
-
+const showReceiptDetails = ref(false);
+const showMarkPaymentAsInvalid = ref(false);
+const closeReceiptDetailsModal = ()=>{
+    showReceiptDetails.value = false
+}
+const closeMarkPaymentAsInvalidModal = ()=>{
+    showMarkPaymentAsInvalid.value = false
+}
+let paymentToBeMarked = ref({})
 const hoverButton = (button) => {
     activeButton.value = button;
 };
-
-const openPaymentModal = () =>{
+const openPaymentModal = () => {
     showPaymentModal.value = true
 }
-const closePaymentModal = () =>{
+let receiptDetails = ref()
+const closePaymentModal = () => {
     showPaymentModal.value = false
 }
 
-const paymentMade = () =>{
+const markPaymentAsInvalid = (payment) => {
+    paymentToBeMarked.value = payment
+    showMarkPaymentAsInvalid.value = true
+}
+const paymentMade = () => {
     router.reload()
 }
-
 const resetButton = () => {
     activeButton.value = null;
 };
-
 // Initialize animations on mount
 onMounted(() => {
     AOS.init({
@@ -101,8 +129,30 @@ onMounted(() => {
         offset: 50
     });
 });
-</script>
+const viewReceipt = (payment) => {
+    let totalAmount = getTotalPaid(props.payments, payment.invoice.id)
+    console.log(payment.invoice)
+    receiptDetails.value = {
+        receipt_number: payment.reference_number,
+        invoice_number: payment.invoice.invoice_number,
+        customer: JSON.parse(payment.invoice.customer_snapshot).name,
+        customer_email: JSON.parse(payment.invoice.customer_snapshot).email,
+        business: JSON.parse(payment.invoice.business_snapshot).name,
+        business_email: JSON.parse(payment.invoice.business_snapshot).email,
+        job: JSON.parse(payment.invoice.job_snapshot).title,
+        payment_amount: payment.amount_in_invoice_currency,
+        total_amount: payment.invoice.total,
+        total_paid: totalAmount,
+        remaining_balance: payment.invoice.total - totalAmount,
+        method: payment.method,
+        date: payment.paid_at,
+        currency: payment.invoice.currency,
+        note: payment.notes
+    }
+    showReceiptDetails.value = true
 
+}
+</script>
 <style scoped>
 /* Button animations */
 .btn-primary, .btn-secondary {

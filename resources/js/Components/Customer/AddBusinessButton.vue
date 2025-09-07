@@ -1,12 +1,13 @@
 <script setup>
-import { ref } from 'vue';
-import {router} from "@inertiajs/vue3";
-defineProps({
+const props = defineProps({
     showModal: Boolean,
 })
-const closeModal = () => props.showModal = false;
+const emits = defineEmits(['closeModal'])
+const closeModal = () => {
+    emits('closeModal')
+}
 const navigateToSettings = ()=>{
-    router.visit('/dashboard/settings')
+    window.open('/dashboard/settings', '_blank');
 }
 </script>
 
@@ -17,6 +18,8 @@ const navigateToSettings = ()=>{
                 To create or add jobs, please complete your business details first.
                 This ensures your account is fully set up and ready to manage clients and invoices.
                 <span class="font-semibold text-gray-900 dark:text-white">Go to Settings → Business Info to update your information.</span>
+                <br>
+                <span class="text-red-600 text-xs italic">Note: Settings would open in a new tab.</span>
             </p>
 
             <div class="flex justify-end space-x-3">
@@ -26,7 +29,7 @@ const navigateToSettings = ()=>{
                 </button>
                 <button @click="closeModal"
                         class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                    Cancel
+                    Already added
                 </button>
             </div>
         </div>

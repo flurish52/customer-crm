@@ -20,17 +20,17 @@ return new class extends Migration
             $table->json('customer_snapshot');
             $table->json('job_snapshot');
             $table->json('business_snapshot');
-
             $table->date('issue_date');
             $table->date('due_date')->nullable();
-            $table->enum('status', ['pending', 'paid', 'overdue', 'partially_paid', 'cancelled'])->default('pending');
+            $table->enum('status', ['unpaid', 'paid', 'partially_paid', 'cancelled'])->default('unpaid');
             $table->decimal('subtotal', 10, 2);
             $table->decimal('tax', 10, 2)->default(0);
             $table->decimal('discount', 10, 2)->default(0);
             $table->decimal('total', 10, 2);
+            $table->string('pdf_path')->nullable();
             $table->string('currency', 10)->default('NGN');
             $table->text('notes')->nullable();
-
+            $table->json('snapshots')->nullable();
             $table->timestamps();
         });
     }

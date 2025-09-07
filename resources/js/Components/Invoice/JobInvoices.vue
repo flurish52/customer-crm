@@ -35,6 +35,7 @@
             </thead>
             <tbody class="divide-y divide-gray-100">
             <tr
+                v-if="sortedInvoices.length > 0"
                 v-for="(invoice, index) in sortedInvoices"
                 :class="invoice.status === 'cancelled' ? 'bg-gray-200 hover:bg-gray-200 text-black' : ' text-black bg-gray-50'"
                 class="transition-colors">
@@ -103,13 +104,19 @@
                     </div>
                 </td>
             </tr>
+            <tr
+            v-else>
+                <td colspan="9" class="px-4 py-6 text-center text-gray-500">
+                    No invoices yet
+                </td>
+            </tr>
             </tbody>
         </table>
     </div>
-
     <!-- Mobile Card View -->
     <div class="block md:hidden space-y-4">
         <div
+            v-if="sortedInvoices.length > 0"
             v-for="invoice in sortedInvoices"
             :key="invoice.id"
             :class="invoice.status === 'cancelled' ? 'bg-gray-200 text-black' : ' text-black'"
@@ -194,8 +201,12 @@
                 </div>
             </div>
         </div>
+        <div v-else>
+        <td colspan="9" class="px-4 py-6 text-center text-gray-500">
+            No invoices yet
+        </td>
+        </div>
     </div>
-
 </template>
 
 <script setup>
@@ -222,8 +233,8 @@ let invoiceToAddPayment = ref({});
 const calculateTotalPaid = (invoice) => {
     if (!invoice || !invoice.payments) return 0
     return invoice.payments
-        .filter(payment => payment.status !== 'cancelled')
-        .reduce((sum, payment) => sum + Number(payment.amount || 0), 0)
+        .filter(payment => !payment.is_invalid)
+        .reduce((sum, payment) => sum + Number(payment.amount_in_invoice_currency || 0), 0)
 }
 
 const calculateInvoiceBalance = (invoice) => {

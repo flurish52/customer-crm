@@ -4,9 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Activity;
 use App\Models\Business;
+use App\Models\Invoice;
 use App\Models\Job;
 use App\Http\Requests\StoreJobRequest;
 use App\Http\Requests\UpdateJobRequest;
+use App\Models\Payment;
+use App\Models\User;
+use Illuminate\Auth\GuardHelpers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -163,12 +167,18 @@ class JobController extends Controller
 
     public function returnJobs()
     {
-        return inertia::render('User/Jobs', [
-        'jobs' => Job::orderBy('created_at', 'DESC')
-            ->with('activities', 'customer', 'invoices.payments')
+        $user = Auth::user()->load('business');
+        $userCurrency = $user->business ? json_decode($user->business->settings, true)['currency'] : null;
+
+        $jobs = Job::orderBy('created_at', 'DESC')
+            ->with('activities', 'customer', 'invoices.payments', 'business')
             ->where('user_id', Auth::id())
-            ->get(),
+            ->get();
+        return inertia::render('User/Jobs', [
+            'jobs' => $jobs->isNotEmpty() ? $jobs : [],
+            'userCurrency' => $userCurrency,
         ]);
+
     }
 
     public function returnJob(Job $job)
@@ -184,18 +194,6 @@ class JobController extends Controller
     public function returnReceipts()
     {
         return inertia::render('User/Receipts', [
-
-        ]);
-    }
-
-    public function returnPayments()
-    {
-        return inertia::render('User/Payments', [
-            'payments' => Activity::orderBy('created_at', 'DESC')->with('subject', 'customer')
-                ->where('user_id', Auth::id())
-                ->where('type', 'payment')
-                ->get(),
-            'jobs' => Job::orderBy('job_title', 'DESC')->where('user_id', Auth::id())->get(),
 
         ]);
     }
