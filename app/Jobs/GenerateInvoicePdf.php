@@ -31,6 +31,7 @@ class GenerateInvoicePdf implements ShouldQueue
         $totalPaid = $payments->sum('amount_in_invoice_currency');
         $balance = $invoice->total - $totalPaid;
         $job = $invoice->job_snapshot ? json_decode($invoice->job_snapshot) : null;
+
         $pdf = Pdf::loadView('pdf.Invoice', [
             'invoice' => $invoice,
             'business' => $business,
@@ -40,10 +41,22 @@ class GenerateInvoicePdf implements ShouldQueue
             'balance' => $balance,
             'totalPaid' => $totalPaid,
         ]);
-        $pdfPath = 'invoices/pdfs/invoice-' . $invoice->invoice_number . '.pdf';
-        $pdf->save(storage_path('app/public/' . $pdfPath));
-        $invoice->pdf_path = $pdfPath;
+
+        $pdfFolder = storage_path('app/public/invoices/pdfs');
+
+        // Ensure folder exists
+        if (!file_exists($pdfFolder)) {
+            mkdir($pdfFolder, 0755, true);
+        }
+
+        $pdfPath = $pdfFolder . '/invoice-' . $invoice->invoice_number . '.pdf';
+        $pdf->save($pdfPath);
+
+        // Save relative path to DB
+        $invoice->pdf_path = 'invoices/pdfs/invoice-' . $invoice->invoice_number . '.pdf';
         $invoice->save();
-        return response()->download(storage_path('app/public/' . $pdfPath));
+
+        return response()->download($pdfPath);
     }
+
 }

@@ -17,6 +17,7 @@ use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Intervention\Image\Encoders\WebpEncoder;
 use Intervention\Image\Laravel\Facades\Image;
+use Intervention\Image\Encoders\JpegEncoder;
 
 // add this
 
@@ -57,7 +58,7 @@ class CustomerController extends Controller
         $user_id = Auth::user()->id;
         return inertia::render('User/Customer', [
             'customer' => Customer::with([
-                'jobs' => function($query) {
+                'jobs' => function ($query) {
                     $query->orderBy('created_at', 'desc'); // or 'asc' for oldest first
                 },
                 'jobs.customer',
@@ -68,7 +69,6 @@ class CustomerController extends Controller
                 ->where('id', $customer_id)
                 ->where('user_id', $user_id)
                 ->first(),
-
 
 
             'totalSpent' => Payment::where('customer_id', $customer_id)->where('user_id', Auth::id())->sum('amount_in_business_currency'),
@@ -96,21 +96,24 @@ class CustomerController extends Controller
     public function store(StoreCustomerRequest $request)
     {
         $data = $request->validated();
-
         $data['company'] = $data['company'] ?? 'Individual';
         $data['user_id'] = auth()->id();
 
         if ($request->hasFile('logo')) {
-
             $file = $request->file('logo');
             $image = Image::read($file)->resize(200, 200);
 
-            // Generate unique name
-            $uniqueName = Str::uuid() . '.webp';
+            $encoded = $image->encode(new JpegEncoder(80));
+
+// For avatar
+
+
+            // Generate unique name with jpg
+            $uniqueName = Str::uuid() . '.jpg';
             $path = 'logos/' . $uniqueName;
 
-            // Encode and compress to WebP
-            $encoded = $image->encode(new WebpEncoder(80));
+            // Encode as JPEG with quality 80
+            $encoded = $image->encode('jpg', 80);
 
             // Save optimized file
             Storage::disk('public')->put($path, $encoded);
@@ -121,18 +124,15 @@ class CustomerController extends Controller
         if ($request->hasFile('avatar')) {
             $file = $request->file('avatar');
 
-            $fileName = uniqid() . '.webp';
+            $fileName = uniqid() . '.jpg';
             $path = 'customer_avatar/' . $fileName;
 
             $image = Image::read($file->getRealPath());
-            $encoded = $image->encode(new WebpEncoder(80));
+            $encoded = $image->encode(new JpegEncoder(80));
 
-            // Save optimized file
             Storage::disk('public')->put($path, $encoded);
             $data['avatar'] = $path;
         }
-
-
 
         $customer = Customer::create($data);
 
@@ -162,22 +162,31 @@ class CustomerController extends Controller
     public function update(UpdateCustomerRequest $request, $customer_id)
     {
         $customer = Customer::findOrFail($customer_id);
-        $path = null;
         DB::beginTransaction();
-        // Handle image upload if present
+
         if ($request->hasFile('avatar')) {
+            $file = $request->file('avatar');
+
+            // Delete existing avatar if present
             if ($customer->avatar && Storage::disk('public')->exists($customer->avatar)) {
                 Storage::disk('public')->delete($customer->avatar);
             }
-            $file = $request->file('avatar');
-            $fileName = uniqid() . '.webp';
-            $path = 'customer_avatar/' . $fileName;
-            $image = Image::read($file->getRealPath());
-            $encoded = $image->encode(new WebpEncoder(80));
-            Storage::disk('public')->put($path, $encoded);
 
-            $data['avatar'] = $path;
+            // Generate unique file name
+            $fileName = uniqid() . '.jpg';
+            $path = 'customer_avatar/' . $fileName;
+
+            // Read, resize, and compress image using JpegEncoder
+            $image = Image::read($file->getRealPath())->resize(200, 200);
+            $encoded = $image->encode(new JpegEncoder(80));
+
+            // Save to storage
+            Storage::disk('public')->put($path, $encoded);
+        } else {
+            $path = $customer->avatar; // keep existing avatar if no new upload
         }
+
+// Update customer data
         $customer->update([
             'name' => $request->input('name'),
             'email' => $request->input('email'),
@@ -185,9 +194,11 @@ class CustomerController extends Controller
             'phone' => $request->input('phone'),
             'address' => $request->input('address'),
             'note' => $request->input('note'),
-            'avatar' => $path ?? $customer->avatar,
+            'avatar' => $path,
         ]);
+
         DB::commit();
+
         return redirect()->back()->with('success', 'Client updated successfully');
     }
 
