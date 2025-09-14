@@ -88,7 +88,7 @@ const validateForm = () => {
         errorMessage.value = 'Date is required'
         return false
     }
-    
+
     const paymentDate = new Date(paymentForm.value.date);
     const invoiceDate = new Date(props.invoice.issue_date);
     const today = new Date();
