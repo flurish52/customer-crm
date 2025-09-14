@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -44,18 +45,19 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'last_login_at' => Carbon::now()
         ]);
-        Customer::create([
-            'name' => 'Walk-in Customers',
-            'user_id' => $user->id,
-            'email' => 'walkin@walkin.com',
-            'company' => 'individual',
-            'phone' => '00000000000',
-            'address' => '',
-            'avatar' => '',
-            'note' => 'This is a dummy customer',
-        ]);
-
+//        Customer::create([
+//            'name' => 'Walk-in Customers',
+//            'user_id' => $user->id,
+//            'email' => 'walkin@walkin.com',
+//            'company' => 'individual',
+//            'phone' => '00000000000',
+//            'address' => '',
+//            'avatar' => '',
+//            'note' => 'This is a dummy customer',
+//        ]);
+        $user->last_login_at = Carbon::now();
         Mail::to($user->email)->send(new RegistrationSuccess(
             $user->name,
             url('/dashboard')

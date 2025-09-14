@@ -48,11 +48,12 @@ const submit = () => {
                         <TextInput
                             id="email"
                             type="email"
-                            class="mt-1 block w-full"
+                            class="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary-500"
+                            :class="{ 'border-red-500': form.errors.email }"
                             v-model="form.email"
+                            @input="form.email = form.email.toLowerCase()"
                             required
-                            autofocus
-                            autocomplete="username"
+                            autocomplete="email"
                         />
                         <InputError class="mt-2" :message="form.errors.email"/>
                     </div>

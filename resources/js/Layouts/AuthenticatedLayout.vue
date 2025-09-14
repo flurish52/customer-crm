@@ -2,9 +2,10 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import AuthSidebar from "@/Components/AuthSideBar.vue"
 import AuthNavBar from "@/Components/AuthNavBar.vue";
-
-const showingNavigationDropdown = ref(false)
+import FeedBackModal from "@/Components/FeedBack/FeedBackModal.vue";
+import FeedbackButton from "@/Components/FeedBack/FeedbackButton.vue";
 const isSidebarOpen = ref(window.innerWidth >= 1024)
+const showFeedBackModal = ref(false)
 
 const handleResize = () => {
     isSidebarOpen.value = window.innerWidth >= 1024
@@ -24,6 +25,11 @@ const toggleSidebar = () => {
 </script>
 
 <template>
+    <FeedBackModal
+        @close="showFeedBackModal=!showFeedBackModal"
+        :show="showFeedBackModal" />
+    <FeedbackButton
+        @toggleFeedback="showFeedBackModal = !showFeedBackModal" />
     <div class="min-h-screen bg-primary-light/5 flex">
         <!-- Sidebar - fixed on large screens, overlay on mobile -->
         <AuthSidebar
