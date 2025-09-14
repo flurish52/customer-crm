@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreCustomerRequest extends FormRequest
 {
@@ -24,8 +25,26 @@ class StoreCustomerRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'company' => 'nullable|string|max:255',
-            'email' => 'required|email|max:255|unique:customers,email,NULL,id,user_id,' . auth()->id(),
-            'phone' => 'required|string|max:20|unique:customers,phone,NULL,id,user_id,' . auth()->id(),
+            'email' => [
+                'required',
+                'email',
+                'max:255',
+                Rule::unique('customers')
+                    ->where(fn ($query) => $query
+                        ->where('user_id', auth()->id())
+                        ->whereNull('deleted_at')
+                    ),
+            ],
+            'phone' => [
+                'required',
+                'string',
+                'max:20',
+                Rule::unique('customers')
+                    ->where(fn ($query) => $query
+                        ->where('user_id', auth()->id())
+                        ->whereNull('deleted_at')
+                    ),
+            ],
             'address' => 'nullable|string|max:255',
             'note' => 'nullable|string|max:255',
             'avatar.file' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',

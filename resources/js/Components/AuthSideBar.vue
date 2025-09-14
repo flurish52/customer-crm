@@ -87,13 +87,17 @@
                         <li v-for="item in navItems" :key="item.name">
                             <Link
                                 :href="item.path"
-                                class="flex items-center p-3 rounded-xl transition-all duration-200 group relative overflow-hidden"
+                                class="flex relative items-center p-3 rounded-xl transition-all duration-200 group relative overflow-hidden"
                                 :class="{
                   'bg-white/10 text-white': $page.url.startsWith(item.path),
                   'text-white/80 hover:bg-white/5': !$page.url.startsWith(item.path)
                 }"
                             >
+
+                                <TagBadge v-if="item.name === 'Prospects'" position="top-1/3"  status="new" label="New" />
+
                 <span class="flex-shrink-0 relative z-10">
+
                   <component
                       :is="item.icon"
                       class="h-6 w-6 transition-all duration-200"
@@ -156,6 +160,7 @@ import {
     CreditCardIcon,
 } from '@heroicons/vue/24/outline'
 import ApplicationLogo from "@/Components/ApplicationLogo.vue";
+import TagBadge from "@/Components/AlertsAndPrompts/TagBadge.vue";
 
 const props = defineProps({
     isSidebarOpen: {
@@ -172,6 +177,7 @@ const toggleSidebar = () => {
 
 const navItems = [
     {name: 'Dashboard', path: '/dashboard', icon: HomeIcon},
+    {name: 'Prospects', path: '/dashboard/prospects', icon: UsersIcon},
     {name: 'Clients', path: '/dashboard/customers', icon: UsersIcon},
     {name: 'Jobs', path: '/dashboard/jobs', icon: ClipboardIcon},
     {name: 'Invoices', path: '/dashboard/invoices', icon: DocumentTextIcon},

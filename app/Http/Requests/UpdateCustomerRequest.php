@@ -30,10 +30,23 @@ class UpdateCustomerRequest extends FormRequest
                 'nullable',
                 'email',
                 Rule::unique('customers')
-                    ->where('user_id', auth()->id())
-                    ->ignore($customerId) // ignore current record
+                    ->where(fn ($query) => $query
+                        ->where('user_id', auth()->id())
+                        ->whereNull('deleted_at')
+                    )
+                    ->ignore($customerId), // ignore current record when updating
             ],
-            'phone' => 'required|string|max:20|unique:customers,phone,NULL,id,user_id,',
+            'phone' => [
+                'required',
+                'string',
+                'max:20',
+                Rule::unique('customers')
+                    ->where(fn ($query) => $query
+                        ->where('user_id', auth()->id())
+                        ->whereNull('deleted_at')
+                    )
+                    ->ignore($customerId),
+            ],
             'address' => 'nullable|string|max:255',
             'note' => 'nullable|string|max:255',
             'avatar' => [

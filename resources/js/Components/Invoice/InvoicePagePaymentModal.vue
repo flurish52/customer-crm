@@ -88,11 +88,21 @@ const validateForm = () => {
         errorMessage.value = 'Date is required'
         return false
     }
-    if (new Date(paymentForm.value.date) < new Date(props.invoice.issue_date) ||
-        new Date(paymentForm.value.date) > new Date()) {
-        errorMessage.value = 'Payment date cannot be before invoice date or after today'
-        return false
+    
+    const paymentDate = new Date(paymentForm.value.date);
+    const invoiceDate = new Date(props.invoice.issue_date);
+    const today = new Date();
+
+// Reset time to midnight
+    paymentDate.setHours(0, 0, 0, 0);
+    invoiceDate.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+
+    if (paymentDate < invoiceDate || paymentDate > today) {
+        errorMessage.value = 'Payment date cannot be before invoice date or after today';
+        return false;
     }
+
 
     if (!paymentForm.value.payment_method) {
         errorMessage.value = 'Payment method is required'

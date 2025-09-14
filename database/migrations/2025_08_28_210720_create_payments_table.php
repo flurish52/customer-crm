@@ -25,6 +25,7 @@ return new class extends Migration {
             $table->string('pdf_path')->nullable();
             $table->text('notes')->nullable();
             $table->json('snapshots')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

@@ -25,7 +25,7 @@ return new class extends Migration
             $table->date('due_date')->nullable();
             $table->timestamp('completed_at')->nullable();
             $table->tinyInteger('satisfaction_score')->nullable();
-            $table->timestamp('deleted_at')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

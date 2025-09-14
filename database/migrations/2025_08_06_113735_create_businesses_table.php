@@ -22,9 +22,18 @@ return new class extends Migration
             $table->string('logo_path')->nullable();
             $table->string('tax_id')->nullable();
             $table->json('settings')->nullable();
-            $table->timestamp('deleted_at')->nullable();
+            $table->softDeletes();
             $table->timestamps();
+
+            // Composite unique indexes per user for active businesses
+            $table->unique(['user_id', 'business_email', 'deleted_at']);
+            $table->unique(['user_id', 'business_phone', 'deleted_at']);
+
+            // Optional indexes for faster lookup
+            $table->index(['user_id', 'business_email', 'deleted_at']);
+            $table->index(['user_id', 'business_phone', 'deleted_at']);
         });
+
     }
 
     /**

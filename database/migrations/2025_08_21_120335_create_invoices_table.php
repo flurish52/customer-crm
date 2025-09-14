@@ -31,6 +31,7 @@ return new class extends Migration
             $table->string('currency', 10)->default('NGN');
             $table->text('notes')->nullable();
             $table->json('snapshots')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

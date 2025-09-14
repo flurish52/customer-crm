@@ -44,7 +44,7 @@
             <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
                 <div class="flex items-center mb-4">
                     <div class="w-3 h-6 rounded-md bg-purple-500 mr-3"></div>
-                    <h3 class="text-lg font-semibold text-gray-800">Customer details</h3>
+                    <h3 class="text-lg font-semibold text-gray-800">Client details</h3>
                 </div>
                 <div class="space-y-3">
                     <p class="text-gray-800 font-medium">{{ job.customer?.name }}</p>

@@ -28,17 +28,30 @@ class UpdateBusinessRequest extends FormRequest
         $businessId = $business->id;
         return [
             'name' => 'required|string|max:255',
+
             'email' => [
                 'required',
                 'email',
                 'max:255',
                 Rule::unique('businesses', 'business_email')
-                    ->where(function ($query) use ($userId) {
-                        return $query->where('user_id', '!=', $userId);
-                    })
+                    ->where(fn ($query) => $query
+                        ->where('user_id', $userId)
+                        ->whereNull('deleted_at')
+                    )
                     ->ignore($businessId),
             ],
-            'phone' => 'nullable|string|max:20',
+            'phone' => [
+                'nullable',
+                'string',
+                'max:20',
+                Rule::unique('businesses', 'business_phone')
+                    ->where(fn ($query) => $query
+                        ->where('user_id', $userId)
+                        ->whereNull('deleted_at')
+                    )
+                    ->ignore($businessId),
+            ],
+
             'address' => 'nullable|string|max:500',
             'website' => 'nullable|url|max:255',
             'logo' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',

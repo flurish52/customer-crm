@@ -18,14 +18,21 @@ return new class extends Migration
             $table->string('avatar')->nullable();
             $table->string('company');
             $table->string('email')->nullable();
-            $table->string('phone');
+            $table->string('phone')->nullable();
             $table->string('address')->nullable();
             $table->text('note')->nullable();
-            $table->unique(['user_id', 'phone']);
-            $table->unique(['user_id', 'email']);
-            $table->timestamp('deleted_at')->nullable();
+            $table->softDeletes();
             $table->timestamps();
+
+            // Composite unique indexes per user for active customers
+            $table->unique(['user_id', 'email', 'deleted_at']);
+            $table->unique(['user_id', 'phone', 'deleted_at']);
+
+            // Optional indexes for faster lookup
+            $table->index(['user_id', 'email', 'deleted_at']);
+            $table->index(['user_id', 'phone', 'deleted_at']);
         });
+
     }
 
     /**

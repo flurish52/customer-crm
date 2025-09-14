@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('email')->unique();
+            $table->string('email');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('avatar')->nullable();
-            $table->string('phone')->nullable()->unique();
+            $table->string('phone')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamp('last_login_at')->nullable();
             $table->boolean('two_factor_enabled')->default(false);
@@ -25,9 +25,17 @@ return new class extends Migration
             $table->string('preferred_language', 10)->nullable();
             $table->json('settings')->nullable();
             $table->string('password');
-            $table->timestamp('deleted_at')->nullable();
+            $table->softDeletes();
             $table->rememberToken();
             $table->timestamps();
+
+            // Composite unique indexes
+            $table->unique(['email', 'deleted_at']);
+            $table->unique(['phone', 'deleted_at']);
+
+            // Separate indexes for faster lookup
+            $table->index('email');
+            $table->index('phone');
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

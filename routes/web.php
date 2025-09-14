@@ -8,6 +8,8 @@ use App\Http\Controllers\JobController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ProspectActivityLogController;
+use App\Http\Controllers\ProspectController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -88,6 +90,19 @@ Route::middleware('auth')->group(function () {
     Route::post('/dashboard/user/notify_client', [NotificationController::class, 'sendJobProgressEmail']);
     Route::get('/dashboard/serve/{ref_number}', [PaymentController::class, 'index']);
     Route::post('/dashboard/user/{ref_number}/send_receipt', [PaymentController::class, 'resendReceipt']);
+
+    Route::get('/dashboard/prospects', [ProspectController::class, 'create'])->name('prospect.get');
+    Route::get('/dashboard/prospect/{prospect}', [ProspectController::class, 'show'])->name('prospect.show');
+    Route::post('/dashboard/prospect', [ProspectController::class, 'store'])->name('prospect.store');
+    Route::patch('/dashboard/prospect/{prospect}', [ProspectController::class, 'update'])->name('prospect.update');
+    Route::delete('/dashboard/prospect/{prospect}', [ProspectController::class, 'destroy'])->name('prospect.destroy');
+
+    Route::post('/prospect/activity_activity', [ProspectActivityLogController::class, 'store'])
+        ->name('prospect_activity.store');
+
+    Route::patch('/prospect_update/status/{prospect}', [ProspectController::class, 'updateStatus'])
+        ->name('prospect_activity.update_status');
+
 
 
 
