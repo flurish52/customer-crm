@@ -1,6 +1,27 @@
 <template>
-    <svg class="h-8 w-auto text-tertiary-50" viewBox="0 0 120 120" fill="currentColor">
-        <path d="M60 0L120 30V90L60 120L0 90V30L60 0Z" />
-        <path d="M60 30L90 45V75L60 90L30 75V45L60 30Z" fill="#fff"/>
-    </svg>
+    <div class="logo-container w-8 h-8">
+        <img src="/logo.png" alt="Entroly logo" class="logo w-8 h-8">
+    </div>
 </template>
+
+<script>
+export default {
+    name: "Logo",
+};
+</script>
+
+<style scoped>
+.logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #00bfae; /* Entroly teal */
+    padding: 1rem;
+    border-radius: 0.5rem;
+}
+
+.logo {
+    max-width: 150px;
+    height: auto;
+}
+</style>

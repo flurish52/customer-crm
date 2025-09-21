@@ -35,11 +35,12 @@ class ComposerStaticInit4e27f7317f303f7f58397c58303c1474
         '7f7ac2ddea9cc3fb4b2cc201d63dbc10' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Log/functions.php',
         '493c6aea52f6009bab023b26c21a386a' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Support/functions.php',
         '58571171fd5812e6e447dce228f52f4d' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Support/helpers.php',
+        '062a54fe8f6f91078b197f2922521dd9' => __DIR__ . '/..' . '/laravel/pint/overrides/Runner/Parallel/ProcessFactory.php',
         '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
         '801c31d8ed748cfa537fa45402288c95' => __DIR__ . '/..' . '/psy/psysh/src/functions.php',
         '0754989a10baadda533479884b399278' => __DIR__ . '/..' . '/resend/resend-php/src/Resend.php',
+        'f641c05521a842027754f9adafba3d7e' => __DIR__ . '/..' . '/erag/laravel-pwa/src/Pwahelpers.php',
         '98caa11a197f6516a8e48aa4abb5ccc6' => __DIR__ . '/..' . '/inertiajs/inertia-laravel/helpers.php',
-        '062a54fe8f6f91078b197f2922521dd9' => __DIR__ . '/..' . '/laravel/pint/overrides/Runner/Parallel/ProcessFactory.php',
         'c72349b1fe8d0deeedd3a52e8aa814d8' => __DIR__ . '/..' . '/mockery/mockery/library/helpers.php',
         'ce9671a430e4846b44e1c68c7611f9f5' => __DIR__ . '/..' . '/mockery/mockery/library/Mockery.php',
         'a1cfe24d14977df6878b9bf804af2d1c' => __DIR__ . '/..' . '/nunomaduro/collision/src/Adapters/Phpunit/Autoload.php',
@@ -170,6 +171,7 @@ class ComposerStaticInit4e27f7317f303f7f58397c58303c1474
         ),
         'E' => 
         array (
+            'EragLaravelPwa\\' => 15,
             'Egulias\\EmailValidator\\' => 23,
         ),
         'D' => 
@@ -387,8 +389,8 @@ class ComposerStaticInit4e27f7317f303f7f58397c58303c1474
         ),
         'Psr\\Http\\Message\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/http-message/src',
-            1 => __DIR__ . '/..' . '/psr/http-factory/src',
+            0 => __DIR__ . '/..' . '/psr/http-factory/src',
+            1 => __DIR__ . '/..' . '/psr/http-message/src',
         ),
         'Psr\\Http\\Client\\' => 
         array (
@@ -436,8 +438,8 @@ class ComposerStaticInit4e27f7317f303f7f58397c58303c1474
         ),
         'League\\Uri\\' => 
         array (
-            0 => __DIR__ . '/..' . '/league/uri-interfaces',
-            1 => __DIR__ . '/..' . '/league/uri',
+            0 => __DIR__ . '/..' . '/league/uri',
+            1 => __DIR__ . '/..' . '/league/uri-interfaces',
         ),
         'League\\MimeTypeDetection\\' => 
         array (
@@ -545,6 +547,10 @@ class ComposerStaticInit4e27f7317f303f7f58397c58303c1474
         array (
             0 => __DIR__ . '/..' . '/fakerphp/faker/src/Faker',
         ),
+        'EragLaravelPwa\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/erag/laravel-pwa/src',
+        ),
         'Egulias\\EmailValidator\\' => 
         array (
             0 => __DIR__ . '/..' . '/egulias/email-validator/src',
@@ -612,7 +618,6 @@ class ComposerStaticInit4e27f7317f303f7f58397c58303c1474
 
     public static $classMap = array (
         'App\\Console\\Commands\\DeactivateInactiveUsers' => __DIR__ . '/../..' . '/app/Console/Commands/DeactivateInactiveUsers.php',
-        'App\\Console\\Kernel' => __DIR__ . '/../..' . '/app/Console/Kernel.php',
         'App\\Http\\Controllers\\ActivityController' => __DIR__ . '/../..' . '/app/Http/Controllers/ActivityController.php',
         'App\\Http\\Controllers\\Auth\\AuthenticatedSessionController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/AuthenticatedSessionController.php',
         'App\\Http\\Controllers\\Auth\\ConfirmablePasswordController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/ConfirmablePasswordController.php',
@@ -1127,6 +1132,12 @@ class ComposerStaticInit4e27f7317f303f7f58397c58303c1474
         'Egulias\\EmailValidator\\Warning\\QuotedString' => __DIR__ . '/..' . '/egulias/email-validator/src/Warning/QuotedString.php',
         'Egulias\\EmailValidator\\Warning\\TLD' => __DIR__ . '/..' . '/egulias/email-validator/src/Warning/TLD.php',
         'Egulias\\EmailValidator\\Warning\\Warning' => __DIR__ . '/..' . '/egulias/email-validator/src/Warning/Warning.php',
+        'EragLaravelPwa\\Commands\\PWACommand' => __DIR__ . '/..' . '/erag/laravel-pwa/src/Commands/PWACommand.php',
+        'EragLaravelPwa\\Commands\\PwaPublishCommand' => __DIR__ . '/..' . '/erag/laravel-pwa/src/Commands/PwaPublishCommand.php',
+        'EragLaravelPwa\\Core\\PWA' => __DIR__ . '/..' . '/erag/laravel-pwa/src/Core/PWA.php',
+        'EragLaravelPwa\\EragLaravelPwaServiceProvider' => __DIR__ . '/..' . '/erag/laravel-pwa/src/EragLaravelPwaServiceProvider.php',
+        'EragLaravelPwa\\Facades\\PWA' => __DIR__ . '/..' . '/erag/laravel-pwa/src/Facades/PWA.php',
+        'EragLaravelPwa\\Services\\PWAService' => __DIR__ . '/..' . '/erag/laravel-pwa/src/Services/PWAService.php',
         'Faker\\Calculator\\Ean' => __DIR__ . '/..' . '/fakerphp/faker/src/Faker/Calculator/Ean.php',
         'Faker\\Calculator\\Iban' => __DIR__ . '/..' . '/fakerphp/faker/src/Faker/Calculator/Iban.php',
         'Faker\\Calculator\\Inn' => __DIR__ . '/..' . '/fakerphp/faker/src/Faker/Calculator/Inn.php',

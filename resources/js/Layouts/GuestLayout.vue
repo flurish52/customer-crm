@@ -1,5 +1,6 @@
 <script setup>
 import { Link } from '@inertiajs/vue3';
+import ApplicationLogo from "@/Components/ApplicationLogo.vue";
 import dayjs from "dayjs";
 </script>
 
@@ -8,10 +9,7 @@ import dayjs from "dayjs";
     <header class="px-6 py-4 sm:px-12 flex justify-between items-center">
         <Link href="/" class="flex items-center space-x-2">
             <div class="w-8 h-8 rounded-lg text-red-600 flex items-center justify-center font-bold">
-                <svg class="h-8 w-auto text-primary-dark" viewBox="0 0 120 120" fill="currentColor">
-                    <path d="M60 0L120 30V90L60 120L0 90V30L60 0Z" />
-                    <path d="M60 30L90 45V75L60 90L30 75V45L60 30Z" fill="white"/>
-                </svg>
+                <ApplicationLogo />
             </div>
             <h1 class="text-2xl font-bold text-primary-dark">
                 Entroly

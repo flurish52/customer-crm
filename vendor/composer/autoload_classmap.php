@@ -7,7 +7,6 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'App\\Console\\Commands\\DeactivateInactiveUsers' => $baseDir . '/app/Console/Commands/DeactivateInactiveUsers.php',
-    'App\\Console\\Kernel' => $baseDir . '/app/Console/Kernel.php',
     'App\\Http\\Controllers\\ActivityController' => $baseDir . '/app/Http/Controllers/ActivityController.php',
     'App\\Http\\Controllers\\Auth\\AuthenticatedSessionController' => $baseDir . '/app/Http/Controllers/Auth/AuthenticatedSessionController.php',
     'App\\Http\\Controllers\\Auth\\ConfirmablePasswordController' => $baseDir . '/app/Http/Controllers/Auth/ConfirmablePasswordController.php',
@@ -522,6 +521,12 @@ return array(
     'Egulias\\EmailValidator\\Warning\\QuotedString' => $vendorDir . '/egulias/email-validator/src/Warning/QuotedString.php',
     'Egulias\\EmailValidator\\Warning\\TLD' => $vendorDir . '/egulias/email-validator/src/Warning/TLD.php',
     'Egulias\\EmailValidator\\Warning\\Warning' => $vendorDir . '/egulias/email-validator/src/Warning/Warning.php',
+    'EragLaravelPwa\\Commands\\PWACommand' => $vendorDir . '/erag/laravel-pwa/src/Commands/PWACommand.php',
+    'EragLaravelPwa\\Commands\\PwaPublishCommand' => $vendorDir . '/erag/laravel-pwa/src/Commands/PwaPublishCommand.php',
+    'EragLaravelPwa\\Core\\PWA' => $vendorDir . '/erag/laravel-pwa/src/Core/PWA.php',
+    'EragLaravelPwa\\EragLaravelPwaServiceProvider' => $vendorDir . '/erag/laravel-pwa/src/EragLaravelPwaServiceProvider.php',
+    'EragLaravelPwa\\Facades\\PWA' => $vendorDir . '/erag/laravel-pwa/src/Facades/PWA.php',
+    'EragLaravelPwa\\Services\\PWAService' => $vendorDir . '/erag/laravel-pwa/src/Services/PWAService.php',
     'Faker\\Calculator\\Ean' => $vendorDir . '/fakerphp/faker/src/Faker/Calculator/Ean.php',
     'Faker\\Calculator\\Iban' => $vendorDir . '/fakerphp/faker/src/Faker/Calculator/Iban.php',
     'Faker\\Calculator\\Inn' => $vendorDir . '/fakerphp/faker/src/Faker/Calculator/Inn.php',

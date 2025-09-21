@@ -5,7 +5,6 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <title inertia>{{ config('app.name', 'Zelra') }}</title>
-
         <!-- Fonts -->
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400&display=swap" rel="stylesheet">
 {{--        <link rel="preconnect" href="https://fonts.bunny.net">--}}
@@ -18,8 +17,11 @@
         @routes
         @vite(['resources/js/app.js', "resources/js/Pages/{$page['component']}.vue"])
         @inertiaHead
+        @PwaHead
+
     </head>
     <body class="font-sans antialiased">
+    @RegisterServiceWorkerScript
         @inertia
     </body>
 </html>
