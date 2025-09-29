@@ -24,6 +24,7 @@ class StoreQuoteRequest extends FormRequest
         return [
             'client_id'   => ['required', 'exists:customers,id'],
             'business_id' => ['required', 'exists:businesses,id'],
+            'job_id' => ['nullable', 'exists:customer_jobs,id'],
             'title'       => ['required', 'string', 'max:255'],
             'description' => ['required', 'string'],
             'terms'       => ['required', 'string'],

@@ -47,12 +47,12 @@ class Job extends Model
 
     public function activities()
     {
-        return $this->morphMany(Activity::class, 'subject');
+        return $this->hasMany(ActivityWithClient::class, 'job_id');
     }
 
     public function quote()
     {
-        return $this->morphMany(Quote::class, 'quote_id');
+        return $this->hasOne(Quote::class, 'job_id');
     }
 
 }

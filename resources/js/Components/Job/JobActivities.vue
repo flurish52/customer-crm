@@ -1,29 +1,27 @@
 <template>
     <div>
-        <AddClientActivity
+        <AddJobActivity
             :visible="showAddActivityModal"
             :isEditing="isEditingActivity"
             :activity="activityToEdit"
             @close="closeAddClientActivityModal"
+            :jobId="jobId"
             :clientId="clientId"
-
         />
-
         <div class="flex justify-between items-center gap-2 flex-wrap">
             <h3 class="text-gray-700 font-semibold truncate max-w-xs">
-                Activities with Client
+                Job notes
             </h3>
             <button
                 @click="openAddActivityModal"
                 class="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg shadow-sm transition-colors text-sm">
-                Add Activity
+                Add a note
             </button>
         </div>
         <div class="flex-1 overflow-y-auto max-h-[400px] space-y-3">
             <div v-if="!sortedActivities.length" class="text-gray-400 italic text-sm">
                 No activity yet.
             </div>
-
             <div v-for="activity in sortedActivities"
                  :key="activity.id"
                  class="group p-3 rounded-lg bg-gray-50 flex justify-between items-start relative hover:bg-gray-100 transition-colors">
@@ -52,9 +50,13 @@ import { ref, computed } from 'vue'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import axios from 'axios'
-import AddClientActivity from "@/Components/Customer/AddClientActivity.vue";
+import AddJobActivity from "@/Components/Job/AddJobActivity.vue";
 dayjs.extend(relativeTime)
 const props = defineProps({
+    jobId: {
+        type: Number,
+        required: true
+    },
     clientId: {
         type: Number,
         required: true

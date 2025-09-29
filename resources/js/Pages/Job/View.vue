@@ -1,5 +1,13 @@
 <template>
     <AuthenticatedLayout>
+                        <QuoteFormModal
+                            :show="showQuoteModal"
+                            :quote="selectedJob.quote"
+                            :jobId="selectedJob.id"
+                            @close="closeQuoteModalFunc"
+                            @saved="saveQuoteModal"
+
+                        />
         <Head title="Job" />
         <div v-if="showCreateInvoiceModal" class="fixed inset-0 z-50 flex items-center justify-center">
 
@@ -110,40 +118,11 @@
                     </div>
                 </div>
                 <div>
-                    <div class="flex justify-between items-center gap-2 flex-wrap">
-                        <h3 class="text-sm font-semibold uppercase tracking-wider text-primary-dark flex items-center">
-                           Project notes
-                        </h3>
-                        <button
-                            class="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg shadow-sm transition-colors text-sm">
-                            Add notes
-                        </button>
-                    </div>
-
-                    <div class="flex-1 overflow-y-auto max-h-[400px] space-y-3">
-                        <div class="text-gray-400 italic text-sm">
-                            No activity yet
-                        </div>
-                        <div
-                             class="group p-3 rounded-lg bg-gray-50 flex justify-between items-start relative hover:bg-gray-100 transition-colors">
-
-                            <div>
-                                <p class="text-gray-800 font-medium"> c</p>
-                                <p class="text-gray-600 text-sm">cw</p>
-                            </div>
-
-                            <span class="text-gray-400 text-xs">
-                                wq}
-                            </span>
-                            <!-- Edit button, only visible on hover -->
-                            <button
-
-                                class="absolute right-3 top-3 bg-primary-dark text-white px-2 py-1 rounded text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-                                Edit
-                            </button>
-                        </div>
-
-                    </div>
+                    <JobActivities
+                        :jobId="selectedJob.id"
+                                    :activities="selectedJob.activities"
+                                    :clientId="selectedJob.customer.id"
+                                    />
                 </div>
             </div>
 
@@ -168,19 +147,31 @@
                         }}</p>
                 </div>
             </div>
-
             <TabSystem :tabs="allTabs"
             @switchTab="switchTab"
             class="mx-6"/>
             <div class="flex flex-col space-y-4 p-4 bg-white rounded-lg shadow-md">
                 <div v-if="activeTab === 'Quote/Proposal'" class="p-4 border border-gray-200 rounded bg-gray-50">
+                    <div
+                        v-if="!selectedJob.quote || Object.keys(selectedJob.quote).length === 0"
+                    >
+                    <button
+                        @click="showCreateQuoteFunc"
+                        class="px-4 py-2   rounded hover:bg-primary/10 transition-colors">
                     <h2 class="text-lg font-semibold text-gray-800 mb-2">Create Proposal / Quote</h2>
                     <p class="text-sm text-gray-600">Fill in details for the client and project.</p>
-                    <button
-                        @click="showCreateInvoiceFunc"
-                        class="px-4 py-2 bg-primary text-white rounded hover:bg-primary-dark transition-colors">
                         Create quote
                     </button>
+
+                    </div>
+                    <div v-else>
+                        <JobQuotationList
+                            :quote="selectedJob.quote"
+                            :jobId="selectedJob.id"
+                        />
+                    </div>
+
+
                 </div>
                 <div v-if="activeTab === 'Contract'" class="p-4 border border-gray-200 rounded bg-gray-50">
                     <h2 class="text-lg font-semibold text-gray-800 mb-2">Contract</h2>
@@ -210,6 +201,7 @@
 
 <script setup>
 import {computed, ref} from "vue";
+import JobActivities from "@/Components/Job/JobActivities.vue";
 import {onMounted} from "vue";
 import {
     PhoneIcon,
@@ -226,11 +218,24 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import {Head, router} from "@inertiajs/vue3";
 import JobInvoices from "@/Components/Invoice/JobInvoices.vue";
 import TabSystem from "@/Components/TabSystem.vue";
+import QuoteFormModal from "@/Components/QuoteAndProposal/QuoteFormModal.vue";
+import JobQuotationList from "@/Components/QuoteAndProposal/JobQuotationList.vue";
 // Define props and emits
 const props = defineProps({
     selectedJob: Object,
 })
+const showQuoteModal = ref(false)
 const emit = defineEmits(['closeModal'])
+const closeQuoteModalFunc = ()=>{
+    showQuoteModal.value = false
+}
+
+const showCreateQuoteFunc = ()=>{
+    showQuoteModal.value = true
+}
+const saveQuoteModal = ()=>{
+router.visit(window.location.href, {preserveScroll: true})
+}
 
 onMounted(() => {
     AOS.init({
@@ -318,7 +323,7 @@ const canCreateInvoice = computed(() => {
 
 const allTabs = ref([
     { name: 'Quote/Proposal' },
-    { name: 'Contract' },
+    // { name: 'Contract' },
     { name: 'Invoices' },
 ])
 

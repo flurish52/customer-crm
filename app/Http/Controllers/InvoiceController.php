@@ -110,12 +110,19 @@ class InvoiceController extends Controller
         $job = Job::with('customer', 'business')->findOrFail($request->job_id);
         $business = $job->business;
         $customer = $job->customer;
+
         $logoPath = $business->logo_path;
-        $logoFilename = basename($logoPath);
-        $invoiceLogoPath = 'invoices/logos/' . $logoFilename;
-        if (!Storage::disk('public')->exists($invoiceLogoPath)) {
-            Storage::disk('public')->copy($logoPath, $invoiceLogoPath);
+        if ($logoPath && Storage::disk('public')->exists($logoPath)) {
+            $logoFilename = basename($logoPath);
+            $invoiceLogoPath = 'invoices/logos/' . $logoFilename;
+
+            if (!Storage::disk('public')->exists($invoiceLogoPath)) {
+                Storage::disk('public')->copy($logoPath, $invoiceLogoPath);
+            }
         }
+
+
+
 
         $invoice = Invoice::create([
             'invoice_number' => 'INV-' . strtoupper(Str::random(8)),

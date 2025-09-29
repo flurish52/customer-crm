@@ -54,7 +54,7 @@
                         </Link>
                         <button v-if="job.status === 'pending'" @click="openConfirmAlertModal(job)"
                                 class="px-3 py-1 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition-colors duration-200 font-medium text-sm flex items-center">
-                            Mark In Progress
+                            Start job
                         </button>
                     </div>
                 </td>
@@ -98,9 +98,10 @@
                           class="text-center px-3 py-1 bg-secondary text-white rounded-md hover:bg-secondary-dark transition-colors font-medium">
                         View
                     </Link>
-                    <button v-if="job.status === 'pending'" @click="openConfirmAlertModal(job)"
+                    <button v-if="job.status === 'pending'"
+                            @click="openConfirmAlertModal(job)"
                             class="px-3 py-1 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition-colors font-medium">
-                        Mark In Progress
+                        Start job
                     </button>
                 </div>
             </div>

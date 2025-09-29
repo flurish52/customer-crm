@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ActivityController;
+use App\Http\Controllers\ActivityWithClientController;
 use App\Http\Controllers\BusinessController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\FeedbackController;
@@ -12,6 +13,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProspectActivityLogController;
 use App\Http\Controllers\ProspectController;
 use App\Http\Controllers\QuoteController;
+use App\Models\ActivityWithClient;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -122,6 +124,14 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/quote/download/{quote_number}', [QuoteController::class, 'downloadQuote'])->name('quote.download');
     Route::post('/dashboard/user/{quote_number}/send_quote', [QuoteController::class, 'sendQuoteViaEmail'])->name('quote.send');
+
+    Route::post('/client/activity', [ActivityWithClientController::class, 'store'])->name('clientActivity.store');
+    Route::patch('/client/activity/{activity}', [ActivityWithClientController::class, 'update'])->name('clientActivity.update');
+    Route::delete('/client/activity/{activity}', [ActivityWithClientController::class, 'destroy'])->name('clientActivity.destroy');
+
+    Route::post('/job/activity', [ActivityWithClientController::class, 'jobActivityStore'])->name('clientActivity.store');
+    Route::patch('/job/activity/{activity}', [ActivityWithClientController::class, 'jobActivityUpdate'])->name('clientActivity.update');
+    Route::delete('/job/activity/{activity}', [ActivityWithClientController::class, 'jobActivityDestroy'])->name('clientActivity.destroy');
 
 });
 

@@ -15,7 +15,7 @@ return new class extends Migration
                 $table->id();
                 $table->foreignId('user_id')->constrained()->onDelete('cascade');
                 $table->foreignId('client_id')->constrained('customers')->onDelete('cascade'); // from customers
-                $table->foreignId('job_id')->nullable()->constrained('customer_jobs')->onDelete('set null'); // from customer_jobs
+                $table->foreignId('job_id')->nullable()->constrained('customer_jobs'); // from customer_jobs
                 $table->string('quote_number')->unique();
                 $table->string('title');
                 $table->text('description')->nullable();
@@ -30,6 +30,8 @@ return new class extends Migration
                 $table->text('terms')->nullable();
                 $table->enum('status', ['draft', 'sent', 'accepted', 'rejected', 'expired'])->default('draft');
                 $table->date('exp_date')->nullable();
+                $table->string('pdf_path')
+                    ->nullable();
                 $table->softDeletes();
                 $table->timestamps();
             });

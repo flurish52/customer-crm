@@ -66,6 +66,7 @@ class QuoteController extends Controller
         $quote = Quote::create([
             'user_id'     => auth()->id(),
             'business_id' => $data['business_id'],
+            'job_id' => $data['job_id'],
             'client_id'   => $data['client_id'],
             'title'       => $data['title'],
             'description' => $data['description'],

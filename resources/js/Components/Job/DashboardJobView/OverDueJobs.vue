@@ -43,7 +43,7 @@
                                 v-if="job.status === 'pending'"
                                 @click="markInProgress(job)"
                                 class="px-3 py-1 bg-teal-600 text-white rounded-md hover:bg-teal-700 text-sm font-medium">
-                                Mark In Progress
+                                Start Job
                             </button>
                             <button
                                 v-else-if="job.status === 'in_progress'"

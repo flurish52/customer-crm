@@ -49,7 +49,7 @@ class JobController extends Controller
     public function viewJob(Job $job)
     {
         if ($job->user_id !== Auth::id()) return;
-        $job->load('customer', 'invoices.payments', 'business');
+        $job->load('customer', 'invoices.payments', 'business', 'activities', 'quote.items');
         return inertia::render('Job/View', [
             'selectedJob'=> $job,
         ]);
@@ -105,7 +105,7 @@ class JobController extends Controller
         DB::beginTransaction();
         $job = Job::create([
             'user_id' => auth()->id(),
-            'quote_id' => 0,
+            'quote_id' => $request->quote_id?? null,
             'business_id' => $business->id,
             ...$request->validated(),
             'satisfaction' => $request->completedExtras['satisfaction'] ?? null,

@@ -23,6 +23,7 @@ class StoreJobRequest extends FormRequest
     {
         return [
             'customer_id' => 'required|exists:customers,id',
+            'quote_id' => 'nullable|exists:quotes,id',
             'job_title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'status' => 'required|in:pending,in_progress,completed,cancelled,in_progress',

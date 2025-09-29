@@ -245,9 +245,9 @@
                 />
             </div>
             <div v-if="activeTab === 'Activities'">
-                <CustomerActivities
-                    :invoices="invoices"
-                    :customerPage="true"
+                <ActivityWithClient
+                    :clientId="customer.id"
+                    :activities="activities"
                 />
             </div>
 
@@ -268,13 +268,13 @@ import PaymentModal from "@/Components/Job/PaymentModal.vue";
 import Jobs from "@/Components/Job/Jobs.vue";
 import TabSystem from "@/Components/TabSystem.vue";
 import JobInvoices from "@/Components/Invoice/JobInvoices.vue";
-import GeneralTips from "@/Components/GeneralTips.vue";
-import CustomerActivities from "@/Components/Customer/CustomerActivities.vue";
+import ActivityWithClient from "@/Components/Customer/ActivityWithClient.vue";
 let props = defineProps({
     customer: Object,
     totalSpent: Number,
     invoices: Array,
     business: Object,
+    activities: Object,
 })
 let showModal = ref(false)
 let showRatingModal = ref(false)

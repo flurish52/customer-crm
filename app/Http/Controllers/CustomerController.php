@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Activity;
+use App\Models\ActivityWithClient;
 use App\Models\Business;
 use App\Models\Customer;
 use App\Http\Requests\StoreCustomerRequest;
@@ -15,7 +15,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
-use Intervention\Image\Encoders\WebpEncoder;
 use Intervention\Image\Laravel\Facades\Image;
 use Intervention\Image\Encoders\JpegEncoder;
 
@@ -79,6 +78,10 @@ class CustomerController extends Controller
             'business' => Business::where('user_id', Auth::id())->first(),
             'jobs' => Job::orderBy('created_at', 'DESC')->with('activities', 'customer')
                 ->where('user_id', Auth::id())->get(),
+            'activities' => ActivityWithClient::orderBy('activity_date', 'DESC')
+            ->where('user_id', Auth::id())
+            ->where('customer_id', $customer_id)
+            ->get(),
         ]);
     }
 

@@ -329,6 +329,7 @@ import axios from "axios"
 
 const props = defineProps({
     show: { type: Boolean, default: false },
+    jobId: { type: Number, default: null },
     quote: { type: Object, default: null },
 })
 
@@ -340,6 +341,7 @@ const clients = ref([])
 const form = ref({
     client_id: "",
     business_id: business?.id || null,
+    job_id: props?.jobId || null,
     title: "",
     description: "",
     items: [
@@ -420,16 +422,13 @@ const submitForm = async () => {
         loading.value = false
         return
     }
-
+console.log(form.value.job_id)
     try {
         let response
         if (isEditing.value) {
-            console.log('notworked', isEditing.value)
             response = await axios.patch(`/quote/update/${props.quote.id}`, form.value)
             successMessage.value = "Quote updated successfully!"
         } else {
-            console.log('worked')
-            console.log(isEditing.value)
             response = await axios.post("/quote/store", form.value)
             successMessage.value = "Quote created successfully!"
         }
@@ -455,6 +454,7 @@ const resetForm = () => {
     form.value = {
         client_id: "",
         business_id: business?.id || null,
+        job_id: props?.jobId || null,
         title: "",
         description: "",
         items: [
@@ -482,6 +482,7 @@ watch(
             form.value = {
                 client_id: newQuote.client_id,
                 business_id: newQuote.business_id,
+                job_id: props.jobId,
                 title: newQuote.title,
                 description: newQuote.description,
                 items: newQuote.items || [],

@@ -24,7 +24,6 @@ return new class extends Migration
             $table->softDeletes();
             $table->timestamps();
 
-            // Composite unique indexes per user for active customers
             $table->unique(['user_id', 'email', 'deleted_at']);
             $table->unique(['user_id', 'phone', 'deleted_at']);
 
