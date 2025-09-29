@@ -168,6 +168,7 @@ const deleteActivity = async () => {
         await axios.delete(`/prospect/activity_activity/${form.id}`);
         emit("saved", { deleted: true, id: form.id });
         emit("close");
+        router.visit(window.location.href, {preserveScroll: true})
     } catch (err) {
         console.error(err);
         alert(err.response?.data?.message || "Something went wrong");

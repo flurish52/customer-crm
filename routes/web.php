@@ -11,6 +11,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProspectActivityLogController;
 use App\Http\Controllers\ProspectController;
+use App\Http\Controllers\QuoteController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -40,9 +41,7 @@ Route::get('/dashboard', function () {
         ->where('user_id', Auth::id())->paginate(),
     ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
-
     Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
-
 
 Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -83,6 +82,9 @@ Route::middleware('auth')->group(function () {
     Route::patch('/update_invoice/status/{invoice}', [InvoiceController::class, 'update'])->name('update.invoice');
     Route::get('/dashboard/invoice/{invoice}', [InvoiceController::class, 'viewInvoice'])->name('view.invoice');
     Route::get('/dashboard/job/{job}/view', [JobController::class, 'viewJob'])->name('view.job');
+    Route::get('/dashboard/quote_proposals', [QuoteController::class, 'index'])->name('view.job');
+
+
 
     Route::get('/invoice/{id}/download', [InvoiceController::class, 'downloadInvoice']);
     Route::post('/invoice/{invoice}/send', [InvoiceController::class, 'sendInvoiceInvoice']);
@@ -102,9 +104,24 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/prospect/activity_activity', [ProspectActivityLogController::class, 'store'])
         ->name('prospect_activity.store');
+    Route::patch('/prospect/activity_activity/{activity}', [ProspectActivityLogController::class, 'update'])
+        ->name('prospect_activity.update');
+    Route::delete('/prospect/activity_activity/{activity}', [ProspectActivityLogController::class, 'destroy'])
+        ->name('prospect_activity.delete');
+
 
     Route::patch('/prospect_update/status/{prospect}', [ProspectController::class, 'updateStatus'])
         ->name('prospect_activity.update_status');
+
+
+    Route::post('/quote/store', [QuoteController::class, 'store'])->name('quotes.store');
+    Route::patch('/quote/update/{quote}', [QuoteController::class, 'update'])->name('quotes.update');
+    Route::get('/quote/view/{quote}', [QuoteController::class, 'viewQuote'])->name('quote.view');
+    Route::patch('/quote/update/status/{quote}', [QuoteController::class, 'updateQuoteStatus'])->name('quote.update.status');
+    Route::patch('/quote/delete/{quote}', [QuoteController::class, 'destroy'])->name('quote.delete');
+
+    Route::get('/quote/download/{quote_number}', [QuoteController::class, 'downloadQuote'])->name('quote.download');
+    Route::post('/dashboard/user/{quote_number}/send_quote', [QuoteController::class, 'sendQuoteViaEmail'])->name('quote.send');
 
 });
 

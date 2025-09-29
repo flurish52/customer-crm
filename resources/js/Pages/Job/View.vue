@@ -17,7 +17,7 @@
             </div>
         </div>
         <div
-            class="bg-white rounded-xl shadow-xl overflow-hidden   w-full border border-gray-100 transform transition-all duration-300 hover:shadow-2xl">
+            class="bg-white rounded-xl shadow-xl overflow-hidden w-full border border-gray-100 transform transition-all duration-300 hover:shadow-2xl">
             <!-- Header with subtle gradient -->
             <div
                 class="flex justify-between items-start p-6 border-b border-gray-200 bg-gradient-to-r from-primary/95 to-primary-dark/95"
@@ -25,7 +25,7 @@
             >
                 <div>
                     <h2 class="text-2xl font-bold text-white">{{ selectedJob.job_title }}</h2>
-                    <div class="mt-2">
+                    <div class="">
           <span
               :class="statusBadgeClasses"
               class="text-xs font-medium px-3 py-1 rounded-full shadow-sm transform transition-all hover:scale-105"
@@ -39,11 +39,6 @@
                     class="p-2 rounded-full hover:bg-white/20 transition-all duration-200 text-white hover:rotate-90"
                     aria-label="Close"
                 >
-<!--                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">-->
-<!--                        <path fill-rule="evenodd"-->
-<!--                              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"-->
-<!--                              clip-rule="evenodd"/>-->
-<!--                    </svg>-->
                 </button>
             </div>
 
@@ -78,41 +73,76 @@
                             <hr class="border-gray-100">
                         </div>
                     </div>
-                </div>
-
-                <!-- Customer Info -->
-                <div class="space-y-6">
-                    <h3 class="text-sm font-semibold uppercase tracking-wider text-primary-dark flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24"
-                             stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                        </svg>
-                        Customer
-                    </h3>
-                    <div class="space-y-4">
-                        <div class="py-2 px-3 rounded-lg hover:bg-gray-50 transition-colors">
-                            <p class="font-medium text-gray-900">{{ selectedJob.customer.name }}</p>
-                            <p class="text-sm text-gray-600 mt-1">{{ selectedJob.customer.company }}</p>
-                        </div>
-
-                        <div
-                            v-for="(item, index) in selectedJob.customerDetails"
-                            v-if="item"
-                            :key="'customer-'+index"
-                            class="animate-detail"
-                            :style="{'--delay': `${index * 50 + 100}ms`}"
-                        >
-                            <div
-                                class="flex items-center space-x-3 py-2 px-3 rounded-lg hover:bg-gray-50 transition-colors">
-                                <div class="text-gray-400">
-                                    <component :is="item.icon" class="h-4 w-4"/>
-                                </div>
-                                <span class="text-sm text-gray-600 flex-1">{{ item.label }}</span>
-                                <span class="font-medium text-gray-900">{{ item.value }}</span>
+                    <!-- Customer Info -->
+                    <div class="space-y-6">
+                        <h3 class="text-sm font-semibold uppercase tracking-wider text-primary-dark flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24"
+                                 stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
+                            Client details
+                        </h3>
+                        <div class="space-y-4">
+                            <div class="py-2 px-3 rounded-lg hover:bg-gray-50 transition-colors">
+                                <p class="font-medium text-gray-900">{{ selectedJob.customer.name }}</p>
+                                <p class="text-sm text-gray-600 mt-1">{{ selectedJob.customer.company }}</p>
                             </div>
-                            <hr class="border-gray-100">
+
+                            <div
+                                v-for="(item, index) in selectedJob.customerDetails"
+                                v-if="item"
+                                :key="'customer-'+index"
+                                class="animate-detail"
+                                :style="{'--delay': `${index * 50 + 100}ms`}"
+                            >
+                                <div
+                                    class="flex items-center space-x-3 py-2 px-3 rounded-lg hover:bg-gray-50 transition-colors">
+                                    <div class="text-gray-400">
+                                        <component :is="item.icon" class="h-4 w-4"/>
+                                    </div>
+                                    <span class="text-sm text-gray-600 flex-1">{{ item.label }}</span>
+                                    <span class="font-medium text-gray-900">{{ item.value }}</span>
+                                </div>
+                                <hr class="border-gray-100">
+                            </div>
                         </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex justify-between items-center gap-2 flex-wrap">
+                        <h3 class="text-sm font-semibold uppercase tracking-wider text-primary-dark flex items-center">
+                           Project notes
+                        </h3>
+                        <button
+                            class="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg shadow-sm transition-colors text-sm">
+                            Add notes
+                        </button>
+                    </div>
+
+                    <div class="flex-1 overflow-y-auto max-h-[400px] space-y-3">
+                        <div class="text-gray-400 italic text-sm">
+                            No activity yet
+                        </div>
+                        <div
+                             class="group p-3 rounded-lg bg-gray-50 flex justify-between items-start relative hover:bg-gray-100 transition-colors">
+
+                            <div>
+                                <p class="text-gray-800 font-medium"> c</p>
+                                <p class="text-gray-600 text-sm">cw</p>
+                            </div>
+
+                            <span class="text-gray-400 text-xs">
+                                wq}
+                            </span>
+                            <!-- Edit button, only visible on hover -->
+                            <button
+
+                                class="absolute right-3 top-3 bg-primary-dark text-white px-2 py-1 rounded text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                                Edit
+                            </button>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -139,82 +169,41 @@
                 </div>
             </div>
 
-            <!-- Activity Log with timeline animation -->
-            <div
-                v-if="selectedJob.activities?.length"
-                class="border-t border-gray-200 pt-6 px-6 pb-6"
-                data-aos="fade-up"
-                data-aos-delay="300"
-            >
-                <h3 class="text-sm font-semibold uppercase tracking-wider text-primary-dark mb-4 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24"
-                         stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    Activity Log
-                </h3>
-                <div class="space-y-6">
-                    <div
-                        v-for="(activity, index) in selectedJob.activities"
-                        :key="activity.id"
-                        class="relative pl-8 group"
-                        data-aos="fade-up"
-                        :data-aos-delay="300 + (index * 50)"
-                    >
-                        <!-- Animated timeline dot -->
-                        <div
-                            class="absolute left-0 top-1 h-full w-0.5 bg-gray-200 group-hover:bg-primary transition-colors"
-                            aria-hidden="true"></div>
-                        <div
-                            class="absolute left-0 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-gray-200 group-hover:bg-primary transition-all transform group-hover:scale-125">
-                            <div class="h-2 w-2 rounded-full bg-white transition-all"></div>
-                        </div>
-                        <!-- Activity content -->
-                        <div
-                            class="bg-white p-4 rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-all">
-                            <div class="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2">
-                                <p class="text-sm font-medium text-gray-900 capitalize">{{
-                                        formatActivityType(activity.type)
-                                    }}</p>
-                                <p class="text-xs text-gray-500">{{ formatDateTime(activity.created_at) }}</p>
-                            </div>
-
-                            <!-- Animated activity details -->
-                            <div
-                                v-if="activity.changes"
-                                class="mt-3 bg-gray-50 p-3 rounded-lg overflow-hidden transition-all duration-300 max-h-0 group-hover:max-h-96"
-                            >
-                                <div v-for="(value, key) in JSON.parse(activity.changes)" :key="key"
-                                     class="text-sm grid grid-cols-3 gap-2 py-1">
-                                    <span class="text-gray-500 col-span-1">{{ key }}:</span>
-                                    <span class="font-medium text-gray-800 col-span-2">{{ value }}</span>
-                                </div>
-                            </div>
-                        </div>
+            <TabSystem :tabs="allTabs"
+            @switchTab="switchTab"
+            class="mx-6"/>
+            <div class="flex flex-col space-y-4 p-4 bg-white rounded-lg shadow-md">
+                <div v-if="activeTab === 'Quote/Proposal'" class="p-4 border border-gray-200 rounded bg-gray-50">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-2">Create Proposal / Quote</h2>
+                    <p class="text-sm text-gray-600">Fill in details for the client and project.</p>
+                    <button
+                        @click="showCreateInvoiceFunc"
+                        class="px-4 py-2 bg-primary text-white rounded hover:bg-primary-dark transition-colors">
+                        Create quote
+                    </button>
+                </div>
+                <div v-if="activeTab === 'Contract'" class="p-4 border border-gray-200 rounded bg-gray-50">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-2">Contract</h2>
+                    <p class="text-sm text-gray-600">Upload or generate the project contract.</p>
+                    <button
+                        @click="showCreateInvoiceFunc"
+                        class="px-4 py-2 bg-primary text-white rounded hover:bg-primary-dark transition-colors">
+                        Create contract
+                    </button>
+                </div>
+                <div v-if="activeTab === 'Invoices'" class="flex flex-col space-y-3">
+                    <div v-if="selectedJob.invoices.length > 0" class="p-4 border border-gray-200 rounded bg-gray-50">
+                        <JobInvoices :invoices="selectedJob.invoices" />
+                    </div>
+                    <div v-if="!selectedJob.invoices.some(inv => inv.status !== 'cancelled')" class="text-center">
+                        <button
+                            @click="showCreateInvoiceFunc"
+                            class="px-4 py-2 bg-primary text-white rounded hover:bg-primary-dark transition-colors">
+                            Generate Invoice
+                        </button>
                     </div>
                 </div>
             </div>
-            <!-- Submit -->
-            <div
-                v-if="selectedJob.invoices.length > 0"
-
-                class="text-left p-3">
-                <JobInvoices
-                :invoices="selectedJob.invoices"
-                />
-
-            </div>
-            <div
-                v-if="!selectedJob.invoices.some(inv => inv.status !== 'cancelled')"
-                class="text-right p-3">
-                <button
-                    @click="showCreateInvoiceFunc"
-                        class="px-4 py-2 bg-primary text-white rounded hover:bg-primary-dark">
-                    Generate Invoice
-                </button>
-            </div>
-
         </div>
     </AuthenticatedLayout>
 </template>
@@ -236,6 +225,7 @@ import CreateInvoiceModal from "@/Components/Invoice/CreateInvoiceModal.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import {Head, router} from "@inertiajs/vue3";
 import JobInvoices from "@/Components/Invoice/JobInvoices.vue";
+import TabSystem from "@/Components/TabSystem.vue";
 // Define props and emits
 const props = defineProps({
     selectedJob: Object,
@@ -264,7 +254,7 @@ const statusBadgeClasses = computed(() => {
 })
 // Job details array for consistent rendering
 const jobDetails = computed(() => [
-    {label: 'Amount', value: formatCurrency(props.selectedJob.amount), icon: CurrencyDollarIcon},
+    {label: 'Expected amount', value: formatCurrency(props.selectedJob.amount), icon: CurrencyDollarIcon},
     {
         label: 'Due Date',
         value: props.selectedJob.due_date ? formatDate(props.selectedJob.due_date) : 'Not set',
@@ -325,6 +315,18 @@ const closeModal = () => {
 const canCreateInvoice = computed(() => {
     return !props.selectedJob.invoices.some(inv => inv.status !== 'cancelled')
 })
+
+const allTabs = ref([
+    { name: 'Quote/Proposal' },
+    { name: 'Contract' },
+    { name: 'Invoices' },
+])
+
+let activeTab  = ref('Quote/Proposal')
+const switchTab = ({payload})=>{
+    activeTab.value = payload
+    console.log(activeTab.value)
+}
 </script>
 
 <style scoped>

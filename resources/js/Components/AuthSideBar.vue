@@ -3,7 +3,7 @@
         <!-- Mobile Toggle Button -->
         <button
             @click="toggleSidebar"
-            class="fixed z-50 md:hidden top-4 left-4 p-2 rounded-full shadow-lg  bg-primary backdrop-blur-sm transition-all duration-300 hover:bg-primary-dark"
+            class="fixed z-50 md:hidden top-4 left-4 p-2 rounded-full shadow-lg bg-primary backdrop-blur-sm transition-all duration-300 hover:bg-primary-dark"
         >
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24"
                  stroke="currentColor">
@@ -38,7 +38,6 @@
         'translate-x-0': isSidebarOpen
       }"
         >
-            <!-- Sidebar Content -->
             <div class="flex flex-col h-full">
                 <!-- Logo Section -->
                 <div class="flex items-center justify-between p-6 pb-4">
@@ -46,25 +45,20 @@
                         <div v-if="isSidebarOpen" key="expanded" class="flex items-center space-x-3">
                             <div class="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center">
                                 <span class="text-white font-bold text-xl">
-                                       <svg class="h-8 w-auto text-tertiary-50" viewBox="0 0 120 120"
-                                            fill="currentColor">
-        <path d="M60 0L120 30V90L60 120L0 90V30L60 0Z"/>
-        <path d="M60 30L90 45V75L60 90L30 75V45L60 30Z" fill="teal"/>
-    </svg>
-
+                              <ApplicationLogo  />
                                 </span>
                             </div>
                             <Link href="/">
-                            <h1 class="text-xl font-bold text-white">Entroly</h1>
+                                <h1 class="text-xl font-bold text-white">Entroly</h1>
                             </Link>
                         </div>
                         <div v-else key="collapsed"
                              class="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center mx-auto">
                             <span class="text-white font-bold text-xl">
-                                   <svg class="h-8 w-auto text-tertiary-50" viewBox="0 0 120 120" fill="currentColor">
-        <path d="M60 0L120 30V90L60 120L0 90V30L60 0Z" />
-        <path d="M60 30L90 45V75L60 90L30 75V45L60 30Z" fill="teal"/>
-    </svg>
+                                <svg class="h-8 w-auto text-tertiary-50" viewBox="0 0 120 120" fill="currentColor">
+                                    <path d="M60 0L120 30V90L60 120L0 90V30L60 0Z" />
+                                    <path d="M60 30L90 45V75L60 90L30 75V45L60 30Z" fill="teal"/>
+                                </svg>
                             </span>
                         </div>
                     </transition>
@@ -85,38 +79,36 @@
                 <nav class="flex-1 overflow-y-auto px-3 py-4">
                     <ul class="space-y-1">
                         <li v-for="item in navItems" :key="item.name">
-                            <Link
-                                :href="item.path"
-                                class="flex relative items-center p-3 rounded-xl transition-all duration-200 group relative overflow-hidden"
-                                :class="{
-                  'bg-white/10 text-white': $page.url.startsWith(item.path),
-                  'text-white/80 hover:bg-white/5': !$page.url.startsWith(item.path)
-                }"
-                            >
-
-                                <TagBadge v-if="item.name === 'Prospects'" position="top-1/3"  status="new" label="New" />
-
-                <span class="flex-shrink-0 relative z-10">
-
-                  <component
-                      :is="item.icon"
-                      class="h-6 w-6 transition-all duration-200"
-                      :class="{
-                      'text-white': $page.url.startsWith(item.path),
-                      'text-white/60 group-hover:text-white': !$page.url.startsWith(item.path)
-                    }"
-                  />
-                </span>
-                                <transition name="slide-fade">
-                  <span v-if="isSidebarOpen" class="ml-4 whitespace-nowrap text-sm font-medium relative z-10">
-                    {{ item.name }}
-                  </span>
-                                </transition>
-                                <span
-                                    v-if="$page.url.startsWith(item.path)"
-                                    class="absolute inset-0 bg-white/5 rounded-xl"
-                                ></span>
-                            </Link>
+                            <div v-if="item.children">
+                                <button
+                                    @click="toggleSection(item.section)"
+                                    class="flex items-center w-full p-3 rounded-xl text-white hover:bg-white/10 transition-all duration-200"
+                                >
+                                    <component :is="item.icon" class="h-6 w-6"/>
+                                    <span v-if="isSidebarOpen" class="ml-4">{{ item.name }}</span>
+                                    <svg v-if="isSidebarOpen" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-auto"
+                                         :class="{ 'rotate-90': openSections[item.section], 'transition-transform': true }"
+                                         fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                    </svg>
+                                </button>
+                                <ul v-show="openSections[item.section]" class="ml-6 mt-1 space-y-1">
+                                    <li v-for="child in item.children" :key="child.name">
+                                        <Link :href="child.path" class="block p-2 rounded-lg text-white/80 hover:bg-white/5">
+                                            {{ child.name }}
+                                        </Link>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div v-else>
+                                <Link
+                                    :href="item.path"
+                                    class="flex items-center p-3 rounded-xl text-white hover:bg-white/10 transition-all duration-200"
+                                >
+                                    <component :is="item.icon" class="h-6 w-6"/>
+                                    <span v-if="isSidebarOpen" class="ml-4">{{ item.name }}</span>
+                                </Link>
+                            </div>
                         </li>
                     </ul>
                 </nav>
@@ -149,85 +141,174 @@
 </template>
 
 <script setup>
-import {Link} from "@inertiajs/vue3";
+import ApplicationLogo from "@/Components/ApplicationLogo.vue";
+import { ref } from 'vue'
+import { Link } from "@inertiajs/vue3"
 import {
     HomeIcon,
     UsersIcon,
     ClipboardIcon,
     DocumentTextIcon,
     CogIcon,
-    ChartBarIcon,
     CreditCardIcon,
 } from '@heroicons/vue/24/outline'
-import ApplicationLogo from "@/Components/ApplicationLogo.vue";
-import TagBadge from "@/Components/AlertsAndPrompts/TagBadge.vue";
 
 const props = defineProps({
-    isSidebarOpen: {
-        type: Boolean,
-        default: true
-    }
+    isSidebarOpen: { type: Boolean, default: true }
 })
-
 const emit = defineEmits(['toggle-sidebar'])
-
-const toggleSidebar = () => {
-    emit('toggle-sidebar')
-}
+const toggleSidebar = () => { emit('toggle-sidebar') }
+const openSections = ref({
+    contacts: false,
+    projects: false,
+    billing: false
+})
+const toggleSection = (section) => { openSections.value[section] = !openSections.value[section] }
 
 const navItems = [
-    {name: 'Dashboard', path: '/dashboard', icon: HomeIcon},
-    {name: 'Prospects', path: '/dashboard/prospects', icon: UsersIcon},
-    {name: 'Clients', path: '/dashboard/customers', icon: UsersIcon},
-    {name: 'Jobs', path: '/dashboard/jobs', icon: ClipboardIcon},
-    {name: 'Invoices', path: '/dashboard/invoices', icon: DocumentTextIcon},
-    {name: 'Payments', path: '/dashboard/payments', icon: CreditCardIcon},
-    {name: 'Settings', path: '/dashboard/settings', icon: CogIcon}
+    { name: 'Dashboard', path: '/dashboard', icon: HomeIcon },
+    {
+        name: 'Contacts', icon: UsersIcon, section: 'contacts',
+        children: [
+            { name: 'Prospects', path: '/dashboard/prospects' },
+            { name: 'Clients', path: '/dashboard/customers' }
+        ]
+    },
+    {
+        name: 'Projects', icon: ClipboardIcon, section: 'projects',
+        children: [
+            { name: 'Quotes/Proposal', path: '/dashboard/quote_proposals' },
+            { name: 'Jobs', path: '/dashboard/jobs' },
+        ]
+    },
+    {
+        name: 'Billing', icon: CreditCardIcon, section: 'billing',
+        children: [
+            { name: 'Invoices', path: '/dashboard/invoices' },
+            { name: 'Payments', path: '/dashboard/payments' }
+        ]
+    },
+    { name: 'Settings', path: '/dashboard/settings', icon: CogIcon }
 ]
 </script>
-
 <style scoped>
-/* Fade transition */
+/* Sidebar background and transitions */
+aside {
+    background-color: #0e3a3a;
+    color: #fff;
+    transition: width 0.3s ease, transform 0.3s ease;
+}
+
+/* Links */
+nav a {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+/* Active link highlight */
+nav a.active,
+nav a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+}
+
+/* Sidebar collapsed text hidden */
+.sidebar-collapsed span {
+    display: none;
+}
+
+/* Nested items */
+nav ul ul {
+    margin-left: 1.5rem;
+    margin-top: 0.25rem;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+    overflow: hidden;
+}
+
+/* Rotate arrow icon when section open */
+button svg.rotate-90 {
+    transform: rotate(90deg);
+    transition: transform 0.3s ease;
+}
+
+/* Scrollbar for sidebar */
+nav::-webkit-scrollbar {
+    width: 6px;
+}
+nav::-webkit-scrollbar-track {
+    background: transparent;
+}
+nav::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+}
+nav::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+/* Profile section */
+aside .user-profile {
+    background-color: rgba(255, 255, 255, 0.05);
+    padding: 0.75rem;
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* User avatar */
+aside .user-profile img {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 9999px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+/* User name and email */
+aside .user-profile .user-info p:first-child {
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+aside .user-profile .user-info p:last-child {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* Collapse toggle button */
+aside button.toggle-collapse {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+/* Mobile overlay */
+.fixed.inset-0.bg-black\/50 {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Fade and slide-fade transitions */
 .fade-enter-active,
 .fade-leave-active {
     transition: opacity 0.2s ease;
 }
-
 .fade-enter-from,
 .fade-leave-to {
     opacity: 0;
 }
-
-/* Slide-fade transition */
 .slide-fade-enter-active {
     transition: all 0.3s ease-out;
 }
-
 .slide-fade-leave-active {
     transition: all 0.2s cubic-bezier(1, 0.5, 0.8, 1);
 }
-
 .slide-fade-enter-from,
 .slide-fade-leave-to {
     transform: translateX(10px);
     opacity: 0;
 }
 
-/* Custom scrollbar */
-nav::-webkit-scrollbar {
-    width: 4px;
-}
-
-nav::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-nav::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 4px;
-}
-
-nav::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.3);
-}
 </style>

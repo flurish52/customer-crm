@@ -107,8 +107,15 @@ class ProspectActivityLogController extends Controller
     {
 
     }
-    public function destroy(ProspectActivityLog $prospectActivityLog)
+    public function destroy(ProspectActivityLog $activity)
     {
-        //
+        if (auth()->id() !== $activity->user_id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $activity->delete();
+
+        return response()->json(['message' => 'Activity deleted successfully']);
     }
+
 }

@@ -116,6 +116,7 @@ class InvoiceController extends Controller
         if (!Storage::disk('public')->exists($invoiceLogoPath)) {
             Storage::disk('public')->copy($logoPath, $invoiceLogoPath);
         }
+
         $invoice = Invoice::create([
             'invoice_number' => 'INV-' . strtoupper(Str::random(8)),
             'user_id'        => Auth::id(),
@@ -139,13 +140,14 @@ class InvoiceController extends Controller
                 'status'      => $job->status,
             ]),
 
+
             'business_snapshot' => json_encode([
                 'id'      => $business->id,
                 'name'    => $business->business_name,
                 'email'   => $business->business_email,
                 'phone'   => $business->business_phone,
                 'address' => $business->business_address,
-                'logo'    => $invoiceLogoPath,
+                'logo'    => $invoiceLogoPath?? null,
                 'currency'    => json_decode($business->settings)->currency,
             ]),
 

@@ -157,6 +157,7 @@
 
             <TabSystem
             @switchTab="switchTab"
+            :tabs="allTabs"
             />
 
 
@@ -287,11 +288,15 @@ const showAddCustomerModal = ref(false)
 const showPaymentModal = ref(false)
 const jobToEdit = ref({})
 const jobCustomer = ref({})
+const allTabs  = ref([
+    { name: 'Jobs' },
+    { name: 'Invoices' },
+    { name: 'Activities' }
+])
 
 let activeTab  = ref('Jobs')
 const switchTab = ({payload})=>{
     activeTab.value = payload
-    console.log(payload)
 }
 
 const isEditingJobFunc = ({payload, amountPaid}) => {

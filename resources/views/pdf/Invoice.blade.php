@@ -6,12 +6,12 @@
     <style>
         body {
             font-family: Arial, Helvetica, sans-serif;
-            color: #2d3748;
+            color: #004d4d;
             margin: 0;
             padding: 15px;
             font-size: 13px;
             line-height: 1.3;
-            background-color: #f8fafc;
+            background-color: #e6f7f7;
         }
         .container {
             max-width: 800px;
@@ -26,39 +26,39 @@
         .business-info { width: 60%; }
         .invoice-info { width: 40%; text-align: right; }
         .logo { max-height: 60px; margin-bottom: 10px; }
-        .business-name { font-size: 20px; font-weight: bold; color: #2b6cb0; margin: 5px 0; }
-        .invoice-title { font-size: 24px; font-weight: bold; color: #2b6cb0; margin: 0 0 15px 0; }
+        .business-name { font-size: 20px; font-weight: bold; color: #008080; margin: 5px 0; }
+        .invoice-title { font-size: 24px; font-weight: bold; color: #008080; margin: 0 0 15px 0; }
         .section { margin-bottom: 20px; }
-        .section-title { font-size: 16px; font-weight: bold; color: #2b6cb0; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; margin-bottom: 12px; }
+        .section-title { font-size: 16px; font-weight: bold; color: #008080; border-bottom: 2px solid #b2dfdb; padding-bottom: 5px; margin-bottom: 12px; }
         .details-grid { display: table; width: 100%; }
         .details-column { display: table-cell; width: 50%; vertical-align: top; padding-right: 15px; }
         .invoice-table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-        .invoice-table th { background-color: #2b6cb0; color: white; padding: 10px; text-align: left; font-weight: bold; }
-        .invoice-table td { padding: 10px; border-bottom: 1px solid #e2e8f0; }
+        .invoice-table th { background-color: #008080; color: white; padding: 10px; text-align: left; font-weight: bold; }
+        .invoice-table td { padding: 10px; border-bottom: 1px solid #b2dfdb; }
         .text-right { text-align: right; }
         .totals { width: 300px; margin-left: auto; margin-top: 20px; }
         .total-row { display: table; width: 100%; margin-bottom: 8px; }
         .total-label, .total-value { display: table-cell; padding: 5px 0; }
         .total-value { text-align: right; font-weight: bold; }
-        .grand-total { border-top: 2px solid #2b6cb0; font-size: 16px; padding-top: 8px; margin-top: 8px; }
+        .grand-total { border-top: 2px solid #008080; font-size: 16px; padding-top: 8px; margin-top: 8px; }
         .status { display: inline-block; padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; color: #fff; margin-top: 5px; }
-        .status-paid { background: #38a169; }
-        .status-pending { background: #d69e2e; }
-        .status-overdue { background: #e53e3e; }
-        .status-cancelled { background: #718096; }
-        .notes { margin-top: 30px; padding: 15px; background: #f1f8ff; border-left: 4px solid #2b6cb0; border-radius: 4px; }
-        .notes-title { font-weight: bold; margin-bottom: 5px; color: #2b6cb0; }
-        .footer { margin-top: 30px; padding-top: 15px; border-top: 1px solid #e2e8f0; text-align: center; color: #718096; font-size: 12px; }
+        .status-paid { background: #009999; }
+        .status-pending { background: #00b3b3; }
+        .status-overdue { background: #006666; }
+        .status-cancelled { background: #004d4d; }
+        .notes { margin-top: 30px; padding: 15px; background: #e0f7f7; border-left: 4px solid #008080; border-radius: 4px; }
+        .notes-title { font-weight: bold; margin-bottom: 5px; color: #008080; }
+        .footer { margin-top: 30px; padding-top: 15px; border-top: 1px solid #b2dfdb; text-align: center; color: #004d4d; font-size: 12px; }
 
         .table-container {width: 100%;font-family: Arial, sans-serif;}
         .table-header {display: flex;justify-content: space-between;margin-bottom: 10px;}
-        .table-header h2 {font-size: 18px;font-weight: bold;color: #333;}
-        .table-header span {font-size: 14px;color: #666;}
+        .table-header h2 {font-size: 18px;font-weight: bold;color: #004d4d;}
+        .table-header span {font-size: 14px;color: #006666;}
         table {width: 100%;border-collapse: collapse;font-size: 14px;}
-        thead tr {background: #f3f3f3;color: #333;}
-        th, td {border: 1px solid #ccc;padding: 8px;text-align: left; }
-        tbody tr:nth-child(even) {background: #fafafa;}
-        tfoot tr {background: #f9f9f9;font-weight: bold;}
+        thead tr {background: #b2dfdb;color: #004d4d;}
+        th, td {border: 1px solid #b2dfdb;padding: 8px;text-align: left; }
+        tbody tr:nth-child(even) {background: #e0f7f7;}
+        tfoot tr {background: #cce6e6;font-weight: bold;}
         .totals {display: flex;justify-content: flex-end; gap: 20px;}
     </style>
 </head>

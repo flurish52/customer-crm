@@ -105,6 +105,7 @@ class JobController extends Controller
         DB::beginTransaction();
         $job = Job::create([
             'user_id' => auth()->id(),
+            'quote_id' => 0,
             'business_id' => $business->id,
             ...$request->validated(),
             'satisfaction' => $request->completedExtras['satisfaction'] ?? null,

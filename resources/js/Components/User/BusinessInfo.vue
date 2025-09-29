@@ -266,6 +266,7 @@ const submit = () => {
                         type="file"
                         accept="image/*"
                         @change="handleLogoChange"
+                        :required="business.logo_path === null"
                         class="block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border file:border-primary file:bg-primary file:text-white hover:file:bg-primary-dark cursor-pointer"
                         :disabled="!isEditable"
                         :class="[

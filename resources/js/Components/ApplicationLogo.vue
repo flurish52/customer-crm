@@ -15,7 +15,7 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #00bfae; /* Entroly teal */
+    background-color: #ffffff; /* Entroly teal */
     padding: 1rem;
     border-radius: 0.5rem;
 }

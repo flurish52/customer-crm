@@ -145,7 +145,6 @@
     </AuthenticatedLayout>
 </template>
 <script setup>
-import TagBadge from "@/Components/AlertsAndPrompts/TagBadge.vue"
 import {ref, computed} from "vue"
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue"
 import AddProspect from "@/Components/Prospect/AddProspect.vue"

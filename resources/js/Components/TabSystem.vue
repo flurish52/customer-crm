@@ -19,19 +19,16 @@
 </template>
 <script setup>
 import {ref} from "vue";
-const tabs = [
-    { name: 'Jobs' },
-    { name: 'Invoices' },
-    { name: 'Activities' }
-]
+const props = defineProps({
+    tabs: Array,
+})
 
-let activeTab = ref('Jobs')
+let activeTab = ref(props.tabs[0].name)
 let emits  = defineEmits(['switchTab'])
 
 const switchTab=(tabName)=>{
     activeTab.value = tabName
     emits('switchTab', {payload: tabName})
-
 }
 
 </script>

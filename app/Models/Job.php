@@ -18,6 +18,7 @@ class Job extends Model
     protected $fillable = [
         'customer_id',
         'user_id',
+        'quote_id',
         'business_id',
         'job_title',
         'description',
@@ -47,6 +48,11 @@ class Job extends Model
     public function activities()
     {
         return $this->morphMany(Activity::class, 'subject');
+    }
+
+    public function quote()
+    {
+        return $this->morphMany(Quote::class, 'quote_id');
     }
 
 }

@@ -34,11 +34,11 @@
                 <form @submit.prevent="submitForm" class="space-y-6">
                     <!-- Customer Information Section -->
                     <section class="space-y-4">
-                        <h3 class="text-lg font-semibold text-gray-800 border-b pb-2">Customer Information</h3>
+                        <h3 class="text-lg font-semibold text-gray-800 border-b pb-2">Client Information</h3>
 
                         <div class="grid grid-cols-1 gap-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Customer <span
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Client <span
                                     class="text-red-500">*</span></label>
                                 <template v-if="customer && Object.keys(customer).length">
                                     <div class="relative">
