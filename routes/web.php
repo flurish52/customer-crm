@@ -42,12 +42,20 @@ Route::get('/dashboard', function () {
             ->orderBy('created_at', 'DESC')
         ->where('user_id', Auth::id())->paginate(),
     ]);
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['auth', 'verified', 'hasBusiness'])->name('dashboard');
     Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
 
-Route::middleware('auth')->group(function () {
+
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::post('/save/business/info', [BusinessController::class, 'store'])->name('business.store');
+});
+Route::middleware(['auth', 'hasBusiness'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::get('/business/setup', [BusinessController::class, 'index'])->name('business.index');
 
     Route::post('/customer_store', [CustomerController::class, 'store'])
         ->name('customer.store');
@@ -77,7 +85,6 @@ Route::middleware('auth')->group(function () {
     Route::delete('/customer_delete/{customer}', [CustomerController::class, 'destroy'])->name('delete.customer');
     Route::get('/get_user/total_receivables', [CustomerController::class, 'getReceivables'])->name('tatal_received.payments');
 
-    Route::post('/save/business/info', [BusinessController::class, 'store'])->name('business.store');
     Route::patch('/save/business/info/{business}', [BusinessController::class, 'update'])->name('business.update');
     Route::get('/get_user/job_details/{job}', [InvoiceController::class, 'create'])->name('create.invoice');
     Route::post('/store/invoice/generate', [InvoiceController::class, 'store'])->name('store.invoice');

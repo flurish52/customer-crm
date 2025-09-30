@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateBusinessRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Inertia\Inertia;
 use Intervention\Image\Encoders\WebpEncoder;
 use Intervention\Image\Laravel\Facades\Image;
 use Intervention\Image\Encoders\JpegEncoder;
@@ -21,7 +22,9 @@ class BusinessController extends Controller
      */
     public function index()
     {
-        //
+        return inertia::render('OnBoard', [
+            'business' => Business::where('user_id', Auth::id())->first(),
+        ]);
     }
 
     /**
@@ -37,7 +40,6 @@ class BusinessController extends Controller
      */
     public function store(StoreBusinessRequest $request)
     {
-
         $data = $request->validated();
 
         if ($request->hasFile('logo')) {

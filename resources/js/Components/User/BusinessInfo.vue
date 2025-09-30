@@ -5,6 +5,7 @@ import {watch} from "vue";
 
 const props = defineProps({
     user: Object,
+    onboarding: Boolean,
     business: {
         type: Object,
         default: () => ({
@@ -54,6 +55,7 @@ const form = useForm({
 let isEditable = ref(true)
 let preview = ref('')
 let sameAsPersonal = ref('')
+const emits = defineEmits(['saved'])
 const sameAsPersonalFunc = () => {
     form.name = props.user?.name
     form.email = props.user?.email
@@ -93,7 +95,12 @@ const submit = () => {
         forceFormData: true,
         onSuccess: () => {
             alert(form.id ? 'Business details updated successfully!' : 'Business details saved successfully!')
+    emits('saved')
+            if (props.onboarding){
+                router.visit('/dashboard')
+            }else{
             router.visit(window.location.href, {preventScroll: true})
+            }
         },
         onError: () => {
         }
@@ -266,7 +273,7 @@ const submit = () => {
                         type="file"
                         accept="image/*"
                         @change="handleLogoChange"
-                        :required="business.logo_path === null"
+                        :required="!business.logo_path"
                         class="block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border file:border-primary file:bg-primary file:text-white hover:file:bg-primary-dark cursor-pointer"
                         :disabled="!isEditable"
                         :class="[

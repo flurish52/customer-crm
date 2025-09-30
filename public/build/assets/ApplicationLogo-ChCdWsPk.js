@@ -1,0 +1,1 @@
+import{_ as s}from"./_plugin-vue_export-helper-DlAUqK2U.js";import{j as t,o as e,b as a}from"./app-DLSH1LwG.js";const n={name:"Logo"},r={class:"logo-container w-8 h-8"};function c(l,o,p,i,_,d){return e(),t("div",r,o[0]||(o[0]=[a("img",{src:"/logo.png",alt:"Entroly logo",class:"logo w-8 h-8"},null,-1)]))}const m=s(n,[["render",c],["__scopeId","data-v-59fac53f"]]);export{m as A};
