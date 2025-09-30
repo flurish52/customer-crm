@@ -28,7 +28,7 @@ class Quote extends Model
         'business_id',
         'terms',
         'status',
-        'exp_date',
+        'due_date',
         'business_snapshot',
         'client_snapshot',
         'pdf_path'

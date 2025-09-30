@@ -11,4 +11,5 @@ Artisan::command('inspire', function () {
 app()->booted(function () {
     $schedule = app(Schedule::class);
     $schedule->command('app:deactivate-inactive-users')->daily();
+    $schedule->command('reminders:overdue')->daily();
 });

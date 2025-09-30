@@ -29,7 +29,7 @@ return new class extends Migration
                 $table->foreignId('business_id')->constrained()->onDelete('cascade');
                 $table->text('terms')->nullable();
                 $table->enum('status', ['draft', 'sent', 'accepted', 'rejected', 'expired'])->default('draft');
-                $table->date('exp_date')->nullable();
+                $table->date('due_date')->nullable();
                 $table->string('pdf_path')
                     ->nullable();
                 $table->softDeletes();
