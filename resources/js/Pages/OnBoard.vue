@@ -1,7 +1,7 @@
 <template>
     <AuthenticatedLayout>
 
-    <div class="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-6">
+    <div class="min-h-screen flex flex-col items-center justify-center bg-gray-50 ">
         <div class="bg-white rounded-lg shadow-lg p-8 w-full text-center">
             <h1 class="text-2xl font-bold text-gray-800 mb-4">Set Up Your Business</h1>
             <p class="text-gray-600 mb-6">

@@ -87,6 +87,7 @@ const handleLogoChange = (e) => {
     reader.readAsDataURL(file);
 };
 const submit = () => {
+
     if (!form.currency){
         form.errors.currency = 'Please select a default currency'
         return;
@@ -112,6 +113,14 @@ const submit = () => {
     }
 };
 
+function normalizeUrl() {
+    if (!form.website) return
+    if (!/^https?:\/\//i.test(form.website)) {
+        form.website = 'https://' + form.website
+    }
+}
+
+
 </script>
 <template>
     <Head title="Business Info"/>
@@ -135,7 +144,8 @@ const submit = () => {
                         <div
                             class="w-11 h-6 bg-gray-500 rounded-full peer peer-checked:bg-primary transition-colors"></div>
                         <span
-                            class="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow-md transform transition-transform peer-checked:translate-x-5"></span>
+                            class="absolute left-0.5 top-2.5 md:top-0.5 w-5 h-5 bg-white rounded-full shadow-md transform transition-transform peer-checked:translate-x-5"></span>
+                        <br />
                         <p class="text-sm text-primary-dark">Same as personal details</p>
                     </label>
                     <p
@@ -202,13 +212,14 @@ const submit = () => {
                     <input
                         type="url"
                         v-model="form.website"
+                        @blur="normalizeUrl"
                         class="w-full px-4 py-2 rounded-lg border border-tertiary-light text-primary-dark focus:ring-2 focus:ring-primary focus:border-primary"
                         placeholder="https://example.com"
                         :disabled="!isEditable"
                         :class="[
-        form.errors.website ? 'border-red-500' : '',
-        !isEditable ? 'bg-gray-100 cursor-not-allowed' : 'bg-tertiary'
-      ]"
+            form.errors.website ? 'border-red-500' : '',
+            !isEditable ? 'bg-gray-100 cursor-not-allowed' : 'bg-tertiary'
+        ]"
                     />
                     <p v-if="form.errors.website" class="mt-1 text-sm text-red-600">{{ form.errors.website }}</p>
                 </div>
@@ -236,6 +247,7 @@ const submit = () => {
                     <input
                         v-model.number="form.tax_percent"
                         type="number"
+                        step="0.01"
                         class="border border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pr-10"
                         placeholder="7.5%"
                     />
